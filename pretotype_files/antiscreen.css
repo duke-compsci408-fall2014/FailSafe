@@ -1,0 +1,20 @@
+body > div {
+        width:inherit;
+        #padding-left:10px
+}
+body > div > h1 {
+        width: inherit;
+        font-size:1.5em
+}
+dt { float: none;
+        width:inherit }
+dt { font-weight:normal }
+
+#col1, #col3 {display: none;}
+
+#col2 {
+        padding:0;
+        margin:0;
+        width:100%;
+        float:none;
+}
