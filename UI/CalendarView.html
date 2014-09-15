@@ -2,44 +2,122 @@
 <html>
 <head>
 <meta charset='utf-8' />
-<link href='../fullcalendar.css' rel='stylesheet' />
-<link href='../fullcalendar.print.css' rel='stylesheet' media='print' />
-<script src='../lib/moment.min.js'></script>
-<script src='../lib/jquery.min.js'></script>
-<script src='../fullcalendar.min.js'></script>
+<link href='fullcalendar/fullcalendar.css' rel='stylesheet' />
+<link href='fullcalendar/fullcalendar.print.css' rel='stylesheet' media='print' />
+<link rel="stylesheet" href="fullcalendar/lib/jquery-ui.min.css">
+<script src='fullcalendar/lib/moment.min.js'></script>
+<script src='fullcalendar/lib/jquery.min.js'></script>
+<script src='fullcalendar/lib/jquery-ui.min.js'></script>
+<script src='fullcalendar/fullcalendar.min.js'></script>
 <script>
-
+	
 	$(document).ready(function() {
+	
+                var currStart, currEnd;
+                
+		var dialog = $( "#dialog-form" ).dialog({
+			autoOpen: false,
+			height: 300,
+			width: 350,
+			modal: true,
+			buttons: {
+                                "OK": function() {
+                                    submitCalls(currStart, currEnd);
+                                    dialog.dialog( "close" );
+                                },
+				Cancel: function() {
+                                    dialog.dialog( "close" );
+				}
+			}
+		});
+ 
+		function updateTips( t ) {
+			tips
+				.text( t )
+				.addClass( "ui-state-highlight" );
+			setTimeout(function() {
+				tips.removeClass( "ui-state-highlight", 1500 );
+			}, 500 );
+		}
+ 
+		function checkFilled( o, n) {
+		  if ( o.val().length <= 0 ) {
+			o.addClass( "ui-state-error" );
+			updateTips( n + " is required.");
+			return false;
+		  } else {
+			return true;
+		  }
+		}
+		
+		function submitCalls(start, end){
+			var eventData,
+			title = "",
+			faculty = $( "#faculty" ),
+			fellow = $( "#fellow" ),
+			rn1 = $( "#rn1" ),
+			rn2 = $( "#rn2" ),
+			tech1 = $( "#tech1" ),
+			tech2 = $( "#tech2" );
+			
+			if (checkFilled(faculty, "faculty") && checkFilled(fellow, "fellow")) {
+				eventData = {
+					title: title,
+					faculty: faculty.val(),
+					fellow: fellow.val(),
+					rn1: rn1.val(),
+					rn2: rn2.val(),
+					tech1: tech1.val(),
+					tech2: tech2.val(),
+					start: start,
+					end: end,
+                                        allDay: true
+				};
+				$('#calendar').fullCalendar('renderEvent', eventData, true); // stick? = true
+			}
+			//$('#calendar').fullCalendar('unselect');
+		}
+		
+		function selectFunction(start, end) {
+			
+                        currStart = start;
+                        currEnd = end;
+			dialog.dialog( "open" );
+		}
 		
 		$('#calendar').fullCalendar({
-			allDayDefault: true,
+			allDaySlot: true,
+			//allDayDefault: true,
 			header: {
 				left: 'prev,next today',
 				center: 'title',
 				right: 'month,agendaWeek,agendaDay'
 			},
+			minTime: "17:00:00",
+			maxTime: "29:00:00",
+			slotEventOverlap: false,
+			
 			selectable: true,
 			selectHelper: true,
-			select: function(start, end) {
-				var title = prompt('Event Title:');
-				var eventData;
-				if (title) {
-					eventData = {
-						title: title,
-						start: start,
-						end: end
-					};
-					$('#calendar').fullCalendar('renderEvent', eventData, true); // stick? = true
-				}
-				$('#calendar').fullCalendar('unselect');
+			select: function(start, end){
+				selectFunction(start, end);
 			},
 			editable: true,
 			eventLimit: true, // allow "more" link when too many events
+			eventClick: function(calEvent, jsEvent, view) {
+
+				alert('Faculty: ' + calEvent.faculty + '\n'
+				    + 'Fellow: ' + calEvent.fellow + '\n'
+				    + 'RN 1: ' + calEvent.rn1 + '\n'
+				    + 'RN 2: ' + calEvent.rn2 + '\n'
+				    + 'Tech 1: ' + calEvent.tech1 + '\n'
+				    + 'Tech 2: ' + calEvent.tech2);
+
+			},
 			events: [
 				//todo: fill from database
 			]
 		});
-		
 	});
 
 </script>
@@ -56,12 +134,39 @@
 		max-width: 900px;
 		margin: 0 auto;
 	}
+	
+	.validateTips { border: 1px solid transparent; padding: 0.3em; }
 
 </style>
 </head>
 <body>
 
 	<div id='calendar'></div>
+	<button id="create-user">Create new user</button>
+	
+	<div id="dialog-form" title="Create new user">
+	  <p class="validateTips">All form fields are required.</p>
+	 
+	  <form>
+		<fieldset>
+		  <label for="faculty">Faculty</label>
+		  <input type="text" name="faculty" id="faculty" class="text ui-widget-content ui-corner-all">
+		  <label for="fellow">Fellow</label>
+		  <input type="text" name="fellow" id="fellow" class="text ui-widget-content ui-corner-all">
+		  <label for="rn1">RN 1</label>
+		  <input type="text" name="rn1" id="rn1" class="text ui-widget-content ui-corner-all">
+		  <label for="rn2">RN 2</label>
+		  <input type="text" name="rn2" id="rn2" class="text ui-widget-content ui-corner-all">
+		  <label for="tech1">Tech 1</label>
+		  <input type="text" name="tech1" id="tech1" class="text ui-widget-content ui-corner-all">
+		  <label for="tech2">Tech 2</label>
+		  <input type="text" name="tech2" id="tech2" class="text ui-widget-content ui-corner-all">
+	 
+		  <!-- Allow form submission with keyboard without duplicating the dialog button -->
+		  <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+		</fieldset>
+	  </form>
+	</div>
 
 </body>
 </html>
