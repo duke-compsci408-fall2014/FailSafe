@@ -85,6 +85,7 @@ var defaults = {
 	},
 
 	buttonIcons: {
+                alert: 'alert-exclaim',
 		prev: 'left-single-arrow',
 		next: 'right-single-arrow',
 		prevYear: 'left-double-arrow',

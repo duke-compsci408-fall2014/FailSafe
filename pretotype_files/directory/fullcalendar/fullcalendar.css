@@ -71,6 +71,12 @@ body .fc { /* extra precedence to overcome jqui */
 	font-family: "Courier New", Courier, monospace;
 }
 
+.fc-icon-alert-exclaim:after {
+	content: "\00021";
+	font-weight: bold;
+	color: #FF0000;
+}
+
 .fc-icon-left-single-arrow:after {
 	content: "\02039";
 	font-weight: bold;
