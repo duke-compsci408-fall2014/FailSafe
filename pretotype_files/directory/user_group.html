@@ -1,11 +1,105 @@
+<!DOCTYPE html>
 <html>
 	<head>
+		<meta charset='utf-8' />
+		<!-- Bootstrap -->
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
 		<link rel="stylesheet" href="style.css">
-		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 		<script type="text/javascript" src="script.js"></script>
-
+		<!-- Full Calendar -->
+		<link href='fullcalendar/fullcalendar.css' rel='stylesheet' />
+		<link href='fullcalendar/fullcalendar.print.css' rel='stylesheet' media='print' />
+		<script src='fullcalendar/lib/moment.min.js'></script>
+		<script src='fullcalendar/fullcalendar.js'></script>
+		<!-- JQuery -->
+		<link rel="stylesheet" href="fullcalendar/lib/jquery-ui.min.css">
+		<script src='fullcalendar/lib/jquery.min.js'></script>
+		<script src='fullcalendar/lib/jquery-ui.min.js'></script>
+		<style>
+			.validateTips { border: 1px solid transparent; padding: 0.3em; }
+		</style>
+		<script>
+			  $(function() {
+				var dialog, form,
+				  firstName = $( "#firstName" ),
+				  lastName = $( "#lastName" ),
+				  phoneNumber = $( "#phoneNumber" ),
+				  allFields = $( [] ).add( firstName ).add( lastName ).add( phoneNumber ),
+				  tips = $( ".validateTips" );
+			 
+				function updateTips( t ) {
+				  tips
+					.text( t )
+					.addClass( "ui-state-highlight" );
+				  setTimeout(function() {
+					tips.removeClass( "ui-state-highlight", 1500 );
+				  }, 500 );
+				}
+			 
+				function checkLength( o, n, min, max ) {
+				  if ( o.val().length > max || o.val().length < min ) {
+					o.addClass( "ui-state-error" );
+					updateTips( "Length of " + n + " must be between " +
+					  min + " and " + max + "." );
+					return false;
+				  } else {
+					return true;
+				  }
+				}
+			 
+				function checkRegexp( o, regexp, n ) {
+				  if ( !( regexp.test( o.val() ) ) ) {
+					o.addClass( "ui-state-error" );
+					updateTips( n );
+					return false;
+				  } else {
+					return true;
+				  }
+				}
+			 
+				function addUser() {
+				  var valid = true;
+			 
+				  if ( valid ) {
+					$( "#staff tbody" ).append( "<tr>" +
+					  "<td>" + firstName.val() + "</td>" +
+					  "<td>" + lastName.val() + "</td>" +
+					  "<td>" + phoneNumber.val() + "</td>" +
+					"</tr>" );
+					allFields.removeClass( "ui-state-error" );
+					dialog.dialog( "close" );
+				  }
+				  return valid;
+				}
+			 
+				dialog = $( "#dialog-form" ).dialog({
+				  autoOpen: false,
+				  height: 300,
+				  width: 350,
+				  modal: true,
+				  buttons: {
+					"Create user": addUser,
+					Cancel: function() {
+					  dialog.dialog( "close" );
+					}
+				  },
+				  close: function() {
+					form[ 0 ].reset();
+					allFields.removeClass( "ui-state-error" );
+				  }
+				});
+			 
+				form = dialog.find( "form" ).on( "submit", function( event ) {
+				  event.preventDefault();
+				  addUser();
+				});
+			 
+				$( "#create-user" ).button().on( "click", function() {
+				  dialog.dialog( "open" );
+				});
+			  });
+		</script>
 	</head>
 	<body>
 		<nav class="navbar navbar-default" role="navigation">
@@ -24,20 +118,8 @@
 		    <!-- Collect the nav links, forms, and other content for toggling -->
 		    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 		      <ul class="nav navbar-nav">
-		        <li class="active"><a href="#">Directory</a></li>
-		        <li><a href="#">Calendar</a></li>
-		        <li class="dropdown">
-		          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <span class="caret"></span></a>
-		          <ul class="dropdown-menu" role="menu">
-		            <li><a href="#">Action</a></li>
-		            <li><a href="#">Another action</a></li>
-		            <li><a href="#">Something else here</a></li>
-		            <li class="divider"></li>
-		            <li><a href="#">Separated link</a></li>
-		            <li class="divider"></li>
-		            <li><a href="#">One more separated link</a></li>
-		          </ul>
-		        </li>
+		        <li><a href="user_group.html">Directory</a></li>
+		        <li><a href="calendar.html">Calendar</a></li>
 		      </ul>
 		      <form class="navbar-form navbar-left" role="search">
 		        <div class="form-group">
@@ -46,9 +128,8 @@
 		        <button type="submit" class="btn btn-default">Submit</button>
 		      </form>
 		      <ul class="nav navbar-nav navbar-right">
-		        <li><a href="#">Login</a></li>
-		        <li class="dropdown">
-		          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <span class="caret"></span></a>
+				<li class="dropdown">
+		          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Preferences<span class="caret"></span></a>
 		          <ul class="dropdown-menu" role="menu">
 		            <li><a href="#">Action</a></li>
 		            <li><a href="#">Another action</a></li>
@@ -57,6 +138,7 @@
 		            <li><a href="#">Separated link</a></li>
 		          </ul>
 		        </li>
+		        <li><a href="#">Login</a></li>
 		      </ul>
 		    </div><!-- /.navbar-collapse -->
 		  </div><!-- /.container-fluid -->
@@ -71,40 +153,64 @@
 					  	<div class="panel-heading">Doctor Directory</div>
 
 					  	<!-- Table -->
-					  	<table class="table">
-					    	<tr class="table_headings">
-					    		<th>First Name</th>
-					    		<th>Last Name</th>
-					    		<th>Phone Number</th>
-					    	</tr>
-					    	<tr class="entry">
-					    		<td>CoolDoctor1</td>
-					    		<td>AwesomeName1</td>
-					    		<td>000-000-0001</td>
-					    	</tr>
-					    	<tr class="entry">
-					    		<td>CoolDoctor2</td>
-					    		<td>AwesomeName2</td>
-					    		<td>000-000-0002</td>
-					    	</tr>
-					    	<tr class="entry">
-					    		<td>CoolDoctor3</td>
-					    		<td>AwesomeName3</td>
-					    		<td>000-000-0003</td>
-					    	</tr>
-					    	<tr class="entry">
-					    		<td>CoolDoctor4</td>
-					    		<td>AwesomeName4</td>
-					    		<td>000-000-0004</td>
-					    	</tr>
-					    	<tr class="entry">
-					    		<td>CoolDoctor5</td>
-					    		<td>AwesomeName5</td>
-					    		<td>000-000-0005</td>
-					    	</tr>
+					  	<table id ="staff" class="table">
+							<tr class="table_headings">
+								<th>First Name</th>
+								<th>Last Name</th>
+								<th>Phone Number</th>
+							</tr>
+							<tr class="entry">
+								<td>CoolDoctor1</td>
+								<td>AwesomeName1</td>
+								<td>000-000-0001</td>
+							</tr>
+							<tr class="entry">
+								<td>CoolDoctor2</td>
+								<td>AwesomeName2</td>
+								<td>000-000-0002</td>
+							</tr>
+							<tr class="entry">
+								<td>CoolDoctor3</td>
+								<td>AwesomeName3</td>
+								<td>000-000-0003</td>
+							</tr>
+							<tr class="entry">
+								<td>CoolDoctor4</td>
+								<td>AwesomeName4</td>
+								<td>000-000-0004</td>
+							</tr>
+							<tr class="entry">
+								<td>CoolDoctor5</td>
+								<td>AwesomeName5</td>
+								<td>000-000-0005</td>
+							</tr>
 						</table>
 					</div>
+					<button id = "create-user" type="button" class="btn btn-default btn-lg">Add New Contact</button>
 				</div>
 			</div>
+		<div id="dialog-form" title="Create new user">
+		  <p class="validateTips">All form fields are required.</p>
+		 
+		  <form>
+			<fieldset>
+				<div>
+					<label for="firstName">First Name</label>
+					<input type="text" name="firstName" id="firstName" class="text ui-widget-content ui-corner-all">
+				</div>
+				<div>
+					<label for="lastName">Last Name</label>
+					<input type="text" name="lastName" id="lastName" class="text ui-widget-content ui-corner-all">
+				</div>
+				<div>
+					<label for="phoneNumber">Phone Number</label>
+					<input type="text" name="phoneNumber" id="phoneNumber" class="text ui-widget-content ui-corner-all">
+				</div>
+		 
+			  <!-- Allow form submission with keyboard without duplicating the dialog button -->
+			  <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+			</fieldset>
+		  </form>
+		</div>
 	</body>
 </html>
