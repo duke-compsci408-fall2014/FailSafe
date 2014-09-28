@@ -7981,21 +7981,38 @@ $.extend(AgendaView.prototype, {
 					'</tr>' +
 				'</thead>' +
 				'<tbody>' +
+                                        '<tr>'+
+                                                '<td class="' + this.widgetContentClass + '" align="center">Faculty</td>'+
+                                                '<td class="' + this.widgetContentClass + '" align="center">Fellow</td>'+
+                                                '<td class="' + this.widgetContentClass + '" align="center">RN 1</td>'+
+                                                '<td class="' + this.widgetContentClass + '" align="center">RN 2</td>'+
+                                                '<td class="' + this.widgetContentClass + '" align="center">Tech 1</td>'+
+                                                '<td class="' + this.widgetContentClass + '" align="center">Tech 2</td>'+
+                                        '</tr>'+
 					'<tr>' +
-						'<td class="' + this.widgetContentClass + '">' +
-							(this.dayGrid ?
-								'<div class="fc-day-grid"/>' +
-								'<hr class="' + this.widgetHeaderClass + '"/>' :
-								''
-								) +
-							'<div class="fc-time-grid-container">' +
-								'<div class="fc-time-grid"/>' +
-							'</div>' +
-						'</td>' +
+						this.renderDayHtml() +
+                                                this.renderDayHtml() +
+						this.renderDayHtml() +
+                                                this.renderDayHtml() +
+						this.renderDayHtml() +
+                                                this.renderDayHtml() +
 					'</tr>' +
 				'</tbody>' +
 			'</table>';
 	},
+                
+        renderDayHtml: function() {
+                return '' + '<td class="' + this.widgetContentClass + '">' +
+                        (this.dayGrid ?
+                                '<div class="fc-day-grid"/>' +
+                                '<hr class="' + this.widgetHeaderClass + '"/>' :
+                                ''
+                                ) +
+                        '<div class="fc-time-grid-container">' +
+                                '<div class="fc-time-grid"/>' +
+                        '</div>' +
+                '</td>';
+        },
 
 
 	// Generates the HTML that will go before the day-of week header cells.
