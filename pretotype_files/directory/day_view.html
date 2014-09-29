@@ -1,6 +1,86 @@
 <html>
     <head>
+		<script src="jquery-1.11.1.min.js"></script>
+		<script src='fullcalendar/lib/jquery-ui.min.js'></script>
+		<link rel="stylesheet" href="fullcalendar/lib/jquery-ui.min.css">
 		<link rel="stylesheet" href="fullcalendar/style.css">
+		<script>
+		$(document).ready(function(){
+		
+			var currStart, currEnd;
+					
+			var dialog = $( "#dialog-form" ).dialog({
+				autoOpen: false,
+				height: 300,
+				width: 350,
+				modal: true,
+				buttons: {
+					"OK": function() {
+						submitCalls(currStart, currEnd);
+						dialog.dialog( "close" );
+					},
+					Cancel: function() {
+						dialog.dialog( "close" );
+					}
+				}
+			});
+	 
+			function updateTips( t ) {
+				tips
+					.text( t )
+					.addClass( "ui-state-highlight" );
+				setTimeout(function() {
+					tips.removeClass( "ui-state-highlight", 1500 );
+				}, 500 );
+			}
+	 
+			function checkFilled( o, n) {
+			  if ( o.val().length <= 0 ) {
+				o.addClass( "ui-state-error" );
+				updateTips( n + " is required.");
+				return false;
+			  } else {
+				return true;
+			  }
+			}
+			
+			function submitCalls(start, end){
+				var eventData,
+				title = "",
+				faculty = $( "#faculty" ),
+				fellow = $( "#fellow" ),
+				rn1 = $( "#rn1" ),
+				rn2 = $( "#rn2" ),
+				tech1 = $( "#tech1" ),
+				tech2 = $( "#tech2" );
+				
+				if (checkFilled(faculty, "faculty") && checkFilled(fellow, "fellow")) {
+					eventData = {
+						title: title,
+						faculty: faculty.val(),
+						fellow: fellow.val(),
+						rn1: rn1.val(),
+						rn2: rn2.val(),
+						tech1: tech1.val(),
+						tech2: tech2.val(),
+						start: start,
+						end: end
+					};
+				}
+			}
+			
+			$("td").click(function(){
+				currStart = "17:00:00";
+				currEnd = "18:00:00";
+				dialog.dialog("open");
+			});
+		});
+		</script>
+		<style>
+		  td:hover {
+			background: yellow;
+		  }
+		</style>
     </head>
     <body>
         <table>
@@ -230,6 +310,42 @@
                 <td class="inside bottom"></td>
             </tr>
         </table>
+		
+				<div id="dialog-form" title="Create new user">
+		  <p class="validateTips">All form fields are required.</p>
+		 
+		  <form>
+			<fieldset>
+				<div>
+					<label for="faculty">Faculty</label>
+					<input type="text" name="faculty" id="faculty" class="text ui-widget-content ui-corner-all">
+				</div>
+				<div>
+					<label for="fellow">Fellow</label>
+					<input type="text" name="fellow" id="fellow" class="text ui-widget-content ui-corner-all">
+				</div>
+				<div>
+					<label for="rn1">RN 1</label>
+					<input type="text" name="rn1" id="rn1" class="text ui-widget-content ui-corner-all">
+				</div>
+				<div>
+					<label for="rn2">RN 2</label>
+					<input type="text" name="rn2" id="rn2" class="text ui-widget-content ui-corner-all">
+				</div>
+				<div>
+					<label for="tech1">Tech 1</label>
+					<input type="text" name="tech1" id="tech1" class="text ui-widget-content ui-corner-all">
+				</div>
+				<div>
+					<label for="tech2">Tech 2</label>
+					<input type="text" name="tech2" id="tech2" class="text ui-widget-content ui-corner-all">
+				</div>
+		 
+			  <!-- Allow form submission with keyboard without duplicating the dialog button -->
+			  <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+			</fieldset>
+		  </form>
+		</div>
     </body>
 
 </html>
