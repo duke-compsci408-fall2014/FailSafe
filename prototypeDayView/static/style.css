@@ -8,10 +8,19 @@ td {
 }
 td.inside {
     background-color: #fcf8e3;
-    height: 30px;
+    height: 2em;
 }
 td.inside:hover {
 	background-color: yellow;
+}
+td.day {
+	height: 5em;
+}
+td.day:hover {
+	background-color: yellow;
+}
+td.weekday {
+	text-align: center;
 }
 .top {
     border-bottom: 1px dotted #ddd;
@@ -25,9 +34,4 @@ td.timelabel {
 }
 .rolelabel {
     text-align: center;
-}
-.invisible {
-	display: block;
-	text-decoration: none;
-	font-size: 100%;
 }

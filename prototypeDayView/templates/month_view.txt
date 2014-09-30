@@ -2,7 +2,6 @@
 {% block headScript %}
 {% endblock %}
 {% block body %}
-	<button id = "gotoMonth" type="button" class="btn btn-default btn-lg" href="/month">Month View</button>
 	<table>
 		<tr>
 			<td class="timelabel"></td>
@@ -10,7 +9,7 @@
 			<td class="rolelabel">{{role}}</td>
                         {% endfor %}
 		</tr>
-		{% for n in range(17, 29) %}
+		{% for n in range(0, 4) %}
 			<tr>
 				<td class="timelabel">{{n%24}}:00</td>
 				{% for role in roles %}
@@ -25,11 +24,11 @@
 			</tr>
 		{% endfor %}
 	</table>
-
-	<div id="substitution-form" title="Create Substitution">
+	
+	<div id="full-form" title="Create new On Call Event">
 	  <p class="validateTips">All form fields are required.</p>
 	
-	  <form action="/addSubstitution" method="post">
+	  <form action="/addFullEvent" method="post">
 		<fieldset>
                         <div>
 				<label for="start">Start Time</label>
@@ -39,10 +38,12 @@
 				<label for="end">End Time</label>
 				<input type="text" name="end" id="end" class="text ui-widget-content ui-corner-all">
 			</div>
+                        {% for roleId in roleIds %}
 			<div>
-				<label for="sub">Substitute</label>
-				<input type="text" name="sub" id="sub" class="text ui-widget-content ui-corner-all">
+				<label for="{{ roleId }}">{{roles[loop.index0]}}</label>
+				<input type="text" name="{{ roleId }}" id="{{ roleId }}" class="text ui-widget-content ui-corner-all">
 			</div>
+                        {% endfor %}
 	 
 		  <!-- Allow form submission with keyboard without duplicating the dialog button -->
 		  <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">

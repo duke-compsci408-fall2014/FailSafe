@@ -5,10 +5,18 @@ from contextlib import closing
 from flaskext.mysql import MySQL
 app = Flask(__name__)
 app.config.from_object(__name__)
-	 
+
 @app.route('/')
+def default():
+	return render_template('day_view.html')
+	 
+@app.route('/day')
 def day_view():
     return render_template('day_view.html')
+	
+@app.route('/month')
+def month_view():
+	return render_template('month_view.html')
 	
 '''    g.db.execute('insert into OnCall (startTime, endTime, faculty, fellow, rn1, rn2, tech1, tech2) values (?, ?, ?, ?, ?, ?, ?, ?)',
                  [request.form['start'], request.form['end'], request.form['faculty'], request.form['fellow'], 

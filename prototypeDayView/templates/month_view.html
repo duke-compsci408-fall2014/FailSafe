@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block headScript %}
+{% endblock %}
+{% block body %}
+	<table>
+		<tr>
+			{% for day in weekdays %}
+			<td class="weekday">{{day}}</td>
+			{% endfor %}
+		</tr>
+		{% for n in range(0, 5) %}
+			<tr>
+				{% for day in weekdays %}
+				<td class="day top">  </td>
+				{% endfor %}
+			</tr>
+		{% endfor %}
+	</table>
+	
+	<div id="full-form" title="Create new On Call Event">
+	  <p class="validateTips">All form fields are required.</p>
+	
+	  <form action="/addFullEvent" method="post">
+		<fieldset>
+                        <div>
+				<label for="start">Start Time</label>
+				<input type="text" name="start" id="start" readonly class="text ui-widget-content ui-corner-all">
+			</div>
+			<div>
+				<label for="end">End Time</label>
+				<input type="text" name="end" id="end" class="text ui-widget-content ui-corner-all">
+			</div>
+                        {% for roleId in roleIds %}
+			<div>
+				<label for="{{ roleId }}">{{roles[loop.index0]}}</label>
+				<input type="text" name="{{ roleId }}" id="{{ roleId }}" class="text ui-widget-content ui-corner-all">
+			</div>
+                        {% endfor %}
+	 
+		  <!-- Allow form submission with keyboard without duplicating the dialog button -->
+		  <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+		</fieldset>
+	  </form>
+	</div>
+{% endblock %}
