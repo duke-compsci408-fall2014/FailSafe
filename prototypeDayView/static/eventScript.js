@@ -8,6 +8,7 @@ $(document).ready(function() {
 	  tech2 = $("#tech2"),
 	  allFields = $( [] ).add( faculty ).add( fellow ).add( rn1 ).add( rn2 ).add( tech1 ).add( tech2 ),
 	  tips = $( ".validateTips" );
+	var clickedSquare;
 
 	function updateTips( t ) {
 	  tips
@@ -51,12 +52,12 @@ $(document).ready(function() {
 		 * repeated code here is temporary
 		 * trying to learn javascript :p
 		 */
-		valid = valid && checkLength(role, "Substitute", 80);
-		valid = valid && checkRegexp( role, /^([a-zA-Z])+$/, "Substitute name must only include a-z" );
+		valid = valid && checkLength(sub, "Substitute", 80);
+		valid = valid && checkRegexp( sub, /^([a-zA-Z])+$/, "Substitute name must only include a-z" );
 		
 		if(valid) {
 			var sub_data = {
-				"sub":$('#sub').val(), 
+				"sub":$('#sub').val()
 			};
 			$.ajax({
 				url:"/addSub",
@@ -65,8 +66,8 @@ $(document).ready(function() {
 				dataType:"json",
 				data: JSON.stringify(sub_data)
 			});
+			clickedSquare.innerHTML = "SUB: " + $('#sub').val();
 			$subDialog.dialog( "close" );
-			window.location.reload(true);
 		}
 	}
 
@@ -94,6 +95,7 @@ $(document).ready(function() {
 		
 		if(valid) {
 			var oncall_data = {
+				"date":$('#date').val(),
 				"faculty":$('#faculty').val(), 
 				"fellow":$('#fellow').val(), 
 				"rn1":$('#rn1').val(), 
@@ -108,6 +110,7 @@ $(document).ready(function() {
 				dataType:"json",
 				data: JSON.stringify(oncall_data)
 			});
+			clickedSquare.innerHTML = "Covered!";
 			$fullDialog.dialog( "close" );
 			window.location.reload(true);
 		}
@@ -115,7 +118,7 @@ $(document).ready(function() {
 
 	var $subDialog = $( "#substitution-form" ).dialog({
 	  autoOpen: false,
-	  height: 300,
+	  height: 400,
 	  width: 350,
 	  modal: true,
 	  buttons: {
@@ -132,7 +135,7 @@ $(document).ready(function() {
 	
 	var $fullDialog = $( "#full-form" ).dialog({
 	  autoOpen: false,
-	  height: 400,
+	  height: 800,
 	  width: 350,
 	  modal: true,
 	  buttons: {
@@ -154,23 +157,16 @@ $(document).ready(function() {
     var fullForm = $fullDialog.find( "form" ).on( "submit", function( event ) {
       event.preventDefault();
     });
-	
-	var $dialog = $('<div></div>')
-    	.html('This dialog will show every time!')
-    	.dialog({
-    		autoOpen: false,
-    		title: 'Basic Dialog'
-    	});
 
     $('.inside').click(function(event) {
+		clickedSquare = event.target || event.srcElement;
     	$subDialog.dialog('open');
-		$('#start').val(event.target.id);
+		$('#start').val(clickedSquare.id);
     });
-
-
 	
 	$( ".day" ).click(function(event) {
-	  $fullDialog.dialog("open");
-		$('#start').val(event.target.id);
+		clickedSquare = event.target || event.srcElement;
+		$fullDialog.dialog("open");
+		$('#date').val(clickedSquare.id);
 	});
 });

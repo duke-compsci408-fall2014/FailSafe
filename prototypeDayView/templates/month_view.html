@@ -2,6 +2,7 @@
 {% block headScript %}
 {% endblock %}
 {% block body %}
+	<button id = "goToDay" type="button" class="btn btn-default btn-lg"><a href="/day">Day View</a></button>
 	<table>
 		<tr>
 			{% for day in weekdays %}
@@ -11,31 +12,34 @@
 		{% for n in range(0, 5) %}
 			<tr>
 				{% for day in weekdays %}
-				<td class="day top">  </td>
+				{% if (((7 * n) + loop.index) <= 30) %}
+				<td class="day" id="{{(7 * n) + loop.index}}">
+				{{(7 * n) + loop.index}}.
+				{{% for call_event in call_list %}}
+					{{call_event[1]}}
+				{{% endfor %}}
+				</td>
+				{% endif %}
 				{% endfor %}
 			</tr>
 		{% endfor %}
 	</table>
 	
-	<div id="full-form" title="Create new On Call Event">
+	<div id="full-form" title="Create on call event">
 	  <p class="validateTips">All form fields are required.</p>
 	
-	  <form action="/addFullEvent" method="post">
+	  <form action="/addCall" method="post">
 		<fieldset>
-                        <div>
-				<label for="start">Start Time</label>
-				<input type="text" name="start" id="start" readonly class="text ui-widget-content ui-corner-all">
+            <div>
+				<label for="date">Date</label>
+				<input type="text" name="date" id="date" readonly class="text ui-widget-content ui-corner-all">
 			</div>
-			<div>
-				<label for="end">End Time</label>
-				<input type="text" name="end" id="end" class="text ui-widget-content ui-corner-all">
-			</div>
-                        {% for roleId in roleIds %}
+            {% for roleId in roleIds %}
 			<div>
 				<label for="{{ roleId }}">{{roles[loop.index0]}}</label>
 				<input type="text" name="{{ roleId }}" id="{{ roleId }}" class="text ui-widget-content ui-corner-all">
 			</div>
-                        {% endfor %}
+            {% endfor %}
 	 
 		  <!-- Allow form submission with keyboard without duplicating the dialog button -->
 		  <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">

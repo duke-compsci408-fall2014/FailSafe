@@ -1,10 +1,16 @@
-from flask import Flask, request, session, g, redirect, url_for, \
-     abort, render_template, flash
-from contextlib import closing
-	 
+from flask import Flask, request
+from flask import render_template
+from flask import jsonify
 from flaskext.mysql import MySQL
+from flask import Response
+
+mysql = MySQL()
 app = Flask(__name__)
-app.config.from_object(__name__)
+app.config['MYSQL_DATABASE_USER'] = 'failsafe'
+app.config['MYSQL_DATABASE_PASSWORD'] = 'efasliaf'
+app.config['MYSQL_DATABASE_DB'] = 'calendar'
+app.config['MYSQL_DATABASE_HOST'] = 'colab-sbx-131.oit.duke.edu'
+mysql.init_app(app)
 
 @app.route('/')
 def default():
@@ -16,25 +22,20 @@ def day_view():
 	
 @app.route('/month')
 def month_view():
-	return render_template('month_view.html')
+	con = mysql.connect()
+	cursor = con.cursor()
+	call_list = list()
 	
-'''    g.db.execute('insert into OnCall (startTime, endTime, faculty, fellow, rn1, rn2, tech1, tech2) values (?, ?, ?, ?, ?, ?, ?, ?)',
-                 [request.form['start'], request.form['end'], request.form['faculty'], request.form['fellow'], 
-				 request.form['rn1'], request.form['rn2'], request.form['tech1'], request.form['tech2']])
-	cursor.execute("SELECT name from category")
-    print dir(cursor)
-    print dir(mysql.connect())
-    data = cursor.fetchall()
-    return_string = ""
-    for i in data:
-        return_string += "," + i[0]
-    cursor.close()
-    conn.commit()
-    conn.close()
-    if data is None:
-		return "Username or Password is wrong"
-    else:
-        return return_string[1:]'''
+	cursor.execute("SELECT * from OnCall")
+	data = cursor.fetchall()
+	for d in data:
+		call_data = list()
+		for i in range(len(d)):
+			call_data.append(d[i])
+		call_list.append(call_data)
+
+	return render_template('directory.html', call_list=call_list)
+	
 
 if __name__ == '__main__':
-	app.run()
+	app.run(host='0.0.0.0', port=5002)
