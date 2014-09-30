@@ -6,10 +6,10 @@ from flask import Response
 
 mysql = MySQL()
 app = Flask(__name__)
-app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'mysqldb'
+app.config['MYSQL_DATABASE_USER'] = 'failsafe'
+app.config['MYSQL_DATABASE_PASSWORD'] = 'efasliaf'
 app.config['MYSQL_DATABASE_DB'] = 'directory'
-app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+app.config['MYSQL_DATABASE_HOST'] = 'colab-sbx-131.oit.duke.edu'
 mysql.init_app(app)
 
 
@@ -18,10 +18,10 @@ def index():
     return 'Index Page'
 
 
-@app.route('/directory')
+@app.route('/directory', methods=['GET', 'POST'])
 def show_directory(newstaff = None):
 	con = mysql.connect()
-	cursor = con.cursor()	
+	cursor = con.cursor()
 	person_list = list();
 
 	# add new staff based on the form
@@ -43,23 +43,24 @@ def show_directory(newstaff = None):
 		except:
 			con.rollback()
 
-	
+
 	cursor.execute("SELECT * from tblUser")
 	data = cursor.fetchall()
-	for d in data: 
+	for d in data:
 		person_data = list()
 		for i in range(len(d)):
 			person_data.append(d[i])
 		person_list.append(person_data)
 
-	return render_template('user_group.html', person_list=person_list)
+	return render_template('directory.html', person_list=person_list)
 
 
 # Add a staff to the directory
 @app.route('/addStaff', methods = ['POST'])
 def add_staff():
 	return show_directory(request.json)
-	
+
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.debug = True
+    app.run(host='0.0.0.0')
