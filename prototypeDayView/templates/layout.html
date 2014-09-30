@@ -1,0 +1,10 @@
+<!doctype html>
+<title>Day View</title>
+<head>
+	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='jquery-ui.min.css') }}">
+	<link rel=stylesheet type=text/javascript href="{{ url_for('static', filename='jquery-1.11.1.min.js') }}">
+	<link rel=stylesheet type=text/javascript href="{{ url_for('static', filename='jquery-ui.min.js') }}">
+	{% block headScript %} {% endblock %}
+</head>
+<body>{% block body %} {% endblock %}</body>
