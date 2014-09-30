@@ -1,9 +1,8 @@
 {% extends "layout.html" %}
 {% block headScript %}
-<style>
-</style>
 {% endblock %}
 {% block body %}
+	<button id = "create-event" type="button" class="btn btn-default btn-lg">Add New Event</button>
 	<table>
 		<tr>
 			<td class="timelabel"></td>
@@ -37,4 +36,40 @@
 			</tr>
 		{% endfor %}
 	</table>
+	
+	<div id="dialog-form" title="Create new user">
+	  <p class="validateTips">All form fields are required.</p>
+	
+	  <form action="/addEvent" method="post">
+		<fieldset>
+			<div>
+				<label for="faculty">Faculty</label>
+				<input type="text" name="faculty" id="faculty" class="text ui-widget-content ui-corner-all">
+			</div>
+			<div>
+				<label for="fellow">Fellow</label>
+				<input type="text" name="fellow" id="fellow" class="text ui-widget-content ui-corner-all">
+			</div>
+			<div>
+				<label for="rn1">RN1</label>
+				<input type="text" name="rn1" id="rn1" class="text ui-widget-content ui-corner-all">
+			</div>
+			<div>
+				<label for="rn2">RN2</label>
+				<input type="text" name="rn2" id="rn2" class="text ui-widget-content ui-corner-all">
+			</div>
+			<div>
+				<label for="tech1">Tech 1</label>
+				<input type="text" name="tech1" id="tech1" class="text ui-widget-content ui-corner-all">
+			</div>
+			<div>
+				<label for="tech2">Tech 2</label>
+				<input type="text" name="tech2" id="tech2" class="text ui-widget-content ui-corner-all">
+			</div>
+	 
+		  <!-- Allow form submission with keyboard without duplicating the dialog button -->
+		  <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+		</fieldset>
+	  </form>
+	</div>
 {% endblock %}
