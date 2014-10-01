@@ -3,6 +3,7 @@
 {% endblock %}
 {% block body %}
 	<button id = "goToDay" type="button" class="btn btn-default btn-lg"><a href="/day">Day View</a></button>
+	<button id = "alert-button" type="button" class="btn btn-default btn-lg">Alert!</button>
 	<table>
 		<tr>
 			{% for day in weekdays %}
@@ -33,23 +34,23 @@
 	<div id="test-form" title="Jeff Test">
 	  <p class="validateTips">All form fields are required.</p>
 	
-	  <form action="/addCall" method="post">
+	  <form action="colab-sbx-131.oit.duke.edu:5001/test_send_template_sms" method="post">
 		<fieldset>
             <div>
-				<label for="date">ETA</label>
-				<input type="text" name="date" id="date" readonly class="text ui-widget-content ui-corner-all">
+				<label for="eta">ETA</label>
+				<input type="text" name="eta" id="eta" class="text ui-widget-content ui-corner-all">
 			</div>
             <div>
-				<label for="date">Location</label>
-				<input type="text" name="date" id="date" readonly class="text ui-widget-content ui-corner-all">
+				<label for="location">Location</label>
+				<input type="text" name="location" id="location" class="text ui-widget-content ui-corner-all">
 			</div>
             <div>
-				<label for="date">Type</label>
-				<input type="text" name="date" id="date" readonly class="text ui-widget-content ui-corner-all">
+				<label for="type">Type</label>
+				<input type="text" name="type" id="type" class="text ui-widget-content ui-corner-all">
 			</div>
             <div>
-				<label for="date">Message</label>
-				<input type="text" name="date" id="date" readonly class="text ui-widget-content ui-corner-all">
+				<label for="msg">Message</label>
+				<input type="text" name="msg" id="msg" class="text ui-widget-content ui-corner-all">
 			</div>
 			
 	 

@@ -58,7 +58,7 @@ $(document).ready(function() {
 			dataType:"json",
 			data: JSON.stringify(test_data)
 		});
-		$subDialog.dialog( "close" );
+		$jeffTest.dialog( "close" );
 	}
 	
 	function addSub() {
@@ -173,7 +173,7 @@ $(document).ready(function() {
 	  width: 350,
 	  modal: true,
 	  buttons: {
-		"Create event": jeffTest,
+		"Send SMS": jeffTest,
 		Cancel: function() {
 		  $jeffTest.dialog( "close" );
 		}
@@ -192,9 +192,13 @@ $(document).ready(function() {
       event.preventDefault();
     });
 	
-	$('#test-form').click( function() {
+    var fullForm = $jeffTest.find( "form" ).on( "submit", function( event ) {
+      event.preventDefault();
+    });
+
+	$('#alert-button').click( function() {
 		$jeffTest.dialog('open');
-	}
+	});
 
     $('.inside').click(function(event) {
 		clickedSquare = event.target || event.srcElement;
