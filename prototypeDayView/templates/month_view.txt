@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+{% block headScript %}
+{% endblock %}
+{% block body %}
+	<table>
+		<tr>
+			<td class="timelabel"></td>
+                        {% for role in roles %}
+			<td class="rolelabel">{{role}}</td>
+                        {% endfor %}
+		</tr>
+		{% for n in range(0, 4) %}
+			<tr>
+				<td class="timelabel">{{n%24}}:00</td>
+				{% for role in roles %}
+				<td class="inside top" id="{{n%24}}:00:00">  </td>
+				{% endfor %}
+			</tr>
+			<tr>
+				<td class="timelabel">{{n%24}}:30</td>
+				{% for role in roles %}
+				<td class="inside bottom" id="{{n%24}}:30:00">  </td>
+				{% endfor %}
+			</tr>
+		{% endfor %}
+	</table>
+	
+	<div id="full-form" title="Create new On Call Event">
+	  <p class="validateTips">All form fields are required.</p>
+	
+	  <form action="/addFullEvent" method="post">
+		<fieldset>
+                        <div>
+				<label for="start">Start Time</label>
+				<input type="text" name="start" id="start" readonly class="text ui-widget-content ui-corner-all">
+			</div>
+			<div>
+				<label for="end">End Time</label>
+				<input type="text" name="end" id="end" class="text ui-widget-content ui-corner-all">
+			</div>
+                        {% for roleId in roleIds %}
+			<div>
+				<label for="{{ roleId }}">{{roles[loop.index0]}}</label>
+				<input type="text" name="{{ roleId }}" id="{{ roleId }}" class="text ui-widget-content ui-corner-all">
+			</div>
+                        {% endfor %}
+	 
+		  <!-- Allow form submission with keyboard without duplicating the dialog button -->
+		  <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+		</fieldset>
+	  </form>
+	</div>
+{% endblock %}
