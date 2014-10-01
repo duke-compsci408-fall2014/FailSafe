@@ -21,7 +21,7 @@ def day_view():
     return render_template('day_view.html')
 
 @app.route('/month')
-def month_view():
+def month_view(newevent = None):
 	con = mysql.connect()
 	cursor = con.cursor()
 	call_list = list()
@@ -36,6 +36,10 @@ def month_view():
 
 	return render_template('month_view.html', call_list=call_list)
 
+@app.route('/addCall', methods=['POST'])
+def add_call():
+	return month_view(request.json)
+
 
 if __name__ == '__main__':
-	app.run(host='0.0.0.0', port=5002, debug=True)
+	app.run(host='0.0.0.0', port=5002, debug=true)

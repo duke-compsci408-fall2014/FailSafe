@@ -44,6 +44,23 @@ $(document).ready(function() {
 	  }
 	}
 	
+	function jeffTest() {
+		var test_data = {
+			"eta":$('#eta').val(),
+			"location":$('#location').val(),
+			"type":$('#type').val(),
+			"msg":$('#msg').val(),	
+		}
+		$.ajax({
+			url:"colab-sbx-131.oit.duke.edu:5001/test_send_template_sms",
+			type: "POST",
+			contentType:"application/json",
+			dataType:"json",
+			data: JSON.stringify(test_data)
+		});
+		$subDialog.dialog( "close" );
+	}
+	
 	function addSub() {
 		var valid = true;
 		allFields.removeClass( "ui-state-error" );
@@ -104,7 +121,7 @@ $(document).ready(function() {
 				"tech2":$('#tech2').val() 
 			};
 			$.ajax({
-				url:"/addFull",
+				url:"/addCall",
 				type: "POST",
 				contentType:"application/json",
 				dataType:"json",
@@ -150,6 +167,23 @@ $(document).ready(function() {
 	  }
 	});
 	
+	var $jeffTest = $( "#test-form" ).dialog({
+	  autoOpen: false,
+	  height: 800,
+	  width: 350,
+	  modal: true,
+	  buttons: {
+		"Create event": jeffTest,
+		Cancel: function() {
+		  $jeffTest.dialog( "close" );
+		}
+	  },
+	  close: function() {
+		fullForm[ 0 ].reset();
+		allFields.removeClass( "ui-state-error" );
+	  }
+	});
+	
     var subForm = $subDialog.find( "form" ).on( "submit", function( event ) {
       event.preventDefault();
     });
@@ -157,6 +191,10 @@ $(document).ready(function() {
     var fullForm = $fullDialog.find( "form" ).on( "submit", function( event ) {
       event.preventDefault();
     });
+	
+	$('#test-form').click( function() {
+		$jeffTest.dialog('open');
+	}
 
     $('.inside').click(function(event) {
 		clickedSquare = event.target || event.srcElement;
