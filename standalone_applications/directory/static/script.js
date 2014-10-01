@@ -112,7 +112,7 @@ $(document).ready(function() {
                         dataType:"json",
                         data: JSON.stringify(data),
                     });
-                    deleteDialog.dialog()
+                    deleteDialog.dialog("close");
                     window.location.reload(true);
                 },
                 Cancel: function() {
@@ -125,6 +125,7 @@ $(document).ready(function() {
             dialog.dialog( "open" );
 		});
         $(".delete-staff").button().on("click", function(e) {
+            console.log($(this).attr('id'));
             e.preventDefault();
             deleteDialog.dialog("open");
         });

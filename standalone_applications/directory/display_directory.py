@@ -20,39 +20,39 @@ def index():
 
 @app.route('/directory', methods=['GET', 'POST'])
 def show_directory(newstaff = None):
-	con = mysql.connect()
-	cursor = con.cursor()
-	person_list = list();
+    con = mysql.connect()
+    cursor = con.cursor()
+    person_list = list();
 
 	# add new staff based on the form
-	if newstaff is not None:
-		sql_query = "INSERT INTO tblUser (UserID, Role, IsAdministrator, FirstName, \
-			LastName, CellPhone, HomePhone, PagerNumber, NetID) VALUES ('', " + \
-				"'" + newstaff['role'] + "', " + \
-				"'" + newstaff['admin'] + "', " + \
-				"'" + newstaff['firstName'] + "', " + \
-				"'" + newstaff['lastName'] + "', " + \
-				"'" + newstaff['cellNumber'] + "', " + \
-				"'" + newstaff['homeNumber'] + "', " + \
-				"'" + newstaff['pager'] + "', " + \
-				"'" + newstaff['netID'] + "' )"
-		# print sql_query
-		try:
-			cursor.execute(sql_query)
-			con.commit()
-		except:
-			con.rollback()
+    if newstaff is not None:
+        sql_query = "INSERT INTO tblUser (UserID, Role, IsAdministrator, FirstName, \
+            LastName, CellPhone, HomePhone, PagerNumber, NetID) VALUES ('', " + \
+                "'" + newstaff['role'] + "', " + \
+                "'" + newstaff['admin'] + "', " + \
+                "'" + newstaff['firstName'] + "', " + \
+                "'" + newstaff['lastName'] + "', " + \
+                "'" + newstaff['cellNumber'] + "', " + \
+                "'" + newstaff['homeNumber'] + "', " + \
+                "'" + newstaff['pager'] + "', " + \
+                "'" + newstaff['netID'] + "' )"
+        # print sql_query
+        try:
+            cursor.execute(sql_query)
+            con.commit()
+        except:
+            con.rollback()
 
+    cursor.execute("SELECT * from tblUser")
+    data = cursor.fetchall()
+    con.close()
+    for d in data:
+        person_data = list()
+        for i in range(len(d)):
+            person_data.append(d[i])
+        person_list.append(person_data)
 
-	cursor.execute("SELECT * from tblUser")
-	data = cursor.fetchall()
-	for d in data:
-		person_data = list()
-		for i in range(len(d)):
-			person_data.append(d[i])
-		person_list.append(person_data)
-
-	return render_template('directory.html', person_list=person_list)
+    return render_template('directory.html', person_list=person_list)
 
 
 # Add a staff to the directory
@@ -65,7 +65,6 @@ def add_staff():
 def delete_staff():
     con = mysql.connect()
     cursor = con.cursor()
-    print 'hi'
     print request.json['userID']
     query = "DELETE from tblUser where UserID = " + request.json['userID']
     try:
@@ -73,6 +72,8 @@ def delete_staff():
         con.commit()
     except:
         con.rollback()
+    con.close()
+    return show_directory()
 
 if __name__ == '__main__':
     app.debug = True
