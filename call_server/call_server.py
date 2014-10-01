@@ -23,24 +23,24 @@ twimlet_default = 'http://twimlets.com/message?Message%5B0%5D='
 def test_test():
     return "hello world"
 
-@app.route("/test_send_call")
+@app.route("/test_send_call", strict_slashes=False)
 def test_send_call():
     call = client.calls.create(to="+14806486560", from_=default_from_phone, body="One call has been made.", url=emergency_url)
     return "Call made!"
 
-@app.route("/test_reply_sms", methods=['GET', 'POST'])
+@app.route("/test_reply_sms", methods=['GET', 'POST'], strict_slashes=False)
 def test_reply_sms():
     resp = twilio.twiml.Response()
     resp.message("Failsafe has received your sms!")
     return str(resp)
 
-@app.route("/test_group_calls")
+@app.route("/test_group_calls", strict_slashes=False)
 def test_group_calls():
     for i in numbers:
         message = client.calls.create(to=i, from_=default_from_phone, body="Calls have been made to the team.", url=emergency_url)
     return "Calls made to: " + str(numbers)
 
-@app.route('/test_custom_group_call/<custom_message>')
+@app.route('/test_custom_group_call/<custom_message>', strict_slashes=False)
 def test_custom_group_call(custom_message = 'There is an emergency at the hospital.'):
     original_message = custom_message
     custom_message = str(urllib2.quote(custom_message)) + "&"
@@ -48,7 +48,7 @@ def test_custom_group_call(custom_message = 'There is an emergency at the hospit
         message = client.calls.create(to=i, from_=default_from_phone, body="Calls have been made to the team.", url=twimlet_default+custom_message)
     return "Call with message: \"" + original_message + "\"  sent to " + str(numbers)
 
-@app.route("/test_custom_group_call")
+@app.route("/test_custom_group_call", strict_slashes=False)
 def test_custom_group_call_with_default():
     original_message = 'There is an emergency at the hospital.'
     custom_message = str(urllib2.quote(original_message)) + "&"
