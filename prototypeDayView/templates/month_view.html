@@ -19,8 +19,8 @@
                 {{day}}.<br>
                 {% for call_event in call_list %}
                     {% if day == call_event[0].day %}
-                        {% for m in range(1, 7) %}
-                            {{call_event[m]}}<br>
+                        {% for role in roles %}
+                        {{role}}: {{call_event[loop.index]}}<br>
                         {% endfor %}
                     {% endif %}
 				{% endfor %}

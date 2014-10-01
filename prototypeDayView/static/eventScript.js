@@ -70,7 +70,7 @@ $(document).ready(function() {
 		 * trying to learn javascript :p
 		 */
 		valid = valid && checkLength(sub, "Substitute", 80);
-		valid = valid && checkRegexp( sub, /^([a-zA-Z])+$/, "Substitute name must only include a-z" );
+		valid = valid && checkRegexp( sub, /^([a-zA-Z ])+$/, "Substitute name must only include a-z" );
 		
 		if(valid) {
 			var sub_data = {
@@ -103,12 +103,12 @@ $(document).ready(function() {
 		valid = valid && checkLength(tech1, "Tech1", 80);
 		valid = valid && checkLength(tech2, "Tech2", 80);
 		
-		valid = valid && checkRegexp( faculty, /^([a-zA-Z])+$/, "Faculty name must only include a-z" );
-		valid = valid && checkRegexp( fellow, /^([a-zA-Z])+$/, "Fellow name must only include a-z" );
-		valid = valid && checkRegexp( rn1, /^([a-zA-Z])+$/, "Nurse name must only include a-z" );
-		valid = valid && checkRegexp( rn2, /^([a-zA-Z])+$/, "Nurse name must only include a-z" );
-		valid = valid && checkRegexp( tech1, /^([a-zA-Z])+$/, "Tech name must only include a-z" );
-		valid = valid && checkRegexp( tech2, /^([a-zA-Z])+$/, "Tech name must only include a-z" );
+		valid = valid && checkRegexp( faculty, /^([a-zA-Z ])+$/, "Faculty name must only include a-z" );
+		valid = valid && checkRegexp( fellow, /^([a-zA-Z ])+$/, "Fellow name must only include a-z" );
+		valid = valid && checkRegexp( rn1, /^([a-zA-Z ])+$/, "Nurse name must only include a-z" );
+		valid = valid && checkRegexp( rn2, /^([a-zA-Z ])+$/, "Nurse name must only include a-z" );
+		valid = valid && checkRegexp( tech1, /^([a-zA-Z ])+$/, "Tech name must only include a-z" );
+		valid = valid && checkRegexp( tech2, /^([a-zA-Z ])+$/, "Tech name must only include a-z" );
 		
 		if(valid) {
 			var oncall_data = {

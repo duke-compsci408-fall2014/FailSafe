@@ -14,7 +14,8 @@ td.inside:hover {
 	background-color: yellow;
 }
 td.day {
-	height: 5em;
+	width: 12em;
+    height: 5em;
 	text-align: left;
 	vertical-align: top;
 	color: #80848A;
