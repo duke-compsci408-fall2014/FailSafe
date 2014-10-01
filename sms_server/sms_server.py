@@ -27,8 +27,22 @@ def test_reply_sms():
     resp.message("Failsafe has received your sms!")
     return str(resp)
 
-@app.route("/", methods=['GET', 'POST'])
-def hello_monkey():
+@app.route("/test_group_sms")
+def test_group_sms():
+    numbers = ['+19197978781', '+18473469673', '+13175653154']
+    for i in numbers:
+        message = client.messages.create(to=i, from_="+14138533700", body="JEFF IS AWESOME!")
+    return "messages sent to " + str(numbers)
+
+@app.route("/test_custom_group_sms/<custom_message>")
+def test_custom_group_sms(custom_message = "Failsafe is awesome!"):
+    numbers = ['+19197978781', '+18473469673', '+13175653154']
+    for i in numbers:
+        message = client.messages.create(to=i, from_="+14138533700", body=custom_message)
+    return "message \"" + custom_message + "\"  sent to " + str(numbers)
+
+@app.route("/handle", methods=['GET', 'POST'])
+def message_handler():
     """Respond and greet the caller by name."""
     print("PT A")
     from_number = request.values.get('From', None)
@@ -76,4 +90,4 @@ def hello_monkey():
     return str(resp)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", debug=True)
+    app.run(host="0.0.0.0", debug=True, port=5001)
