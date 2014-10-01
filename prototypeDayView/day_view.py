@@ -44,7 +44,7 @@ def add_call():
     callData = request.json
     sql_query = "INSERT INTO OnCall (Day, Faculty, Fellow, RN1, \
             RN2, Tech1, Tech2) VALUES (" + \
-            "'" + "2014-10-12" + "', " + \
+            "'" + callData['date'] + "', " + \
             "'" + callData['faculty'] + "', " + \
             "'" + callData['fellow'] + "', " + \
             "'" + callData['rn1'] + "', " + \
