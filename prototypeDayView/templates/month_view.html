@@ -6,24 +6,59 @@
 	<table>
 		<tr>
 			{% for day in weekdays %}
-			<td class="weekday">{{day}}</td>
+				<td class="weekday">{{day}}</td>
 			{% endfor %}
 		</tr>
-		{% for n in range(0, 5) %}
+		{% for weekNumber in range(0, 5) %}
 			<tr>
 				{% for day in weekdays %}
-				{% if (((7 * n) + loop.index) <= 30) %}
-				<td class="day" id="{{(7 * n) + loop.index}}">
-				{{(7 * n) + loop.index}}.
-				{{% for call_event in call_list %}}
-					{{call_event[1]}}
-				{{% endfor %}}
-				</td>
-				{% endif %}
+					{% set day = ((7 * weekNumber) + loop.index) %}
+					{% set formattedDate = datetime.date(datetime.now().year, 10, day) %}
+					{% if (day <= 30) %}
+						<td class="day" id="{{day}}">
+						{{day}}.<br>
+						{% for call_event in call_list %}
+							{% if day == call_event[0].day %}
+								{% for m in range(1, 7) %}
+									{{call_event[m]}}<br>
+								{% endfor %}
+							{% endif %}
+						{% endfor %}
+						</td>
+					{% endif %}
 				{% endfor %}
 			</tr>
 		{% endfor %}
 	</table>
+	
+	<div id="test-form" title="Jeff Test">
+	  <p class="validateTips">All form fields are required.</p>
+	
+	  <form action="/addCall" method="post">
+		<fieldset>
+            <div>
+				<label for="date">ETA</label>
+				<input type="text" name="date" id="date" readonly class="text ui-widget-content ui-corner-all">
+			</div>
+            <div>
+				<label for="date">Location</label>
+				<input type="text" name="date" id="date" readonly class="text ui-widget-content ui-corner-all">
+			</div>
+            <div>
+				<label for="date">Type</label>
+				<input type="text" name="date" id="date" readonly class="text ui-widget-content ui-corner-all">
+			</div>
+            <div>
+				<label for="date">Message</label>
+				<input type="text" name="date" id="date" readonly class="text ui-widget-content ui-corner-all">
+			</div>
+			
+	 
+		  <!-- Allow form submission with keyboard without duplicating the dialog button -->
+		  <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+		</fieldset>
+	  </form>
+	</div>
 	
 	<div id="full-form" title="Create on call event">
 	  <p class="validateTips">All form fields are required.</p>
@@ -35,10 +70,10 @@
 				<input type="text" name="date" id="date" readonly class="text ui-widget-content ui-corner-all">
 			</div>
             {% for roleId in roleIds %}
-			<div>
-				<label for="{{ roleId }}">{{roles[loop.index0]}}</label>
-				<input type="text" name="{{ roleId }}" id="{{ roleId }}" class="text ui-widget-content ui-corner-all">
-			</div>
+				<div>
+					<label for="{{ roleId }}">{{roles[loop.index0]}}</label>
+					<input type="text" name="{{ roleId }}" id="{{ roleId }}" class="text ui-widget-content ui-corner-all">
+				</div>
             {% endfor %}
 	 
 		  <!-- Allow form submission with keyboard without duplicating the dialog button -->
