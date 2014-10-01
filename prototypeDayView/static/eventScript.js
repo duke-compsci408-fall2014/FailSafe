@@ -112,7 +112,7 @@ $(document).ready(function() {
 		
 		if(valid) {
 			var oncall_data = {
-				"date":$('#date').val(),
+				"date":"2014-10-" + $('#date').val(),
 				"faculty":$('#faculty').val(), 
 				"fellow":$('#fellow').val(), 
 				"rn1":$('#rn1').val(), 

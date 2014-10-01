@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, json
 from flask import render_template
 from flask import jsonify
 from flaskext.mysql import MySQL
@@ -22,23 +22,41 @@ def day_view():
 
 @app.route('/month')
 def month_view(newevent = None):
-	con = mysql.connect()
-	cursor = con.cursor()
-	call_list = list()
+    con = mysql.connect()
+    cursor = con.cursor()
+    call_list = list()
 
-	cursor.execute("SELECT * from OnCall")
-	data = cursor.fetchall()
-	for d in data:
-		call_data = list()
-		for i in range(len(d)):
-			call_data.append(d[i])
-		call_list.append(call_data)
+    cursor.execute("SELECT * from OnCall")
+    data = cursor.fetchall()
+    for d in data:
+        call_data = list()
+        for i in range(len(d)):
+            call_data.append(d[i])
+        call_list.append(call_data)
 
-	return render_template('month_view.html', call_list=call_list)
+    return render_template('month_view.html', call_list=call_list)
 
 @app.route('/addCall', methods=['POST'])
 def add_call():
-	return month_view(request.json)
+    con = mysql.connect()
+    cursor = con.cursor()
+
+    callData = request.json
+    sql_query = "INSERT INTO OnCall (Day, Faculty, Fellow, RN1, \
+            RN2, Tech1, Tech2) VALUES (" + \
+            "'" + "2014-10-12" + "', " + \
+            "'" + callData['faculty'] + "', " + \
+            "'" + callData['fellow'] + "', " + \
+            "'" + callData['rn1'] + "', " + \
+            "'" + callData['rn2'] + "', " + \
+            "'" + callData['tech1'] + "', " + \
+            "'" + callData['tech2'] + "')"
+    try:
+        cursor.execute(sql_query)
+        con.commit()
+    except:
+        con.rollback()
+    return redirect(url_for('month_view'))
 
 
 if __name__ == '__main__':
