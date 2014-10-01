@@ -57,6 +57,8 @@ $(document).ready(function() {
 		//   }
 		//   return valid;
 		// }
+        
+        
 
 		dialog = $( "#dialog-form" ).dialog({
 		  autoOpen: false,
@@ -95,8 +97,36 @@ $(document).ready(function() {
 		  // addUser();
 		});
 
+        deleteDialog = $( "#delete-dialog" ).dialog({
+            autoOpen: false,
+            height: 100,
+            width: 200,
+            modal: true,
+            buttons: {
+                "Delete": function() {
+                    var data  = { "userID" : $(this).attr('id') };
+                    $.ajax({
+                        url:"/deleteStaff",
+                        type:"POST",
+                        contentType:"application/json",
+                        dataType:"json",
+                        data: JSON.stringify(data),
+                    });
+                    deleteDialog.dialog()
+                    window.location.reload(true);
+                },
+                Cancel: function() {
+                    deleteDialog.dialog("close");
+                }
+            }
+        });
+
 		$( "#create-user" ).button().on( "click", function() {
-		  dialog.dialog( "open" );
+            dialog.dialog( "open" );
 		});
+        $(".delete-staff").button().on("click", function(e) {
+            e.preventDefault();
+            deleteDialog.dialog("open");
+        });
 	});
 });

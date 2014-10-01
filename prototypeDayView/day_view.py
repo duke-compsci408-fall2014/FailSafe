@@ -15,17 +15,17 @@ mysql.init_app(app)
 @app.route('/')
 def default():
 	return render_template('day_view.html')
-	 
+
 @app.route('/day')
 def day_view():
     return render_template('day_view.html')
-	
+
 @app.route('/month')
 def month_view():
 	con = mysql.connect()
 	cursor = con.cursor()
 	call_list = list()
-	
+
 	cursor.execute("SELECT * from OnCall")
 	data = cursor.fetchall()
 	for d in data:
@@ -34,8 +34,8 @@ def month_view():
 			call_data.append(d[i])
 		call_list.append(call_data)
 
-	return render_template('directory.html', call_list=call_list)
-	
+	return render_template('month_view.html', call_list=call_list)
+
 
 if __name__ == '__main__':
-	app.run(host='0.0.0.0', port=5002)
+	app.run(host='0.0.0.0', port=5002, debug=True)

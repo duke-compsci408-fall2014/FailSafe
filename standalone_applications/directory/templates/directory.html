@@ -72,7 +72,9 @@
 								<th>Cell</th>
 								<th>Home</th>
 								<th>Pager</th>
-								<th>NetID</th>
+                                <th>NetID</th>
+                                <th>Edit</th>
+                                <th>Delete</th>
 							</tr>
 								
 								{% for person in person_list %}
@@ -84,7 +86,9 @@
 									<td>{{person[5]}}</td>
 									<td>{{person[6]}}</td>
 									<td>{{person[7]}}</td>
-									<td>{{person[8]}}</td>
+                                    <td>{{person[8]}}</td>
+                                    <td><a href="#" class="btn btn-primary btn-large"><i class="icon-white icon-pencil"></i> Edit</a></td>
+                                    <td class="delete-staff" id="{{person[0]}}"><a href="#" class="btn btn-danger btn-large"><i class="icon-white icon-remove"></i> delete</a></td>
 								</tr>
 								{% endfor %}
 						</table>
@@ -135,6 +139,11 @@
 			  <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
 			</fieldset>
 		  </form>
-		</div>
+      </div>
+        
+      <div id="delete-dialog" title="Delete this contact?">
+        
+      </div>
+
 	</body>
 </html>

@@ -60,7 +60,20 @@ def show_directory(newstaff = None):
 def add_staff():
 	return show_directory(request.json)
 
+# Delete a staff in the directory
+@app.route('/deleteStaff', methods = ['POST'])
+def delete_staff():
+    con = mysql.connect()
+    cursor = con.cursor()
+    print 'hi'
+    print request.json['userID']
+    query = "DELETE from tblUser where UserID = " + request.json['userID']
+    try:
+        cursor.execute(query)
+        con.commit()
+    except:
+        con.rollback()
 
 if __name__ == '__main__':
     app.debug = True
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', port=7000)
