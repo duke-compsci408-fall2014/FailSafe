@@ -1,26 +1,16 @@
-from flask import Flask, request, json
-from flask import render_template
-from flask import jsonify
-from flaskext.mysql import MySQL
-from flask import Response
+from flask import Flask, Blueprint, request, render_template, json, jsonify, Response
 
-mysql = MySQL()
-app = Flask(__name__)
-app.config['MYSQL_DATABASE_USER'] = 'failsafe'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'efasliaf'
-app.config['MYSQL_DATABASE_DB'] = 'calendar'
-app.config['MYSQL_DATABASE_HOST'] = 'colab-sbx-131.oit.duke.edu'
-mysql.init_app(app)
+calendar = Blueprint('calendar',__name__,template_folder='calendar/templates')
 
-@app.route('/')
+@calendar.route('/')
 def default():
 	return render_template('day_view.html')
 
-@app.route('/day')
+@calendar.route('/day')
 def day_view():
     return render_template('day_view.html')
 
-@app.route('/month')
+@calendar.route('/month')
 def month_view(newevent = None):
     con = mysql.connect()
     cursor = con.cursor()
@@ -36,7 +26,7 @@ def month_view(newevent = None):
 
     return render_template('month_view.html', call_list=call_list)
 
-@app.route('/addCall', methods=['POST'])
+@calendar.route('/addCall', methods=['POST'])
 def add_call():
     con = mysql.connect()
     cursor = con.cursor()
@@ -58,6 +48,3 @@ def add_call():
         con.rollback()
     return redirect(url_for('month_view'))
 
-
-if __name__ == '__main__':
-	app.run(host='0.0.0.0', port=5002, debug=True)

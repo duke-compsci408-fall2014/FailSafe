@@ -1,24 +1,8 @@
-from flask import Flask, request
-from flask import render_template
-from flask import jsonify
-from flaskext.mysql import MySQL
-from flask import Response
+from flask import Flask, Blueprint, render_template, request, Response, jsonify
 
-mysql = MySQL()
-app = Flask(__name__)
-app.config['MYSQL_DATABASE_USER'] = 'failsafe'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'efasliaf'
-app.config['MYSQL_DATABASE_DB'] = 'directory'
-app.config['MYSQL_DATABASE_HOST'] = 'colab-sbx-131.oit.duke.edu'
-mysql.init_app(app)
+directory = Blueprint('directory',__name__,template_folder='directory/templates')
 
-
-@app.route('/')
-def index():
-    return 'Index Page'
-
-
-@app.route('/directory', methods=['GET', 'POST'])
+@directory.route('/', methods=['GET', 'POST'])
 def show_directory(newstaff = None):
     con = mysql.connect()
     cursor = con.cursor()
@@ -56,12 +40,12 @@ def show_directory(newstaff = None):
 
 
 # Add a staff to the directory
-@app.route('/addStaff', methods = ['POST'])
+@directory.route('/addStaff', methods = ['POST'])
 def add_staff():
 	return show_directory(request.json)
 
 # Delete a staff in the directory
-@app.route('/deleteStaff', methods = ['POST'])
+@directory.route('/deleteStaff', methods = ['POST'])
 def delete_staff():
     con = mysql.connect()
     cursor = con.cursor()
@@ -74,7 +58,3 @@ def delete_staff():
         con.rollback()
     con.close()
     return show_directory()
-
-if __name__ == '__main__':
-    app.debug = True
-    app.run(host='0.0.0.0', port=7000)
