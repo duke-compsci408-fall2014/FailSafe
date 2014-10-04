@@ -1,0 +1,44 @@
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+td {
+    border: 1px solid #ddd;
+    width: 8em;
+}
+td.inside {
+    background-color: #fcf8e3;
+    height: 2em;
+}
+td.inside:hover {
+	background-color: yellow;
+}
+td.day {
+	width: 12em;
+    height: 5em;
+	text-align: left;
+	vertical-align: top;
+	color: #80848A;
+}
+td.day:hover {
+	background-color: yellow;
+}
+td.weekday {
+	text-align: center;
+}
+.top {
+    border-bottom: 1px dotted #ddd;
+}
+.bottom {
+    border-top: 1px dotted #ddd;
+}   
+td.timelabel {
+    text-align: left;
+}
+.rolelabel {
+    text-align: center;
+}
+a {
+	color: black;
+	text-decoration: none;
+}
