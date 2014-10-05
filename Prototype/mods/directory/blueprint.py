@@ -1,10 +1,11 @@
 from flask import Flask, Blueprint, render_template, request, Response, jsonify
+import config
 
-directory = Blueprint('directory',__name__,template_folder='directory/templates')
+directory = Blueprint('directory',__name__, template_folder='templates', static_folder='static')
 
 @directory.route('/', methods=['GET', 'POST'])
 def show_directory(newstaff = None):
-    con = mysql.connect()
+    con = config.mysql.connect()
     cursor = con.cursor()
     person_list = list();
 

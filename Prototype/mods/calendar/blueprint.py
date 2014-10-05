@@ -1,6 +1,7 @@
 from flask import Flask, Blueprint, request, render_template, json, jsonify, Response
+import config
 
-calendar = Blueprint('calendar',__name__,template_folder='calendar/templates')
+calendar = Blueprint('calendar',__name__,template_folder='templates',static_folder='static')
 
 @calendar.route('/')
 def default():
@@ -12,7 +13,7 @@ def day_view():
 
 @calendar.route('/month')
 def month_view(newevent = None):
-    con = mysql.connect()
+    con = config.mysql.connect()
     cursor = con.cursor()
     call_list = list()
 
