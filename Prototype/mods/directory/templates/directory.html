@@ -1,99 +1,99 @@
-	{% extends "layout.html" %}	
-	{% block title %} FailSafe: Directory {% endblock %}
-	{% block dir_static %}
-		<link rel="stylesheet" href="{{ url_for('directory.static', filename='style.css') }}">
-		<script src='{{ url_for('directory.static', filename='script.js') }}'></script>
-	{% endblock %}
-	{% block body %}	
-			<div class="main">
-				<div class="container">
-					<h1>Doctor Directory</h1>
-					<h3>List of Doctors available and their contact information</h3>
-					<div class="panel panel-default">
-					  	<!-- Default panel contents -->
-					  	<div class="panel-heading">Doctor Directory</div>
+{% extends "layout.html" %}	
+{% block title %} FailSafe: Directory {% endblock %}
+{% block dir_head %}
+	<link rel="stylesheet" href="{{ url_for('directory.static', filename='style.css') }}">
+	<script src='{{ url_for('directory.static', filename='script.js') }}'></script>
+{% endblock %}
+{% block body %}	
+	<div class="main">
+		<div class="container">
+			<h1>Doctor Directory</h1>
+			<h3>List of Doctors available and their contact information</h3>
+			<div class="panel panel-default">
+			  	<!-- Default panel contents -->
+			  	<div class="panel-heading">Doctor Directory</div>
 
-					  	<!-- Table -->
-					  	<table id ="staff" class="table">
-							<tr class="table_headings">
-								<th>Role</th>
-								<th>Admin</th>
-								<th>First Name</th>
-								<th>Last Name</th>
-								<th>Cell</th>
-								<th>Home</th>
-								<th>Pager</th>
-                                <th>NetID</th>
-                                <th>Edit</th>
-                                <th>Delete</th>
-							</tr>
-								
-								{% for person in person_list %}
-								<tr class="entry">
-									<td>{{person[1]}}</td>
-									<td>{{person[2]}}</td>
-									<td>{{person[3]}}</td>
-									<td>{{person[4]}}</td>
-									<td>{{person[5]}}</td>
-									<td>{{person[6]}}</td>
-									<td>{{person[7]}}</td>
-                                    <td>{{person[8]}}</td>
-                                    <td><a href="#" class="btn btn-primary btn-large"><i class="icon-white icon-pencil"></i> Edit</a></td>
-                                    <td class="delete-staff" id="{{person[0]}}"><a href="#" class="btn btn-danger btn-large"><i class="icon-white icon-remove"></i> delete</a></td>
-								</tr>
-								{% endfor %}
-						</table>
-					</div>
-					<button id = "create-user" type="button" class="btn btn-default btn-lg">Add New Contact</button>
-				</div>
+			  	<!-- Table -->
+			  	<table id ="staff" class="table">
+					<tr class="table_headings">
+						<th>Role</th>
+						<th>Admin</th>
+						<th>First Name</th>
+						<th>Last Name</th>
+						<th>Cell</th>
+						<th>Home</th>
+						<th>Pager</th>
+                        <th>NetID</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+					</tr>
+						
+					{% for person in person_list %}
+						<tr class="entry">
+							<td>{{person[1]}}</td>
+							<td>{{person[2]}}</td>
+							<td>{{person[3]}}</td>
+							<td>{{person[4]}}</td>
+							<td>{{person[5]}}</td>
+							<td>{{person[6]}}</td>
+							<td>{{person[7]}}</td>
+                            <td>{{person[8]}}</td>
+                            <td><a href="#" class="btn btn-primary btn-large"><i class="icon-white icon-pencil"></i> Edit</a></td>
+                            <td class="delete-staff" id="{{person[0]}}"><a href="#" class="btn btn-danger btn-large"><i class="icon-white icon-remove"></i> delete</a></td>
+						</tr>
+					{% endfor %}
+				</table>
 			</div>
+			<button id = "create-user" type="button" class="btn btn-default btn-lg">Add New Contact</button>
+		</div>
+	</div>
 
-		<div id="dialog-form" title="Create new user">
-		  <p class="validateTips">All form fields are required.</p>
-		
-		  <form action="/addStaff" method="post">
-			<fieldset>
-				<div>
-					<label for="role">Role</label>
-					<input type="text" name="role" id="role" class="text ui-widget-content ui-corner-all">
-				</div>
-				<div>
-					<label for="admin">Is Admin?</label>
-					<input type="text" name="admin" id="admin" class="text ui-widget-content ui-corner-all">
-				</div>
-				<div>
-					<label for="firstName">First Name</label>
-					<input type="text" name="firstName" id="firstName" class="text ui-widget-content ui-corner-all">
-				</div>
-				<div>
-					<label for="lastName">Last Name</label>
-					<input type="text" name="lastName" id="lastName" class="text ui-widget-content ui-corner-all">
-				</div>
-				<div>
-					<label for="cellNumber">Cell Number</label>
-					<input type="text" name="cellNumber" id="cellNumber" class="text ui-widget-content ui-corner-all">
-				</div>
-				<div>
-					<label for="homeNumber">Home Number</label>
-					<input type="text" name="homeNumber" id="homeNumber" class="text ui-widget-content ui-corner-all">
-				</div>
-				<div>
-					<label for="pager">Pager Number</label>
-					<input type="text" name="pager" id="pager" class="text ui-widget-content ui-corner-all">
-				</div>
-				<div>
-					<label for="netID">NetID</label>
-					<input type="text" name="netID" id="netID" class="text ui-widget-content ui-corner-all">
-				</div>
-		 
-			  <!-- Allow form submission with keyboard without duplicating the dialog button -->
-			  <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-			</fieldset>
-		  </form>
-      </div>
-        
-      <div id="delete-dialog" title="Delete this contact?">
-        
-      </div>
+	<div id="dialog-form" title="Create new user">
+	  <p class="validateTips">All form fields are required.</p>
+	
+	  <form action="/addStaff" method="post">
+		<fieldset>
+			<div>
+				<label for="role">Role</label>
+				<input type="text" name="role" id="role" class="text ui-widget-content ui-corner-all">
+			</div>
+			<div>
+				<label for="admin">Is Admin?</label>
+				<input type="text" name="admin" id="admin" class="text ui-widget-content ui-corner-all">
+			</div>
+			<div>
+				<label for="firstName">First Name</label>
+				<input type="text" name="firstName" id="firstName" class="text ui-widget-content ui-corner-all">
+			</div>
+			<div>
+				<label for="lastName">Last Name</label>
+				<input type="text" name="lastName" id="lastName" class="text ui-widget-content ui-corner-all">
+			</div>
+			<div>
+				<label for="cellNumber">Cell Number</label>
+				<input type="text" name="cellNumber" id="cellNumber" class="text ui-widget-content ui-corner-all">
+			</div>
+			<div>
+				<label for="homeNumber">Home Number</label>
+				<input type="text" name="homeNumber" id="homeNumber" class="text ui-widget-content ui-corner-all">
+			</div>
+			<div>
+				<label for="pager">Pager Number</label>
+				<input type="text" name="pager" id="pager" class="text ui-widget-content ui-corner-all">
+			</div>
+			<div>
+				<label for="netID">NetID</label>
+				<input type="text" name="netID" id="netID" class="text ui-widget-content ui-corner-all">
+			</div>
+	 
+		  <!-- Allow form submission with keyboard without duplicating the dialog button -->
+		  <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+		</fieldset>
+	  </form>
+  </div>
+    
+  <div id="delete-dialog" title="Delete this contact?">
+    
+  </div>
 
-	{% endblock  %}
+{% endblock  %}
