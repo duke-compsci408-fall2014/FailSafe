@@ -1,7 +1,15 @@
 from flask import Flask, Blueprint, request, render_template, json, jsonify, Response
-import config
+from flaskext.mysql import MySQL
 
 calendar = Blueprint('calendar',__name__,template_folder='templates',static_folder='static')
+
+app = Flask(__name__)
+mysql = MySQL()
+app.config['MYSQL_DATABASE_USER'] = 'failsafe'
+app.config['MYSQL_DATABASE_PASSWORD'] = 'efasliaf'
+app.config['MYSQL_DATABASE_DB'] = 'calendar'
+app.config['MYSQL_DATABASE_HOST'] = 'colab-sbx-131.oit.duke.edu'
+mysql.init_app(app)
 
 @calendar.route('/')
 def default():
@@ -13,7 +21,7 @@ def day_view():
 
 @calendar.route('/month')
 def month_view(newevent = None):
-    con = config.mysql.connect()
+    con = mysql.connect()
     cursor = con.cursor()
     call_list = list()
 
@@ -28,7 +36,7 @@ def month_view(newevent = None):
     return render_template('month_view.html', call_list=call_list)
 
 @calendar.route('/addCall', methods=['POST'])
-def add_call():
+def addCall():
     con = mysql.connect()
     cursor = con.cursor()
 

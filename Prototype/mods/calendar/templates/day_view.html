@@ -2,6 +2,10 @@
 {% block headScript %}
 {% endblock %}
 {% block body %}
+    {% set roles = ['Faculty', 'Fellow', 'Nurse 1', 'Nurse 2', 'Tech 1', 'Tech 2'] %}
+    {% set roleIds = ["faculty", "fellow", "rn1", "rn2", "tech1", "tech2"] %}
+	{% set weekdays =['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] %}
+
 	<button id = "gotoMonth" type="button" class="btn btn-default btn-lg"><a href="month">Month View</a></button>
 	<table>
 		<tr>
@@ -20,7 +24,7 @@
 			<tr>
 				<td class="timelabel">{{n%24}}:00</td>
 				{% for role in roles %}
-				<td class="inside top" id="{{n%24}}:00:00">  </td>
+				    <td class="inside top" id="{{n%24}}:00:00">  </td>
 				{% endfor %}
 			</tr>
 			<tr>
