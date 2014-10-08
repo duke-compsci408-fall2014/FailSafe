@@ -20,6 +20,10 @@ td.day {
 	vertical-align: top;
 	color: #80848A;
 }
+td.month {
+    text-align: center;
+    font-size: 2em;
+}
 td.day:hover {
 	background-color: yellow;
 }

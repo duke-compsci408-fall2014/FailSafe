@@ -9,6 +9,7 @@ $(document).ready(function() {
 	  allFields = $( [] ).add( faculty ).add( fellow ).add( rn1 ).add( rn2 ).add( tech1 ).add( tech2 ),
 	  tips = $( ".validateTips" );
 	var clickedSquare;
+    var displayTime = moment();
 
 	function updateTips( t ) {
 	  tips
@@ -205,10 +206,23 @@ $(document).ready(function() {
     	$subDialog.dialog('open');
 		$('#start').val(clickedSquare.id);
     });
-	
+
 	$( ".day" ).click(function(event) {
+        $( "#derpMeow" ).text( "derp" );
 		clickedSquare = event.target || event.srcElement;
 		$fullDialog.dialog("open");
 		$('#date').val(clickedSquare.id);
 	});
+
+    $( "#month" ).text( displayTime.format("MMMM") );
+    
+    $( "#last-month" ).click(function(event) {
+        displayTime.subtract(1, "M");
+        $( "#month" ).text( displayTime.format("MMMM") );
+    });
+
+    $( "#next-month" ).click(function(event) {
+        displayTime.add(1, "M");
+        $( "#month" ).text( displayTime.format("MMMM") );
+    });
 });
