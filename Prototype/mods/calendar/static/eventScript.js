@@ -77,7 +77,7 @@ $(document).ready(function() {
 				"sub":$('#sub').val()
 			};
 			$.ajax({
-				url:"/addSub",
+				url:"/calendar/addSub",
 				type: "POST",
 				contentType:"application/json",
 				dataType:"json",
@@ -121,7 +121,7 @@ $(document).ready(function() {
 				"tech2":$('#tech2').val() 
 			};
 			$.ajax({
-				url:"/addCall",
+				url:"/calendar/addCall",
 				type: "POST",
 				contentType:"application/json",
 				dataType:"json",
