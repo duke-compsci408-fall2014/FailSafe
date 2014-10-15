@@ -5,12 +5,14 @@
     {% set roles = ['Faculty', 'Fellow', 'Nurse 1', 'Nurse 2', 'Tech 1', 'Tech 2'] %}
     {% set roleIds = ["faculty", "fellow", "rn1", "rn2", "tech1", "tech2"] %}
 	{% set weekdays =['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] %}
-
-	<button id = "goToDay" type="button" class="btn btn-default btn-lg"><a href="day">Day View</a></button>
-    <button id = "alert-button" type="button" class="btn btn-danger btn-lg">Alert!</button>
-    <button id = "last-month" type="button" class="btn bth-default btn-lg">Last</button>
-    <button id = "next-month" type="button" class="btn bth-default btn-lg">Next</button>
-    <table>
+    <div class="container">
+    <button id = "alert-button" type="button" class="btn btn-danger pull-right">Alert!</button>
+	<button id = "goToDay" type="button" class="btn btn-default pull-left"><a href="day">Day View</a></button>
+    <button id = "last-month" type="button" class="btn bth-default pull-left">Last</button>
+    <button id = "next-month" type="button" class="btn bth-default pull-left">Next</button>
+</div>
+    <div class="container">
+    <table align="center">
         <tr>
             <td class="month" colspan = "7" id="month"></td>
         </tr>
@@ -39,7 +41,8 @@
 			</tr>
 		{% endfor %}
 	</table>
-	
+    </div>
+
 	<div id="test-form" title="Alert">
 	  <p class="validateTips">All form fields are required.</p>
 	

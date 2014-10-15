@@ -4,7 +4,7 @@ table {
 }
 td {
     border: 1px solid #ddd;
-    width: 8em;
+    width: 12em;
 }
 td.inside {
     background-color: #fcf8e3;
@@ -14,7 +14,6 @@ td.inside:hover {
 	background-color: yellow;
 }
 td.day {
-	width: 12em;
     height: 5em;
 	text-align: left;
 	vertical-align: top;
