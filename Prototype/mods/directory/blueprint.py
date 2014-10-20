@@ -48,7 +48,8 @@ def add_staff():
 # Delete a staff in the directory
 @directory.route('/deleteStaff', methods = ['POST'])
 def delete_staff():
-    con = mysql.connect()
+    print "i'm here!!"
+    con = config.mysql.connect()
     cursor = con.cursor()
     print request.json['userID']
     query = "DELETE from tblUser where UserID = " + request.json['userID']
