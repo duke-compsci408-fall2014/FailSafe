@@ -14,32 +14,38 @@ td.inside:hover {
 	background-color: yellow;
 }
 td.day {
-    height: 5em;
+	height: 5em;
 	text-align: left;
 	vertical-align: top;
 	color: #80848A;
 }
-td.month {
-    text-align: center;
-    font-size: 2em;
-}
 td.day:hover {
 	background-color: yellow;
+}
+td.disabledDay {
+	height: 5em;
+	text-align: left;
+	vertical-align: top;
+	background-color: #B8B8CA;
+}
+td.month {
+	text-align: center;
+	font-size: 2em;
 }
 td.weekday {
 	text-align: center;
 }
 .top {
-    border-bottom: 1px dotted #ddd;
+	border-bottom: 1px dotted #ddd;
 }
 .bottom {
-    border-top: 1px dotted #ddd;
+	border-top: 1px dotted #ddd;
 }   
 td.timelabel {
-    text-align: left;
+	text-align: left;
 }
 .rolelabel {
-    text-align: center;
+	text-align: center;
 }
 a {
 	color: black;

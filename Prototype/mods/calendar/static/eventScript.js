@@ -10,6 +10,77 @@ $(document).ready(function() {
 	  tips = $( ".validateTips" );
 	var clickedSquare;
     var displayTime = moment();
+	document.getElementById("calendar").innerHTML = makeCalendar();
+
+	function makeCalendar() {
+		var calendarText = "<table align='center'>";
+		
+		//header
+		calendarText += "<tr><td class='month' colspan='7' id='month'>";
+		calendarText += displayTime.format("MMMM YYYY");
+		calendarText += "</td></tr>";
+
+		//list weekdays
+		calendarText += "<tr>";
+		var weekday = displayTime.weekday();
+		for(i = 0; i < 7; i++) {
+			calendarText += "<td class='weekday'>";
+			calendarText += displayTime.weekday(i).format("dddd");
+			calendarText += "</td>";
+		}
+		displayTime.weekday(weekday); //revert
+		calendarText += "</tr>";
+
+		//days of the month
+		var daysInThis = displayTime.daysInMonth();
+		var daysInLast = displayTime.subtract(1, "M").daysInMonth();
+		displayTime.add(1, "M"); //revert
+		var date = displayTime.date();
+		var firstDay = displayTime.date(1).day();
+		displayTime.date(date);
+		var idx = 1;
+		
+		while (idx <= firstDay + daysInThis) {
+			calendarText += "<tr>";
+			for(j=0; j < 7; j++) {
+				
+				var currentDay;
+				
+				if(idx <= firstDay) {
+					calendarText += "<td class='disabledDay' id=\"" + idx + "\">";
+					currentDay = daysInLast - firstDay + idx;
+				}
+				else if(idx <= firstDay + daysInThis) {
+					calendarText += "<td class='day' id=\"" + idx + "\">";
+					currentDay = idx - firstDay;
+				}
+				else {
+					calendarText += "<td class='disabledDay' id=\"" + idx + "\">";
+					currentDay = idx - firstDay - daysInThis;
+				}
+		
+				calendarText += currentDay;
+				calendarText += "</td>";
+				idx += 1;
+			}
+			calendarText += "</tr>";
+		}
+		calendarText += "</table>";
+		return calendarText;
+	}
+	
+	$("#last-month").click(function(event) {
+		displayTime.subtract(1, "M");
+		document.getElementById("calendar").innerHTML = makeCalendar();
+	});
+
+
+	$("#next-month").click(function(event) {
+		displayTime.add(1, "M");
+		document.getElementById("calendar").innerHTML = makeCalendar();
+	});
+
+	//FORMS
 
 	function updateTips( t ) {
 	  tips
@@ -214,15 +285,4 @@ $(document).ready(function() {
 		$('#date').val(clickedSquare.id);
 	});
 
-    $( "#month" ).text( displayTime.format("MMMM") );
-    
-    $( "#last-month" ).click(function(event) {
-        displayTime.subtract(1, "M");
-        $( "#month" ).text( displayTime.format("MMMM") );
-    });
-
-    $( "#next-month" ).click(function(event) {
-        displayTime.add(1, "M");
-        $( "#month" ).text( displayTime.format("MMMM") );
-    });
 });
