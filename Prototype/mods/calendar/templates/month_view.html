@@ -2,65 +2,62 @@
 {% block headScript %}
 {% endblock %}
 {% block body %}
-    {% set roles = ['Faculty', 'Fellow', 'Nurse 1', 'Nurse 2', 'Tech 1', 'Tech 2'] %}
-    {% set roleIds = ["faculty", "fellow", "rn1", "rn2", "tech1", "tech2"] %}
-	{% set weekdays =['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] %}
-    <div class="container">
-    <button id = "alert-button" type="button" class="btn btn-danger pull-right">Alert!</button>
-	<button id = "goToDay" type="button" class="btn btn-default pull-left"><a href="day">Day View</a></button>
-    <button id = "last-month" type="button" class="btn bth-default pull-left">Last</button>
-    <button id = "next-month" type="button" class="btn bth-default pull-left">Next</button>
-</div>
-    <div class="container" id="calendar"></div>
+{% set roles = ['Faculty', 'Fellow', 'Nurse 1', 'Nurse 2', 'Tech 1', 'Tech 2'] %}
+{% set roleIds = ["faculty", "fellow", "rn1", "rn2", "tech1", "tech2"] %}
+	<div class="container">
+		<button id = "alert-button" type="button" class="btn btn-danger pull-right">Alert!</button>
+		<button id = "goToDay" type="button" class="btn btn-default pull-left"><a href="day">Day View</a></button>
+		<button id = "last-month" type="button" class="btn bth-default pull-left">Last</button>
+		<button id = "next-month" type="button" class="btn bth-default pull-left">Next</button>
+	</div>
+	<div class="container" id="calendar"></div>
 
 	<div id="test-form" title="Alert">
-	  <p class="validateTips">All form fields are required.</p>
-	
-	  <form action="colab-sbx-131.oit.duke.edu:5001/test_send_template_sms" method="post">
-		<fieldset>
-            <div>
-				<label for="eta">ETA</label>
-				<input type="text" name="eta" id="eta" class="text ui-widget-content ui-corner-all">
-			</div>
-            <div>
-				<label for="location">Location</label>
-				<input type="text" name="location" id="location" class="text ui-widget-content ui-corner-all">
-			</div>
-            <div>
-				<label for="type">Type</label>
-				<input type="text" name="type" id="type" class="text ui-widget-content ui-corner-all">
-			</div>
-            <div>
-				<label for="msg">Message</label>
-				<input type="text" name="msg" id="msg" class="text ui-widget-content ui-corner-all">
-			</div>
-			
-	 
-		  <!-- Allow form submission with keyboard without duplicating the dialog button -->
-		  <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-		</fieldset>
-	  </form>
+		<p class="validateTips">All form fields are required.</p>
+		
+		<form action="colab-sbx-131.oit.duke.edu:5001/test_send_template_sms" method="post">
+			<fieldset>
+				<div>
+					<label for="eta">ETA</label>
+					<input type="text" name="eta" id="eta" class="text ui-widget-content ui-corner-all">
+				</div>
+				<div>
+					<label for="location">Location</label>
+					<input type="text" name="location" id="location" class="text ui-widget-content ui-corner-all">
+				</div>
+				<div>
+					<label for="type">Type</label>
+					<input type="text" name="type" id="type" class="text ui-widget-content ui-corner-all">
+				</div>
+				<div>
+					<label for="msg">Message</label>
+					<input type="text" name="msg" id="msg" class="text ui-widget-content ui-corner-all">
+				</div>
+					
+				<!-- Allow form submission with keyboard without duplicating the dialog button -->
+				<input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+			</fieldset>
+		</form>
 	</div>
 	
 	<div id="full-form" title="Create on call event">
-	  <p class="validateTips">All form fields are required.</p>
+		<p class="validateTips">All form fields are required.</p>
 	
-      <form action="{{ url_for('calendar.addCall') }} " method="POST">
-		<fieldset>
-            <div>
-				<label for="date">Date</label>
-				<input type="text" name="date" id="date" readonly class="text ui-widget-content ui-corner-all">
-			</div>
-            {% for roleId in roleIds %}
+		<form action="{{ url_for('calendar.addCall') }} " method="POST">
+			<fieldset>
+				<div>
+					<label for="date">Date</label>
+					<input type="text" name="date" id="date" readonly class="text ui-widget-content ui-corner-all">
+				</div>
+				{% for roleId in roleIds %}
 				<div>
 					<label for="{{ roleId }}">{{roles[loop.index0]}}</label>
 					<input type="text" name="{{ roleId }}" id="{{ roleId }}" class="text ui-widget-content ui-corner-all">
 				</div>
-            {% endfor %}
-	 
-		  <!-- Allow form submission with keyboard without duplicating the dialog button -->
-		  <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-		</fieldset>
-	  </form>
+				{% endfor %}
+
+				<input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+			</fieldset>
+		</form>
 	</div>
 {% endblock %}

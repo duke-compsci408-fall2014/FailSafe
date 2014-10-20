@@ -1,7 +1,27 @@
-from flask import Flask, Blueprint, request, render_template, json, jsonify, Response
+from flask import Flask, Blueprint, request, render_template, jsonify, Response
+from flask.json import JSONEncoder
+import calendar
+from datetime import datetime
+from datetime import date
 from flaskext.mysql import MySQL
 
 calendar = Blueprint('calendar',__name__,template_folder='templates',static_folder='static')
+
+class CustomJSONEncoder(JSONEncoder):
+    def default(self, obj):
+        try:
+            if isinstance(obj, datetime.date):
+                return obj.year + "-" + obj.month + "-" + obj.day
+            if isinstance(obj, datetime):
+                return obj.year + "-" + obj.month + "-" + obj.day
+            if isinstance(obj, date):
+                return obj.year + "-" + obj.month + "-" + obj.day
+            iterable = iter(obj)
+        except TypeError:
+            pass
+        else:
+            return list(iterable)
+        return JSONEncoder.default(self, obj)
 
 app = Flask(__name__)
 mysql = MySQL()
@@ -13,14 +33,18 @@ mysql.init_app(app)
 
 @calendar.route('/')
 def default():
-	return render_template('day_view.html')
+    return render_template('day_view.html')
 
 @calendar.route('/day')
 def day_view():
     return render_template('day_view.html')
 
-@calendar.route('/month')
-def month_view(newevent = None):
+@calendar.route('/testGet')
+def test_get():
+    return jsonify(results=[{'a': 'foo', 'b': 'bar'}, {'a': 'FOO', 'b': 'BAR'}])
+
+@calendar.route('/schedule')
+def get_schedule():
     con = mysql.connect()
     cursor = con.cursor()
     call_list = list()
@@ -30,10 +54,20 @@ def month_view(newevent = None):
     for d in data:
         call_data = list()
         for i in range(len(d)):
-            call_data.append(d[i])
+            if(isinstance(d[i], date)):
+                call_data.append(str(d[i].year) + "-" + str(d[i].month) + "-" + str(d[i].day));
+            else:
+                call_data.append(d[i])
         call_list.append(call_data)
+    return call_list;
 
-    return render_template('month_view.html', call_list=call_list)
+@calendar.route('/jsonSchedule')
+def get_json_schedule():
+   return jsonify(results=get_schedule())
+
+@calendar.route('/month')
+def month_view():
+    return render_template('month_view.html', call_list=get_schedule())
 
 @calendar.route('/addCall', methods=['POST'])
 def addCall():

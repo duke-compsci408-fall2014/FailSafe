@@ -1,18 +1,26 @@
 $(document).ready(function() {
-	var	sub = $("#sub"),
-	  faculty = $( "#faculty" ),
-	  fellow = $( "#fellow" ),
-	  rn1 = $( "#rn1" ),
-	  rn2 = $( "#rn2" ),
-	  tech1 = $("#tech1"),
-	  tech2 = $("#tech2"),
-	  allFields = $( [] ).add( faculty ).add( fellow ).add( rn1 ).add( rn2 ).add( tech1 ).add( tech2 ),
-	  tips = $( ".validateTips" );
+	var sub = $("#sub"),
+		faculty = $( "#faculty" ),
+		fellow = $( "#fellow" ),
+		rn1 = $( "#rn1" ),
+		rn2 = $( "#rn2" ),
+		tech1 = $("#tech1"),
+		tech2 = $("#tech2"),
+		allFields = $( [] ).add( faculty ).add( fellow ).add( rn1 ).add( rn2 ).add( tech1 ).add( tech2 ),
+		tips = $( ".validateTips" );
+	var roles = ["Faculty", "Fellow", "RN1", "RN2", "Tech1", "Tech2"];
 	var clickedSquare;
     	var displayTime = moment();
 	document.getElementById("calendar").innerHTML = makeCalendar();
 
+	function getSchedule() {
+		$.getJSON("/calendar/jsonSchedule", function(json) {
+			return json.results;
+		});
+	}
+
 	function makeCalendar() {
+		var schedule = getSchedule();
 		var calendarText = "<table align='center'>";
 		
 		//header
@@ -42,7 +50,7 @@ $(document).ready(function() {
 		
 		while (idx <= firstDay + daysInThis) {
 			calendarText += "<tr>";
-			for(j=0; j < 7; j++) {
+			for(i=0; i < 7; i++) {
 				
 				var currentDay;
 				
@@ -58,6 +66,12 @@ $(document).ready(function() {
 					calendarText += "<td class='disabledDay' id=\"" + idx + "\">";
 					currentDay = idx - firstDay - daysInThis;
 				}
+				//for(i = 0; i < schedule.length; i++) {
+				//	if(currentDay == schedule[i][0]) {
+				//		
+				//		calendarText += "Faculty: ";
+				//	}
+				//}
 		
 				calendarText += currentDay;
 				calendarText += "</td>";
