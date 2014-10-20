@@ -14,13 +14,21 @@ $(document).ready(function() {
 	document.getElementById("calendar").innerHTML = makeCalendar();
 
 	function getSchedule() {
-		$.getJSON("/calendar/jsonSchedule", function(json) {
-			return json.results;
-		});
+		var schedule;
+		//$.ajax({
+		//	url: '/calendar/jsonSchedule',
+		//	async: false,
+		//	dataType: 'json',
+		//	success: function(json) {
+		//		schedule = json.results[1][0];
+		//	}
+		//});
+		return schedule;
 	}
 
 	function makeCalendar() {
 		var schedule = getSchedule();
+		//alert(schedule);
 		var calendarText = "<table align='center'>";
 		
 		//header
@@ -66,8 +74,8 @@ $(document).ready(function() {
 					calendarText += "<td class='disabledDay' id=\"" + idx + "\">";
 					currentDay = idx - firstDay - daysInThis;
 				}
-				//for(i = 0; i < schedule.length; i++) {
-				//	if(currentDay == schedule[i][0]) {
+				//for(j = 0; j < schedule.length; j++) {
+				//	if(currentDay === schedule[j][0]) {
 				//		
 				//		calendarText += "Faculty: ";
 				//	}
@@ -127,14 +135,6 @@ $(document).ready(function() {
 		return false;
 	  } else {
 		return true;
-	  }
-	}
-	
-	function jeffTest() {
-		var test_data = {
-			"eta":$('#eta').val(),
-			"location":$('#location').val(),
-			"type":$('#type').val(),
 			"msg":$('#msg').val(),	
 		}
 		$.ajax({
@@ -299,3 +299,11 @@ $(document).ready(function() {
 	});
 
 });
+$(document).ready(function() {
+	var sub = $("#sub"),
+		faculty = $( "#faculty" ),
+		fellow = $( "#fellow" ),
+		rn1 = $( "#rn1" ),
+		rn2 = $( "#rn2" ),
+		tech1 = $("#tech1"),
+		tech2 = $("#tech2"),
