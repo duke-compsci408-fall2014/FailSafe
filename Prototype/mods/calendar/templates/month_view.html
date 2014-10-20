@@ -2,36 +2,18 @@
 {% block headScript %}
 {% endblock %}
 {% block body %}
-	<button id = "goToDay" type="button" class="btn btn-default btn-lg"><a href="day">Day View</a></button>
-	<button id = "alert-button" type="button" class="btn btn-default btn-lg">Alert!</button>
-	<table>
-		<tr>
-			{% for day in weekdays %}
-				<td class="weekday">{{day}}</td>
-			{% endfor %}
-		</tr>
-		{% for weekNumber in range(0, 5) %}
-			<tr>
-                {% for weekday in weekdays %}
-                {% set day = ((7 * weekNumber) + loop.index) %}
-    			{% if (day <= 30) %}
-				<td class="day" id="{{day}}">
-                {{day}}.<br>
-                {% for call_event in call_list %}
-                    {% if day == call_event[0].day %}
-                        {% for role in roles %}
-                        {{role}}: {{call_event[loop.index]}}<br>
-                        {% endfor %}
-                    {% endif %}
-				{% endfor %}
-				</td>
-				{% endif %}
-				{% endfor %}
-			</tr>
-		{% endfor %}
-	</table>
-	
-	<div id="test-form" title="Jeff Test">
+    {% set roles = ['Faculty', 'Fellow', 'Nurse 1', 'Nurse 2', 'Tech 1', 'Tech 2'] %}
+    {% set roleIds = ["faculty", "fellow", "rn1", "rn2", "tech1", "tech2"] %}
+	{% set weekdays =['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] %}
+    <div class="container">
+    <button id = "alert-button" type="button" class="btn btn-danger pull-right">Alert!</button>
+	<button id = "goToDay" type="button" class="btn btn-default pull-left"><a href="day">Day View</a></button>
+    <button id = "last-month" type="button" class="btn bth-default pull-left">Last</button>
+    <button id = "next-month" type="button" class="btn bth-default pull-left">Next</button>
+</div>
+    <div class="container" id="calendar"></div>
+
+	<div id="test-form" title="Alert">
 	  <p class="validateTips">All form fields are required.</p>
 	
 	  <form action="colab-sbx-131.oit.duke.edu:5001/test_send_template_sms" method="post">
@@ -63,7 +45,7 @@
 	<div id="full-form" title="Create on call event">
 	  <p class="validateTips">All form fields are required.</p>
 	
-      <form action="{{ url_for('add_call') }} " method="post">
+      <form action="{{ url_for('calendar.addCall') }} " method="POST">
 		<fieldset>
             <div>
 				<label for="date">Date</label>

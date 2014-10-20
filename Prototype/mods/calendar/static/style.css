@@ -4,7 +4,7 @@ table {
 }
 td {
     border: 1px solid #ddd;
-    width: 8em;
+    width: 12em;
 }
 td.inside {
     background-color: #fcf8e3;
@@ -14,8 +14,7 @@ td.inside:hover {
 	background-color: yellow;
 }
 td.day {
-	width: 12em;
-    height: 5em;
+	height: 5em;
 	text-align: left;
 	vertical-align: top;
 	color: #80848A;
@@ -23,20 +22,30 @@ td.day {
 td.day:hover {
 	background-color: yellow;
 }
+td.disabledDay {
+	height: 5em;
+	text-align: left;
+	vertical-align: top;
+	background-color: #B8B8CA;
+}
+td.month {
+	text-align: center;
+	font-size: 2em;
+}
 td.weekday {
 	text-align: center;
 }
 .top {
-    border-bottom: 1px dotted #ddd;
+	border-bottom: 1px dotted #ddd;
 }
 .bottom {
-    border-top: 1px dotted #ddd;
+	border-top: 1px dotted #ddd;
 }   
 td.timelabel {
-    text-align: left;
+	text-align: left;
 }
 .rolelabel {
-    text-align: center;
+	text-align: center;
 }
 a {
 	color: black;
