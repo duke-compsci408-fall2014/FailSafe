@@ -9,7 +9,7 @@ $(document).ready(function() {
 	  allFields = $( [] ).add( faculty ).add( fellow ).add( rn1 ).add( rn2 ).add( tech1 ).add( tech2 ),
 	  tips = $( ".validateTips" );
 	var clickedSquare;
-    var displayTime = moment();
+    	var displayTime = moment();
 	document.getElementById("calendar").innerHTML = makeCalendar();
 
 	function makeCalendar() {
@@ -256,30 +256,29 @@ $(document).ready(function() {
 	  }
 	});
 	
-    var subForm = $subDialog.find( "form" ).on( "submit", function( event ) {
-      event.preventDefault();
-    });
+	var subForm = $subDialog.find( "form" ).on( "submit", function( event ) {
+		event.preventDefault();
+	});
 	
-    var fullForm = $fullDialog.find( "form" ).on( "submit", function( event ) {
-      event.preventDefault();
-    });
+	var fullForm = $fullDialog.find( "form" ).on( "submit", function( event ) {
+		event.preventDefault();
+	});
 	
-    var fullForm = $jeffTest.find( "form" ).on( "submit", function( event ) {
-      event.preventDefault();
-    });
+	var fullForm = $jeffTest.find( "form" ).on( "submit", function( event ) {
+		event.preventDefault();
+	});
 
 	$('#alert-button').click( function() {
 		$jeffTest.dialog('open');
 	});
 
-    $('.inside').click(function(event) {
+	$('.inside').click(function(event) {
 		clickedSquare = event.target || event.srcElement;
-    	$subDialog.dialog('open');
+    		$subDialog.dialog('open');
 		$('#start').val(clickedSquare.id);
-    });
+	});
 
 	$( ".day" ).click(function(event) {
-        $( "#derpMeow" ).text( "derp" );
 		clickedSquare = event.target || event.srcElement;
 		$fullDialog.dialog("open");
 		$('#date').val(clickedSquare.id);
