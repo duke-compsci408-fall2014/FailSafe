@@ -72,7 +72,7 @@ $(document).ready(function() {
 								  "cellNumber":$('#cellNumber').val(), "homeNumber":$('#homeNumber').val(), 
 								  "pager":$('#pager').val(), "netID":$('#netID').val() };
 				$.ajax({
-                    url:"/addStaff",
+                    url:"/directory/addStaff",
                     type: "POST",
                     contentType:"application/json",
                     dataType:"json",
@@ -113,7 +113,7 @@ $(document).ready(function() {
                     "Delete": function() {
                         var data  = { "userID" : id };
                         $.ajax({
-                            url:"/deleteStaff",
+                            url:"/directory/deleteStaff",
                             type:"POST",
                             contentType:"application/json",
                             dataType:"json",
