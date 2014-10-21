@@ -14,7 +14,7 @@ $(document).ready(function() {
 	var firstDay;
 
 	document.getElementById("calendar").innerHTML = makeCalendar();
-	document.getElementById("dayView").innerHTML = makeDayView();
+	//document.getElementById("dayView").innerHTML = makeDayView();
 	
 	function getDaySchedule() {
 		var schedule;
@@ -241,8 +241,8 @@ $(document).ready(function() {
 			"eta":$('#eta').val(),
 			"location":$('#location').val(),
 			"type":$('#type').val(),
-			"msg":$('#msg').val(),	
-		}
+			"msg":$('#msg').val()
+		};
 		$.ajax({
 			url:"colab-sbx-131.oit.duke.edu:5001/test_send_template_sms",
 			type: "POST",
@@ -400,7 +400,7 @@ $(document).ready(function() {
 
 	$('.inside').click(function(event) {
 		clickedSquare = event.target || event.srcElement;
-    	$subDialog.dialog('open');
+    		$subDialog.dialog('open');
 		$('#start').val(clickedSquare.id);
 	});
 	
