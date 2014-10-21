@@ -19,6 +19,7 @@ $(document).ready(function() {
 			url: '/calendar/jsonSchedule',
 			async: false,
 			dataType: 'json',
+			data: { "month": displayTime.month() + 1 },
 			success: function(json) {
 				schedule = json.results;
 			}
@@ -74,14 +75,16 @@ $(document).ready(function() {
 					calendarText += "<td class='disabledDay' id=\"" + idx + "\">";
 					currentDay = idx - firstDay - daysInThis;
 				}
+				calendarText += currentDay;
+				
 				for(j = 0; j < schedule.length; j++) {
-					if(currentDay === schedule[j][0]) {
-						
-						calendarText += "Faculty: ";
+					if(currentDay == schedule[j][0].split("-")[2]) {
+						for(role = 0; role < 6; role++){
+							calendarText += "<br>" + roles[role] + ": " + schedule[j][role+1];
+						}
 					}
 				}
 		
-				calendarText += currentDay;
 				calendarText += "</td>";
 				idx += 1;
 			}

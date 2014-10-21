@@ -7,22 +7,6 @@ from flaskext.mysql import MySQL
 
 calendar = Blueprint('calendar',__name__,template_folder='templates',static_folder='static')
 
-class CustomJSONEncoder(JSONEncoder):
-    def default(self, obj):
-        try:
-            if isinstance(obj, datetime.date):
-                return obj.year + "-" + obj.month + "-" + obj.day
-            if isinstance(obj, datetime):
-                return obj.year + "-" + obj.month + "-" + obj.day
-            if isinstance(obj, date):
-                return obj.year + "-" + obj.month + "-" + obj.day
-            iterable = iter(obj)
-        except TypeError:
-            pass
-        else:
-            return list(iterable)
-        return JSONEncoder.default(self, obj)
-
 app = Flask(__name__)
 mysql = MySQL()
 app.config['MYSQL_DATABASE_USER'] = 'failsafe'
@@ -44,12 +28,12 @@ def test_get():
     return jsonify(results=[{'a': 'foo', 'b': 'bar'}, {'a': 'FOO', 'b': 'BAR'}])
 
 @calendar.route('/schedule')
-def get_schedule():
+def get_schedule(month):
     con = mysql.connect()
     cursor = con.cursor()
     call_list = list()
 
-    cursor.execute("SELECT * from OnCall")
+    cursor.execute("SELECT * FROM OnCall WHERE MONTH(Day) = " + month)
     data = cursor.fetchall()
     for d in data:
         call_data = list()
@@ -63,11 +47,11 @@ def get_schedule():
 
 @calendar.route('/jsonSchedule')
 def get_json_schedule():
-   return jsonify(results=get_schedule())
+   return jsonify(results=get_schedule(request.args.get('month')))
 
 @calendar.route('/month')
 def month_view():
-    return render_template('month_view.html', call_list=get_schedule())
+    return render_template('month_view.html')
 
 @calendar.route('/addCall', methods=['POST'])
 def addCall():
