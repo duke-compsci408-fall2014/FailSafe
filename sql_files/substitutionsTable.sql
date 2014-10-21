@@ -1,0 +1,8 @@
+CREATE TABLE substitutions (
+  SubID int NOT NULL AUTO_INCREMENT,
+  StartTime DATETIME NOT NULL,
+  EndTime DATETIME NOT NULL, 
+  Role VARCHAR(50),
+  SubName VARCHAR(50), 
+  PRIMARY KEY(SubID)
+);

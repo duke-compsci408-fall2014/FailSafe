@@ -20,22 +20,33 @@ mysql.init_app(app)
 @calendar.route('/')
 def default():
     return render_template('day_view.html')
-
+	
 @calendar.route('/day')
 def day_view():
     return render_template('day_view.html')
 
-@calendar.route('/testGet')
-def test_get():
-    return jsonify(results=[{'a': 'foo', 'b': 'bar'}, {'a': 'FOO', 'b': 'BAR'}])
+@calendar.route('/month')
+def month_view():
+    return render_template('month_view.html', directory_list=get_directory_list())
+	
+def get_directory_list():
+    dir_con = config.mysql.connect()
+    dir_cursor = dir_con.cursor()
+    directory_list = list()
 
-@calendar.route('/schedule')
-def get_schedule(month):
+    dir_cursor.execute("SELECT * from tblUser")
+    dir_data = dir_cursor.fetchall()
+    for d in dir_data:
+        directory_list.append(d)
+    return directory_list
+	
+@calendar.route('/monthSchedule')
+def get_month_schedule(month, year):
     con = mysql.connect()
     cursor = con.cursor()
     call_list = list()
 
-    cursor.execute("SELECT * FROM OnCall WHERE MONTH(Day) = " + month)
+    cursor.execute("SELECT * FROM schedule WHERE MONTH(Day) = " + month + "AND YEAR(Day) = " + year)
     data = cursor.fetchall()
     for d in data:
         call_data = list()
@@ -47,24 +58,9 @@ def get_schedule(month):
         call_list.append(call_data)
     return call_list;
 
-@calendar.route('/jsonSchedule')
-def get_json_schedule():
-   return jsonify(results=get_schedule(request.args.get('month')))
-
-def get_directory_list():
-    dir_con = config.mysql.connect()
-    dir_cursor = dir_con.cursor()
-    directory_list = list()
-
-    dir_cursor.execute("SELECT * from tblUser")
-    dir_data = dir_cursor.fetchall()
-    for d in dir_data:
-        directory_list.append(d)
-    return directory_list
-
-@calendar.route('/month')
-def month_view():
-    return render_template('month_view.html', directory_list=get_directory_list())
+@calendar.route('/jsonMonthSchedule')
+def get_json_month_schedule():
+   return jsonify(results=get_schedule(request.args.get('month'), request.args.get('year')))
 
 @calendar.route('/addCall', methods=['POST'])
 def addCall():
@@ -72,7 +68,7 @@ def addCall():
     cursor = con.cursor()
 
     callData = request.json
-    sql_query = "INSERT INTO OnCall (Day, Faculty, Fellow, RN1, \
+    sql_query = "INSERT INTO schedule (Day, Faculty, Fellow, RN1, \
             RN2, Tech1, Tech2) VALUES (" + \
             "'" + callData['date'] + "', " + \
             "'" + callData['faculty'] + "', " + \
@@ -87,4 +83,23 @@ def addCall():
     except:
         con.rollback()
     return redirect(url_for('month_view'))
+	
+@calendar.route('/addSub', methods=['POST'])
+def addSub():
+    con = mysql.connect()
+    cursor = con.cursor()
+
+    callData = request.json
+    sql_query = "INSERT INTO substitutions (StartTime, EndTime, Role, SubName \
+            ) VALUES (" + \
+            "'" + callData['start'] + "', " + \
+            "'" + callData['end'] + "', " + \
+            "'" + callData['role'] + "', " + \
+            "'" + callData['name'] + "')"
+    try:
+        cursor.execute(sql_query)
+        con.commit()
+    except:
+        con.rollback()
+    return redirect(url_for('day_view'))
 
