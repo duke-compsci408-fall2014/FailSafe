@@ -1,4 +1,4 @@
-CREATE TABLE tblMonthViewCalendar (
+CREATE TABLE schedule (
   Day DATE NOT NULL, 
   Faculty VARCHAR(50) NOT NULL,
   Fellow VARCHAR(50) NOT NULL,

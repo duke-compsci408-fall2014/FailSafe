@@ -14,11 +14,12 @@ $(document).ready(function() {
 	var firstDay;
 
 	document.getElementById("calendar").innerHTML = makeCalendar();
-
-	function getSchedule() {
+	document.getElementById("dayView").innerHTML = makeDayView();
+	
+	function getDaySchedule() {
 		var schedule;
 		$.ajax({
-			url: '/calendar/jsonSchedule',
+			url: '/calendar/jsonMonthSchedule',
 			async: false,
 			dataType: 'json',
 			data: { "month": displayTime.month() + 1 },
@@ -29,8 +30,25 @@ $(document).ready(function() {
 		return schedule;
 	}
 
+	function getMonthSchedule() {
+		var schedule;
+		$.ajax({
+			url: '/calendar/jsonMonthSchedule',
+			async: false,
+			dataType: 'json',
+			data: { 
+				"month": displayTime.month() + 1,
+				"year": displayTime.year()
+			},
+			success: function(json) {
+				schedule = json.results;
+			}
+		});
+		return schedule;
+	}
+
 	function makeCalendar() {
-		var schedule = getSchedule();
+		var schedule = getMonthSchedule();
 		//alert(schedule);
 		var calendarText = "<table align='center'>";
 		
