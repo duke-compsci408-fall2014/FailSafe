@@ -4,6 +4,8 @@ import calendar
 from datetime import datetime
 from datetime import date
 from flaskext.mysql import MySQL
+import mods.directory as directory
+import config
 
 calendar = Blueprint('calendar',__name__,template_folder='templates',static_folder='static')
 
@@ -49,9 +51,20 @@ def get_schedule(month):
 def get_json_schedule():
    return jsonify(results=get_schedule(request.args.get('month')))
 
+def get_directory_list():
+    dir_con = config.mysql.connect()
+    dir_cursor = dir_con.cursor()
+    directory_list = list()
+
+    dir_cursor.execute("SELECT * from tblUser")
+    dir_data = dir_cursor.fetchall()
+    for d in dir_data:
+        directory_list.append(d)
+    return directory_list
+
 @calendar.route('/month')
 def month_view():
-    return render_template('month_view.html')
+    return render_template('month_view.html', directory_list=get_directory_list())
 
 @calendar.route('/addCall', methods=['POST'])
 def addCall():
