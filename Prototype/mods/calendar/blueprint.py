@@ -46,7 +46,7 @@ def get_month_schedule(month, year):
     cursor = con.cursor()
     call_list = list()
 
-    cursor.execute("SELECT * FROM schedule WHERE MONTH(Day) = " + month + "AND YEAR(Day) = " + year)
+    cursor.execute("SELECT * FROM schedule WHERE MONTH(Day) = " + month + " AND YEAR(Day) = " + year)
     data = cursor.fetchall()
     for d in data:
         call_data = list()
@@ -60,7 +60,52 @@ def get_month_schedule(month, year):
 
 @calendar.route('/jsonMonthSchedule')
 def get_json_month_schedule():
-   return jsonify(results=get_schedule(request.args.get('month'), request.args.get('year')))
+    return jsonify(results=get_month_schedule(request.args.get('month'), request.args.get('year')))
+   
+@calendar.route('/daySchedule')
+def get_day_schedule(day, month, year):
+    con = mysql.connect()
+    cursor = con.cursor()
+    call_list = list()
+
+    cursor.execute("SELECT * FROM schedule WHERE DAY(Day) = " + day + " AND MONTH(Day) = " + month + " AND YEAR(Day) = " + year)
+    data = cursor.fetchall()
+    for d in data:
+        call_data = list()
+        for i in range(len(d)):
+            if(isinstance(d[i], date)):
+                call_data.append(str(d[i].year) + "-" + str(d[i].month) + "-" + str(d[i].day));
+            else:
+                call_data.append(d[i])
+        call_list.append(call_data)
+    return call_list;
+
+@calendar.route('/jsonDaySchedule')
+def get_json_day_schedule():
+    return jsonify(results=get_day_schedule(request.args.get('day'), request.args.get('month'), request.args.get('year')))
+  
+@calendar.route('/subSchedule')
+def get_sub_schedule(day, month, year):
+    con = mysql.connect()
+    cursor = con.cursor()
+    call_list = list()
+
+    cursor.execute("SELECT * FROM substitutions WHERE DAY(Day) = " + day + " AND MONTH(Day) = " + month + " AND YEAR(Day) = " + year)
+    data = cursor.fetchall()
+    for d in data:
+        call_data = list()
+        for i in range(len(d)):
+            if(isinstance(d[i], date)):
+                call_data.append(str(d[i].year) + "-" + str(d[i].month) + "-" + str(d[i].day));
+            else:
+                call_data.append(d[i])
+        call_list.append(call_data)
+    return call_list;
+
+@calendar.route('/jsonSubSchedule')
+def get_json_sub_schedule(day, month, year):
+    return jsonify(results=get_sub_schedule(request.args.get('day'), request.args.get('month'), request.args.get('year')))
+   
 
 @calendar.route('/addCall', methods=['POST'])
 def addCall():
@@ -95,7 +140,7 @@ def addSub():
             "'" + callData['start'] + "', " + \
             "'" + callData['end'] + "', " + \
             "'" + callData['role'] + "', " + \
-            "'" + callData['name'] + "')"
+            "'" + callData['sub'] + "')"
     try:
         cursor.execute(sql_query)
         con.commit()

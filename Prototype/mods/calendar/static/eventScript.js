@@ -10,7 +10,7 @@ $(document).ready(function() {
 		tips = $( ".validateTips" );
 	var roles = ["Faculty", "Fellow", "RN1", "RN2", "Tech1", "Tech2"];
 	var clickedSquare;
-    	var displayTime = moment();
+    var displayTime = moment();
 	var firstDay;
 
 	document.getElementById("calendar").innerHTML = makeCalendar();
@@ -19,10 +19,14 @@ $(document).ready(function() {
 	function getDaySchedule() {
 		var schedule;
 		$.ajax({
-			url: '/calendar/jsonMonthSchedule',
+			url: '/calendar/jsonDaySchedule',
 			async: false,
 			dataType: 'json',
-			data: { "month": displayTime.month() + 1 },
+			data: { 
+				"day": displayTime.day(),
+				"month": displayTime.month() + 1,
+				"year": displayTime.year()
+			},
 			success: function(json) {
 				schedule = json.results;
 			}
@@ -45,6 +49,51 @@ $(document).ready(function() {
 			}
 		});
 		return schedule;
+	}
+	
+	function makeDayView() {
+		var schedule = getDaySchedule();
+		var dayView = "<table align='center'>";
+		
+		//header
+		calendarText += "<tr><td class='date' colspan='7' id='date'>";
+		calendarText += displayTime.format("dddd Do[,] YYYY");
+		calendarText += "</td></tr>";
+		
+		//labels
+		dayView += "<tr><td class='timelabel'></td>";
+		for(role = 0; role < roles.length; role++) {
+			dayView += "<td class='rolelabel'>" + roles[role] + "</td>";
+		}
+		dayView += "</tr>";
+		
+		//primary person for this day for each role
+		dayView += "<tr><td class='timelabel'>Primary</td>";
+		for(role = 0; role < roles.length; role++) {
+			dayView += "<td class='inside' id='ALLNIGHT'>" + schedule[0][role+1] + "</td>";
+		}
+		dayView += "</tr>";
+		
+		var id = moment([displayTime.year(), displayTime.month(), displayTime.day(), 17]);
+		
+		//times of the day
+		for(n = 1; n < 14; n++) {
+			dayView += "<tr><td class='timelabel'>" + id.format("h[:]mm") + "</td>";
+			for(role = 0; role < roles.length; role++) {
+				dayView += "<td class='inside top' id='" + id.toISOString() + "'>" + "" /*todo: add subs */ + "</td>";
+			}
+			dayView += "</tr>";
+			id.add(30, 'm');
+			dayView += "<tr><td class='timelabel'>" + id.format("h[:]mm") + "</td>";
+			for(role = 0; role < roles.length; role++) {
+				dayView += "<td class='inside bottom' id='" + id.toISOString() + "'>" + "" /*todo: add subs */ + "</td>";
+			}
+			dayView += "</tr>";
+			id.add(30, 'm');
+		}
+		
+		dayView += "</table>";
+		return dayView;
 	}
 
 	function makeCalendar() {
@@ -139,6 +188,17 @@ $(document).ready(function() {
 		displayTime.add(1, "M");
 		document.getElementById("calendar").innerHTML = makeCalendar();
 	});
+	
+	$("#yesterday").click(function(event) {
+		displayTime.subtract(1, "d");
+		document.getElementById("calendar").innerHTML = makeDayView();
+	});
+
+
+	$("#tomorrow").click(function(event) {
+		displayTime.add(1, "d");
+		document.getElementById("calendar").innerHTML = makeDayView();
+	});
 
 	//FORMS
 
@@ -204,8 +264,14 @@ $(document).ready(function() {
 		valid = valid && checkLength(sub, "Substitute", 80);
 		valid = valid && checkRegexp( sub, /^([a-zA-Z ])+$/, "Substitute name must only include a-z" );
 		
+		var start = $('#start').val();
+		var duration = parseInt($('#duration').val());
+		
 		if(valid) {
 			var sub_data = {
+				"start":start,
+				"end":moment(start).add(duration, 'h'),
+				"role":$('#role').val(),
 				"sub":$('#sub').val()
 			};
 			$.ajax({
@@ -334,7 +400,7 @@ $(document).ready(function() {
 
 	$('.inside').click(function(event) {
 		clickedSquare = event.target || event.srcElement;
-    		$subDialog.dialog('open');
+    	$subDialog.dialog('open');
 		$('#start').val(clickedSquare.id);
 	});
 	
