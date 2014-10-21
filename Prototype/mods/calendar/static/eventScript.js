@@ -11,6 +11,8 @@ $(document).ready(function() {
 	var roles = ["Faculty", "Fellow", "RN1", "RN2", "Tech1", "Tech2"];
 	var clickedSquare;
     	var displayTime = moment();
+	var firstDay;
+
 	document.getElementById("calendar").innerHTML = makeCalendar();
 
 	function getSchedule() {
@@ -53,7 +55,7 @@ $(document).ready(function() {
 		var daysInLast = displayTime.subtract(1, "M").daysInMonth();
 		displayTime.add(1, "M"); //revert
 		var date = displayTime.date();
-		var firstDay = displayTime.date(1).day();
+		firstDay = displayTime.date(1).day();
 		displayTime.date(date);
 		var idx = 1;
 		
@@ -62,29 +64,44 @@ $(document).ready(function() {
 			for(i=0; i < 7; i++) {
 				
 				var currentDay;
-				
+				var id;				
+
 				if(idx <= firstDay) {
-					calendarText += "<td class='disabledDay' id=\"" + idx + "\">";
 					currentDay = daysInLast - firstDay + idx;
+					
+					if(displayTime.month() == 0) {
+						id = moment(currentDay + " 12 " + (displayTime.year() - 1), "DD MM YYYY").format("YYYY[-]MM[-]DD");
+					}
+					else {
+						id = moment(currentDay + " " + displayTime.month() + " " + displayTime.year(), "DD MM YYYY").format("YYYY[-]MM[-]DD");
+					}
+					calendarText += "<td class='disabledDay' id=\"" + id + "\">";
+					calendarText += currentDay;
 				}
 				else if(idx <= firstDay + daysInThis) {
-					calendarText += "<td class='day' id=\"" + idx + "\">";
 					currentDay = idx - firstDay;
-				}
-				else {
-					calendarText += "<td class='disabledDay' id=\"" + idx + "\">";
-					currentDay = idx - firstDay - daysInThis;
-				}
-				calendarText += currentDay;
-				
-				for(j = 0; j < schedule.length; j++) {
-					if(currentDay == schedule[j][0].split("-")[2]) {
-						for(role = 0; role < 6; role++){
-							calendarText += "<br>" + roles[role] + ": " + schedule[j][role+1];
+					id = moment(currentDay + " " + (displayTime.month() + 1) + " " + displayTime.year(), "DD MM YYYY").format("YYYY[-]MM[-]DD");
+					calendarText += "<td class='day' id=\"" + id + "\">";
+					calendarText += currentDay;
+					for(j = 0; j < schedule.length; j++) {
+						if(currentDay == schedule[j][0].split("-")[2]) {
+							for(role = 0; role < 6; role++){
+								calendarText += "<br>" + roles[role] + ": " + schedule[j][role+1];
+							}
 						}
 					}
 				}
-		
+				else {
+					currentDay = idx - firstDay - daysInThis;
+					if(displayTime.month() == 11) {
+						id = moment(currentDay + " 1 " + (displayTime.year() + 1), "DD MM YYYY").format("YYYY[-]MM[-]DD");
+					}
+					else {
+						id = moment(currentDay + " " + (displayTime.month() + 2) + " " + displayTime.year(), "DD MM YYYY").format("YYYY[-]MM[-]DD");
+					}
+					calendarText += "<td class='disabledDay' id=\"" + id + "\">";
+					calendarText += currentDay;
+				}
 				calendarText += "</td>";
 				idx += 1;
 			}
@@ -200,16 +217,16 @@ $(document).ready(function() {
 		valid = valid && checkLength(tech1, "Tech1", 80);
 		valid = valid && checkLength(tech2, "Tech2", 80);
 		
-		valid = valid && checkRegexp( faculty, /^([a-zA-Z ])+$/, "Faculty name must only include a-z" );
-		valid = valid && checkRegexp( fellow, /^([a-zA-Z ])+$/, "Fellow name must only include a-z" );
-		valid = valid && checkRegexp( rn1, /^([a-zA-Z ])+$/, "Nurse name must only include a-z" );
-		valid = valid && checkRegexp( rn2, /^([a-zA-Z ])+$/, "Nurse name must only include a-z" );
-		valid = valid && checkRegexp( tech1, /^([a-zA-Z ])+$/, "Tech name must only include a-z" );
-		valid = valid && checkRegexp( tech2, /^([a-zA-Z ])+$/, "Tech name must only include a-z" );
+		valid = valid && checkRegexp( faculty, /^([a-zA-Z ])+$/, "Faculty name must only include a-z and spaces" );
+		valid = valid && checkRegexp( fellow, /^([a-zA-Z ])+$/, "Fellow name must only include a-z and spaces" );
+		valid = valid && checkRegexp( rn1, /^([a-zA-Z ])+$/, "Nurse name must only include a-z and spaces" );
+		valid = valid && checkRegexp( rn2, /^([a-zA-Z ])+$/, "Nurse name must only include a-z and spaces" );
+		valid = valid && checkRegexp( tech1, /^([a-zA-Z ])+$/, "Tech name must only include a-z and spaces" );
+		valid = valid && checkRegexp( tech2, /^([a-zA-Z ])+$/, "Tech name must only include a-z and spaces" );
 		
 		if(valid) {
 			var oncall_data = {
-				"date":"2014-10-" + $('#date').val(),
+				"date":$('#date').val(),
 				"faculty":$('#faculty').val(), 
 				"fellow":$('#fellow').val(), 
 				"rn1":$('#rn1').val(), 
@@ -232,7 +249,7 @@ $(document).ready(function() {
 
 	var $subDialog = $( "#substitution-form" ).dialog({
 	  autoOpen: false,
-	  height: 400,
+	  height: 300,
 	  width: 350,
 	  modal: true,
 	  buttons: {
@@ -249,7 +266,7 @@ $(document).ready(function() {
 	
 	var $fullDialog = $( "#full-form" ).dialog({
 	  autoOpen: false,
-	  height: 800,
+	  height: 350,
 	  width: 350,
 	  modal: true,
 	  buttons: {
@@ -266,7 +283,7 @@ $(document).ready(function() {
 	
 	var $jeffTest = $( "#test-form" ).dialog({
 	  autoOpen: false,
-	  height: 800,
+	  height: 350,
 	  width: 350,
 	  modal: true,
 	  buttons: {
@@ -302,11 +319,10 @@ $(document).ready(function() {
     		$subDialog.dialog('open');
 		$('#start').val(clickedSquare.id);
 	});
-
-	$( ".day" ).click(function(event) {
+	
+	$("div").on('click', 'td.day', function() {
 		clickedSquare = event.target || event.srcElement;
 		$fullDialog.dialog("open");
 		$('#date').val(clickedSquare.id);
 	});
-
 });
