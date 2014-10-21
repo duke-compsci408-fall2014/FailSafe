@@ -56,7 +56,7 @@
                         <select name="{{ roleId }}" id="{{ roleId }}">
                             {% for dir_entry in directory_list %}
                                 {% if dir_entry[1]|lower in roles[index]|lower%}
-                                    <option value="{{dir_entry[3]}}-{{dir_entry[4]}}"> {{dir_entry[3]}} {{dir_entry[4]}}</option>
+                                    <option value="{{dir_entry[3]}} {{dir_entry[4]}}"> {{dir_entry[3]}} {{dir_entry[4]}}</option>
                                 {% endif %}
                             {% endfor %}
                         </select>
