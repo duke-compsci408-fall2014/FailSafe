@@ -129,11 +129,38 @@ def loop_users(netIDs, message, delay, repeats):
         time.sleep(delay)
         call_all_home(users, message)
 
-@app.route("/test_test")
+@app.route("/")
 def test_test():
     resp = twilio.twiml.Response()
     resp.message("Hi, we got your response!")
     return str(resp)   
+
+class User:
+    def __init__(self, row_entry):
+        self.userID = int(row_entry[0])
+        self.role = row_entry[1]
+        self.isAdministrator = row_entry[2]
+        self.firstName = row_entry[3]
+        self.lastName = row_entry[4]
+        self.cellPhone = str(row_entry[5])
+        self.homePhone = str(row_entry[6])
+        self.pagerNumber = str(row_entry[7])
+        self.netID = str(row_entry[8])
+
+def get_all_users():
+    con = mysql.connect()
+    cursor = con.cursor()
+    users = {}
+    cursor.execute("SELECT * from tblUser")
+    data = cursor.fetchall()
+    con.close()
+    for d in data:
+        person_data = list()
+        for i in range(len(d)):
+            person_data.append(d[i])
+        newUser = User(person_data)
+        users[newUser.netID] = newUser
+    return users
 
 class User:
     def __init__(self, row_entry):
