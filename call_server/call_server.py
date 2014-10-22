@@ -112,6 +112,8 @@ def test_loop_break_check():
 @app.route("/response", methods=['GET', 'POST'])
 def sms_response():
     from_number = request.values.get('From', None)
+    if from_number in mynumbers:
+       loop_breaker_dictionary[from_number]=True
     message = str(request.values.get('Body', None)).lower()
     message = client.messages.create(to=from_number, from_=default_from_phone, body="Thanks for the message, bro. Your number is " + from_number + ".")
     return "done"
@@ -159,8 +161,8 @@ class User:
         self.cellPhone = str(row_entry[5])
         self.homePhone = str(row_entry[6])
         self.pagerNumber = str(row_entry[7])
-        self.netID = str(row_entry[8])
-
+        self.netID = str(row_entry[8]
+                )
 def get_all_users():
     con = mysql.connect()
     cursor = con.cursor()
@@ -169,6 +171,7 @@ def get_all_users():
     data = cursor.fetchall()
     con.close()
     for d in data:
+        print d
         person_data = list()
         for i in range(len(d)):
             person_data.append(d[i])
@@ -192,6 +195,7 @@ class User:
 def sandbox():
     print get_all_users()
     return ""
+
 
 @app.route("/test_send_call", strict_slashes=False)
 def test_send_call():
@@ -242,4 +246,4 @@ def test_custom_group_call_with_default():
 
 
 if __name__ == "__main__":
-  app.run(host="0.0.0.0", debug=True, port=5001)
+  app.run(host="0.0.0.0", debug=True, port=5002)
