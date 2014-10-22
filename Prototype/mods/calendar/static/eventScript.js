@@ -38,6 +38,24 @@ $(document).ready(function() {
 		return schedule;
 	}
 
+	function getSubstitutions() {
+		var schedule;
+		$.ajax({
+			url: '/calendar/jsonSubSchedule',
+			async: false,
+			dataType: 'json',
+			data: { 
+				"day": displayTime.date(),
+				"month": displayTime.month() + 1,
+				"year": displayTime.year()
+			},
+			success: function(json) {
+				schedule = json.results;
+			}
+		});
+		return schedule;
+	}
+
 	function getMonthSchedule() {
 		var schedule;
 		$.ajax({
@@ -57,6 +75,11 @@ $(document).ready(function() {
 	
 	function makeDayView() {
 		var schedule = getDaySchedule();
+		var substitutions = getSubstitutions();
+		if(substitutions.length >= 1) {
+			alert(substitutions[0][1]);
+		}
+		
 		var dayView = "<table align='center'>";
 		
 		//header
@@ -88,13 +111,31 @@ $(document).ready(function() {
 		for(n = 1; n < 14; n++) {
 			dayView += "<tr><td class='timelabel'>" + id.format("h[:]mm") + "</td>";
 			for(role = 0; role < roles.length; role++) {
-				dayView += "<td class='inside top' id='" + id.format() + "'>" + "" /*todo: add subs */ + "</td>";
+				dayView += "<td class='inside top' id='" + id.format() + "'>";
+				for(sub = 0; sub < substitutions.length; sub++) {
+					var startTime = moment(substitutions[sub][1]).format();
+					var endTime = moment(substitutions[sub][2]).format();
+					var subRole = substitutions[sub][3];
+					if((id.isSame(startTime) || id.isAfter(startTime)) && (id.isSame(startTime) || id.isBefore(endTime)) && subRole == roles[role]) {
+						dayView += "Sub: " + substitutions[sub][4];
+					}
+				}
+				dayView +=  "</td>";
 			}
 			dayView += "</tr>";
 			id.add(30, 'm');
 			dayView += "<tr><td class='timelabel'>" + id.format("h[:]mm") + "</td>";
 			for(role = 0; role < roles.length; role++) {
-				dayView += "<td class='inside bottom' id='" + id.format() + "'>" + "" /*todo: add subs */ + "</td>";
+				dayView += "<td class='inside bottom' id='" + id.format() + "'>";
+				for(sub = 0; sub < substitutions.length; sub++) {
+					var startTime = moment(substitutions[sub][1]).format();
+					var endTime = moment(substitutions[sub][2]).format();
+					var subRole = substitutions[sub][3];
+					if((id.isSame(startTime) || id.isAfter(startTime)) && (id.isSame(startTime) || id.isBefore(endTime)) && subRole == roles[role]) {
+						dayView += "Sub: " + substitutions[sub][4];
+					}
+				}
+				dayView +=  "</td>";
 			}
 			dayView += "</tr>";
 			id.add(30, 'm');
@@ -288,7 +329,6 @@ $(document).ready(function() {
 				dataType:"json",
 				data: JSON.stringify(sub_data)
 			});
-			clickedSquare.innerHTML = "SUB: " + $('#sub').val();
 			$subDialog.dialog( "close" );
 		}
 	}
