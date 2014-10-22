@@ -13,8 +13,12 @@ $(document).ready(function() {
     var displayTime = moment();
 	var firstDay;
 
-	document.getElementById("calendar").innerHTML = makeCalendar();
-	//document.getElementById("dayView").innerHTML = makeDayView();
+	if(document.getElementById("calendar") != null) {
+		document.getElementById("calendar").innerHTML = makeCalendar();
+	}
+	if(document.getElementById("dayView") != null) {
+		document.getElementById("dayView").innerHTML = makeDayView();
+	}
 	
 	function getDaySchedule() {
 		var schedule;
@@ -23,7 +27,7 @@ $(document).ready(function() {
 			async: false,
 			dataType: 'json',
 			data: { 
-				"day": displayTime.day(),
+				"day": displayTime.date(),
 				"month": displayTime.month() + 1,
 				"year": displayTime.year()
 			},
@@ -56,9 +60,9 @@ $(document).ready(function() {
 		var dayView = "<table align='center'>";
 		
 		//header
-		calendarText += "<tr><td class='date' colspan='7' id='date'>";
-		calendarText += displayTime.format("dddd Do[,] YYYY");
-		calendarText += "</td></tr>";
+		dayView += "<tr><td class='header' colspan='7' id='header'>";
+		dayView += displayTime.format("dddd Do[,] YYYY");
+		dayView += "</td></tr>";
 		
 		//labels
 		dayView += "<tr><td class='timelabel'></td>";
@@ -74,7 +78,7 @@ $(document).ready(function() {
 		}
 		dayView += "</tr>";
 		
-		var id = moment([displayTime.year(), displayTime.month(), displayTime.day(), 17]);
+		var id = moment([displayTime.year(), displayTime.month(), displayTime.date(), 17]);
 		
 		//times of the day
 		for(n = 1; n < 14; n++) {
@@ -102,7 +106,7 @@ $(document).ready(function() {
 		var calendarText = "<table align='center'>";
 		
 		//header
-		calendarText += "<tr><td class='month' colspan='7' id='month'>";
+		calendarText += "<tr><td class='header' colspan='7' id='header'>";
 		calendarText += displayTime.format("MMMM YYYY");
 		calendarText += "</td></tr>";
 
@@ -191,13 +195,13 @@ $(document).ready(function() {
 	
 	$("#yesterday").click(function(event) {
 		displayTime.subtract(1, "d");
-		document.getElementById("calendar").innerHTML = makeDayView();
+		document.getElementById("dayView").innerHTML = makeDayView();
 	});
 
 
 	$("#tomorrow").click(function(event) {
 		displayTime.add(1, "d");
-		document.getElementById("calendar").innerHTML = makeDayView();
+		document.getElementById("dayView").innerHTML = makeDayView();
 	});
 
 	//FORMS
@@ -398,13 +402,13 @@ $(document).ready(function() {
 		$jeffTest.dialog('open');
 	});
 
-	$('.inside').click(function(event) {
+	$('.inside').on('click', 'td.day', function(event) {
 		clickedSquare = event.target || event.srcElement;
     		$subDialog.dialog('open');
 		$('#start').val(clickedSquare.id);
 	});
 	
-	$("div").on('click', 'td.day', function() {
+	$("div").on('click', 'td.day', function(event) {
 		clickedSquare = event.target || event.srcElement;
 		$fullDialog.dialog("open");
 		$('#date').val(clickedSquare.id);

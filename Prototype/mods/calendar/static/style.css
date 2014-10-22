@@ -28,7 +28,7 @@ td.disabledDay {
 	vertical-align: top;
 	background-color: #B8B8CA;
 }
-td.month {
+td.header {
 	text-align: center;
 	font-size: 2em;
 }

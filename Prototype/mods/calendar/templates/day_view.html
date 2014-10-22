@@ -7,9 +7,11 @@
 	{% set weekdays =['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] %}
 
     <div class="container">
-    <button id = "gotoMonth" type="button" class="btn btn-default"><a href="month">Month View</a></button>
+	<button id = "gotoMonth" type="button" class="btn btn-default"><a href="month">Month View</a></button>
+	<button id = "yesterday" type="button" class="btn btn-default pull-left">Last</button>
+	<button id = "tomorrow" type="button" class="btn btn-default pull-left">Next</button>
     </div>
-    <div class="dayView"></div>
+    <div class="container" id="dayView"></div>
 
 	<div id="substitution-form" title="Create Substitution">
 	  <p class="validateTips">All form fields are required.</p>
@@ -25,8 +27,8 @@
 				<input type="text" name="duration" id="duration" class="text ui-widget-content ui-corner-all">
 			</div>
 			<div>
-				<label for="duration">Role</label>
-				<input type="text" name="duration" id="duration" class="text ui-widget-content ui-corner-all">
+				<label for="role">Role</label>
+				<input type="text" name="role" id="role" class="text ui-widget-content ui-corner-all">
 			</div>
 			<div>
 				<label for="sub">Substitute</label>
