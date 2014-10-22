@@ -43,7 +43,7 @@
 						</tr>
 					{% endfor %}
 				</table>
-			</div>
+            </div>
 			<button id = "create-user" type="button" class="btn btn-default btn-lg">Add New Contact</button>
 		</div>
 	</div>
@@ -54,12 +54,20 @@
 	  <form action="/directory/addStaff" method="post">
 		<fieldset>
 			<div>
-				<label for="role">Role</label>
-				<input type="text" name="role" id="role" class="text ui-widget-content ui-corner-all">
+                <label for="role">Role</label>
+                <select id="role">
+                    <option value="Faculty">Faculty</option>
+                    <option value="Fellow">Fellow</option>
+                    <option value="Nurse">Nurse</option>
+                    <option value="Tech">Tech</option>
+                </select>
 			</div>
 			<div>
-				<label for="admin">Is Admin?</label>
-				<input type="text" name="admin" id="admin" class="text ui-widget-content ui-corner-all">
+                <label for="admin">Is Admin?</label>
+                <select id="admin">
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                </select>
 			</div>
 			<div>
 				<label for="firstName">First Name</label>
