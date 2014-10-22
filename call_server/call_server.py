@@ -1,4 +1,5 @@
-from flask import Flask, request, redirect, url_for
+from flask import Flask, redirect, url_for, Blueprint, render_template, request, Response, jsonify
+import config
 import twilio.twiml, random
 from twilio.rest import TwilioRestClient
 import urllib2, datetime
@@ -7,11 +8,14 @@ from urllib import urlencode
 import requests
 from flaskext.mysql import MySQL
 import time
+
+backend = Blueprint('backend', __name__, template_folder='templates', static_folder='static')
+
 # Find these values at https://twilio.com/user/account
 account_sid = "AC8ec001dd37e80c10a9bf5e47794b6501"
 auth_token = "b0a47efa254507764caa06b8949c788b"
 client = TwilioRestClient(account_sid, auth_token)
-app = Flask(__name__)
+backend = Flask(__name__)
 
 mysql = MySQL()
 app.config['MYSQL_DATABASE_USER'] = 'failsafe'
@@ -184,24 +188,10 @@ class User:
         self.pagerNumber = str(row_entry[7])
         self.netID = str(row_entry[8])
 
-def get_all_users():
-    con = mysql.connect()
-    cursor = con.cursor()
-    users = {}
-    cursor.execute("SELECT * from tblUser")
-    data = cursor.fetchall()
-    con.close()
-    for d in data:
-        person_data = list()
-        for i in range(len(d)):
-            person_data.append(d[i])
-        newUser = User(person_data)
-        users[newUser.netID] = newUser
-    return users
-
 @app.route("/sandbox")
 def sandbox():
-    get_all_users()
+    print get_all_users()
+    return ""
 
 @app.route("/test_send_call", strict_slashes=False)
 def test_send_call():
