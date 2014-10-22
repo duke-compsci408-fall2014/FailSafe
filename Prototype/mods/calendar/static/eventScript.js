@@ -74,7 +74,11 @@ $(document).ready(function() {
 		//primary person for this day for each role
 		dayView += "<tr><td class='timelabel'>Primary</td>";
 		for(role = 0; role < roles.length; role++) {
-			dayView += "<td class='inside' id='ALLNIGHT'>" + schedule[0][role+1] + "</td>";
+			dayView += "<td class='inside' id='ALLNIGHT'>";
+			if(schedule.length >= 1) {
+				dayView +=  schedule[0][role+1];
+			}
+			dayView += "</td>";
 		}
 		dayView += "</tr>";
 		
@@ -402,7 +406,7 @@ $(document).ready(function() {
 		$jeffTest.dialog('open');
 	});
 
-	$('.inside').on('click', 'td.day', function(event) {
+	$('div').on('click', 'td.inside', function(event) {
 		clickedSquare = event.target || event.srcElement;
     		$subDialog.dialog('open');
 		$('#start').val(clickedSquare.id);
