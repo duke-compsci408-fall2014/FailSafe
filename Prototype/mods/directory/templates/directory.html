@@ -30,15 +30,15 @@
 						
 					{% for person in person_list %}
 						<tr class="entry">
-							<td>{{person[1]}}</td>
-							<td>{{person[2]}}</td>
-							<td>{{person[3]}}</td>
-							<td>{{person[4]}}</td>
-							<td>{{person[5]}}</td>
-							<td>{{person[6]}}</td>
-							<td>{{person[7]}}</td>
-                            <td>{{person[8]}}</td>
-                            <td><a href="#" class="btn btn-primary btn-large"><i class="icon-white icon-pencil"></i> Edit</a></td>
+							<td class="entry-data">{{person[1]}}</td>
+							<td class="entry-data">{{person[2]}}</td>
+							<td class="entry-data">{{person[3]}}</td>
+							<td class="entry-data">{{person[4]}}</td>
+							<td class="entry-data">{{person[5]}}</td>
+							<td class="entry-data">{{person[6]}}</td>
+							<td class="entry-data">{{person[7]}}</td>
+                            <td class="entry-data">{{person[8]}}</td>
+                            <td class="edit-staff" id="{{person[0]}}"><a href="#" class="btn btn-primary btn-large"><i class="icon-white icon-pencil"></i> Edit</a></td>
                             <td class="delete-staff" id="{{person[0]}}"><a href="#" class="btn btn-danger btn-large"><i class="icon-white icon-remove"></i> delete</a></td>
 						</tr>
 					{% endfor %}

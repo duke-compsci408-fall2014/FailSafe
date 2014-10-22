@@ -41,23 +41,7 @@ $(document).ready(function() {
 		  } else {
 			return true;
 		  }
-		}
-
-		// function addUser() {
-		//   var valid = true;
-
-		//   if ( valid ) {
-		// 	$( "#staff tbody" ).append( "<tr>" +
-		// 	  "<td>" + firstName.val() + "</td>" +
-		// 	  "<td>" + lastName.val() + "</td>" +
-		// 	  "<td>" + phoneNumber.val() + "</td>" +
-		// 	"</tr>" );
-		// 	allFields.removeClass( "ui-state-error" );
-		// 	dialog.dialog( "close" );
-		//   }
-		//   return valid;
-		// }
-        
+		}        
         
 
 		dialog = $( "#dialog-form" ).dialog({
@@ -100,6 +84,50 @@ $(document).ready(function() {
 		$( "#create-user" ).button().on( "click", function() {
             dialog.dialog( "open" );
 		});
+        $(".edit-staff").button().on("click", function(e) {
+            e.preventDefault();
+            var id = $(this).attr('id');
+            var par = $(this).parent();
+            var list = ["#role", "#admin", "#firstName", "#lastName", "#cellNumber", "#homeNumber", "#pager", "#netID"];
+            var count = 0;
+            par.children(".entry-data").each(function() {
+                $(list[count]).val($(this).text());
+                count += 1
+            });
+            
+            edit_dialog = $( "#dialog-form" ).dialog({
+                autoOpen: false,
+                height: 300,
+                width: 350,
+                modal: true,
+                buttons: {
+                    "Edit Staff": function() {
+                    var staff_data = {"role":$('#role').val(), "admin":$('#admin').val(),
+                                      "firstName":$('#firstName').val(), "lastName":$('#lastName').val(),
+                                      "cellNumber":$('#cellNumber').val(), "homeNumber":$('#homeNumber').val(),
+                                      "pager":$('#pager').val(), "netID":$('#netID').val() };
+                    $.ajax({
+                        url:"/directory/editStaff",
+                        type: "POST",
+                        contentType:"application/json",
+                        dataType:"json",
+                        data: JSON.stringify(staff_data),
+                    }); 
+                    dialog.dialog( "close" );
+                    window.location.reload(true);                                                                                                                 
+                    },
+                    Cancel: function() {
+                        dialog.dialog( "close" );
+                    }
+                },
+                close: function() {
+                    form[ 0 ].reset();
+                    allFields.removeClass( "ui-state-error" );
+                }
+            });
+            edit_dialog.dialog("open");
+        });
+
         $(".delete-staff").button().on("click", function(e) {
             console.log($(this).attr('id'));
             var id = $(this).attr('id');

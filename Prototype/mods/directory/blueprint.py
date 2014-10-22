@@ -4,24 +4,34 @@ import config
 directory = Blueprint('directory',__name__, template_folder='templates', static_folder='static')
 
 @directory.route('/', methods=['GET', 'POST'])
-def show_directory(newstaff = None):
+def show_directory(staff = None, addstaff = False, editstaff = False):
     con = config.mysql.connect()
     cursor = con.cursor()
     person_list = list();
 
 	# add new staff based on the form
-    if newstaff is not None:
-        sql_query = "INSERT INTO tblUser (UserID, Role, IsAdministrator, FirstName, \
-            LastName, CellPhone, HomePhone, PagerNumber, NetID) VALUES ('', " + \
-                "'" + newstaff['role'] + "', " + \
-                "'" + newstaff['admin'] + "', " + \
-                "'" + newstaff['firstName'] + "', " + \
-                "'" + newstaff['lastName'] + "', " + \
-                "'" + newstaff['cellNumber'] + "', " + \
-                "'" + newstaff['homeNumber'] + "', " + \
-                "'" + newstaff['pager'] + "', " + \
-                "'" + newstaff['netID'] + "' )"
-        # print sql_query
+    if staff is not None:
+        if addstaff:
+            sql_query = "INSERT INTO tblUser (UserID, Role, IsAdministrator, FirstName, \
+                LastName, CellPhone, HomePhone, PagerNumber, NetID) VALUES ('', " + \
+                    "'" + staff['role'] + "', " + \
+                    "'" + staff['admin'] + "', " + \
+                    "'" + staff['firstName'] + "', " + \
+                    "'" + staff['lastName'] + "', " + \
+                    "'" + staff['cellNumber'] + "', " + \
+                    "'" + staff['homeNumber'] + "', " + \
+                    "'" + staff['pager'] + "', " + \
+                    "'" + staff['netID'] + "' )"
+        elif editstaff:
+            sql_query = "UPDATE tblUser SET Role = " + "'" + staff['role'] + "' ," + \
+                    "IsAdministrator = " + "'" + staff['admin'] + "' ," + \
+                    "FirstName = " + "'" + staff['firstName'] + "' ," + \
+                    "LastName = " + "'" + staff['lastName'] + "' ," + \
+                    "CellPhone = " + "'" + staff['cellNumber'] + "' ," + \
+                    "HomePhone = " + "'" + staff['homeNumber'] + "' ," +\
+                    "PagerNumber = " + "'" + staff['pager'] + "' ," + \
+                    "NetID = " + "'" + staff['netID'] + "' " + \
+                    "WHERE netID = " + "'" + staff['netID'] + "'"
         try:
             cursor.execute(sql_query)
             con.commit()
@@ -43,7 +53,12 @@ def show_directory(newstaff = None):
 # Add a staff to the directory
 @directory.route('/addStaff', methods = ['POST'])
 def add_staff():
-	return show_directory(request.json)
+	return show_directory(request.json, True, False)
+
+# Edit a staff in the directory
+@directory.route('/editStaff', methods = ['POST'])
+def edit_staff():
+    return show_directory(request.json, False, True)
 
 # Delete a staff in the directory
 @directory.route('/deleteStaff', methods = ['POST'])
