@@ -61,7 +61,7 @@ $(document).ready(function() {
 		
 		//header
 		dayView += "<tr><td class='header' colspan='7' id='header'>";
-		dayView += displayTime.format("dddd Do[,] YYYY");
+		dayView += displayTime.format("dddd, MMMM Do[,] YYYY");
 		dayView += "</td></tr>";
 		
 		//labels
@@ -74,7 +74,7 @@ $(document).ready(function() {
 		//primary person for this day for each role
 		dayView += "<tr><td class='timelabel'>Primary</td>";
 		for(role = 0; role < roles.length; role++) {
-			dayView += "<td class='inside' id='ALLNIGHT'>";
+			dayView += "<td class='primary' id='primary'>";
 			if(schedule.length >= 1) {
 				dayView +=  schedule[0][role+1];
 			}
@@ -106,7 +106,6 @@ $(document).ready(function() {
 
 	function makeCalendar() {
 		var schedule = getMonthSchedule();
-		//alert(schedule);
 		var calendarText = "<table align='center'>";
 		
 		//header

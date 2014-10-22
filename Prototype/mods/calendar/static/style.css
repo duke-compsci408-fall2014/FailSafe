@@ -6,6 +6,11 @@ td {
     border: 1px solid #ddd;
     width: 12em;
 }
+td.primary {
+	height: 2em;
+	text-align: center;
+	border-top: 2px double;
+}
 td.inside {
     background-color: #fcf8e3;
     height: 2em;
