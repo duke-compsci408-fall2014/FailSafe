@@ -76,9 +76,6 @@ $(document).ready(function() {
 	function makeDayView() {
 		var schedule = getDaySchedule();
 		var substitutions = getSubstitutions();
-		if(substitutions.length >= 1) {
-			alert(substitutions[0][1]);
-		}
 		
 		var dayView = "<table align='center'>";
 		
@@ -305,13 +302,6 @@ $(document).ready(function() {
 		var valid = true;
 		allFields.removeClass( "ui-state-error" );
 		
-		/*
-		 * repeated code here is temporary
-		 * trying to learn javascript :p
-		 */
-		valid = valid && checkLength(sub, "Substitute", 80);
-		valid = valid && checkRegexp( sub, /^([a-zA-Z ])+$/, "Substitute name must only include a-z" );
-		
 		var start = $('#start').val();
 		var duration = parseInt($('#duration').val());
 		
@@ -330,30 +320,13 @@ $(document).ready(function() {
 				data: JSON.stringify(sub_data)
 			});
 			$subDialog.dialog( "close" );
+			document.getElementById("dayView").innerHTML = makeDayView();
 		}
 	}
 
 	function addFull() {
 		var valid = true;
 		allFields.removeClass( "ui-state-error" );
-		
-		/*
-		 * repeated code here is temporary
-		 * trying to learn javascript :p
-		 */
-		valid = valid && checkLength(faculty, "Faculty", 80);
-		valid = valid && checkLength(fellow, "Fellow", 80);
-		valid = valid && checkLength(rn1, "RN1", 80);
-		valid = valid && checkLength(rn2, "RN2", 80);
-		valid = valid && checkLength(tech1, "Tech1", 80);
-		valid = valid && checkLength(tech2, "Tech2", 80);
-		
-		valid = valid && checkRegexp( faculty, /^([a-zA-Z ])+$/, "Faculty name must only include a-z and spaces" );
-		valid = valid && checkRegexp( fellow, /^([a-zA-Z ])+$/, "Fellow name must only include a-z and spaces" );
-		valid = valid && checkRegexp( rn1, /^([a-zA-Z ])+$/, "Nurse name must only include a-z and spaces" );
-		valid = valid && checkRegexp( rn2, /^([a-zA-Z ])+$/, "Nurse name must only include a-z and spaces" );
-		valid = valid && checkRegexp( tech1, /^([a-zA-Z ])+$/, "Tech name must only include a-z and spaces" );
-		valid = valid && checkRegexp( tech2, /^([a-zA-Z ])+$/, "Tech name must only include a-z and spaces" );
 		
 		if(valid) {
 			var oncall_data = {
@@ -374,7 +347,7 @@ $(document).ready(function() {
 			});
 			clickedSquare.innerHTML = "Covered!";
 			$fullDialog.dialog( "close" );
-			window.location.reload(true);
+			document.getElementById("calendar").innerHTML = makeCalendar();
 		}
 	}
 
