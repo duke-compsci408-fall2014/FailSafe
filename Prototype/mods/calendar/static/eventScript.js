@@ -88,13 +88,13 @@ $(document).ready(function() {
 		for(n = 1; n < 14; n++) {
 			dayView += "<tr><td class='timelabel'>" + id.format("h[:]mm") + "</td>";
 			for(role = 0; role < roles.length; role++) {
-				dayView += "<td class='inside top' id='" + id.toISOString() + "'>" + "" /*todo: add subs */ + "</td>";
+				dayView += "<td class='inside top' id='" + id.format() + "'>" + "" /*todo: add subs */ + "</td>";
 			}
 			dayView += "</tr>";
 			id.add(30, 'm');
 			dayView += "<tr><td class='timelabel'>" + id.format("h[:]mm") + "</td>";
 			for(role = 0; role < roles.length; role++) {
-				dayView += "<td class='inside bottom' id='" + id.toISOString() + "'>" + "" /*todo: add subs */ + "</td>";
+				dayView += "<td class='inside bottom' id='" + id.format() + "'>" + "" /*todo: add subs */ + "</td>";
 			}
 			dayView += "</tr>";
 			id.add(30, 'm');
@@ -277,7 +277,7 @@ $(document).ready(function() {
 		if(valid) {
 			var sub_data = {
 				"start":start,
-				"end":moment(start).add(duration, 'h'),
+				"end":moment(start).add(duration, 'h').format(),
 				"role":$('#role').val(),
 				"sub":$('#sub').val()
 			};
