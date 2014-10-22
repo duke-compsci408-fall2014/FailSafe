@@ -281,7 +281,7 @@ $(document).ready(function() {
           }
         }
         
-	function jeffTest() {
+	function alertOnCall() {
 		var test_data = {
 			"eta":$('#eta').val(),
 			"location":$('#location').val(),
@@ -289,13 +289,13 @@ $(document).ready(function() {
 			"msg":$('#msg').val()
 		};
 		$.ajax({
-			url:"colab-sbx-131.oit.duke.edu:5001/test_send_template_sms",
+			url:"/alert/on_call",
 			type: "POST",
 			contentType:"application/json",
 			dataType:"json",
 			data: JSON.stringify(test_data)
 		});
-		$jeffTest.dialog( "close" );
+		$alertDialog.dialog( "close" );
 	}
 	
 	function addSub() {
@@ -385,15 +385,15 @@ $(document).ready(function() {
 	  }
 	});
 	
-	var $jeffTest = $( "#test-form" ).dialog({
+	var $alertDialog = $( "#alert-form" ).dialog({
 	  autoOpen: false,
 	  height: 350,
 	  width: 350,
 	  modal: true,
 	  buttons: {
-		"Send SMS": jeffTest,
+		"Send SMS": alertOnCall,
 		Cancel: function() {
-		  $jeffTest.dialog( "close" );
+		  $alertDialog.dialog( "close" );
 		}
 	  },
 	  close: function() {
@@ -410,12 +410,12 @@ $(document).ready(function() {
 		event.preventDefault();
 	});
 	
-	var fullForm = $jeffTest.find( "form" ).on( "submit", function( event ) {
+	var fullForm = $alertDialog.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
 	});
 
 	$('#alert-button').click( function() {
-		$jeffTest.dialog('open');
+		$alertDialog.dialog('open');
 	});
 
 	$('div').on('click', 'td.inside', function(event) {
