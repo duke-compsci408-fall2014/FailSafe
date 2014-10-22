@@ -105,7 +105,17 @@ def test_loop_break_check():
     else:
     	return twilio.twiml.Response()
 
-@app.route("/", methods=['GET', 'POST'], strict_slashes=False)
+@app.route("/response", methods=['GET', 'POST'])
+def sms_response():
+    from_number = request.values.get('From', None)
+    message = str(request.values.get('Body', None)).lower()
+    message = client.messages.create(to=from_number, from_=default_from_phone, body="Thanks for the message, bro. Your number is " + from_number + ".")
+    return "done"
+
+@app.route("/")
+def index():
+    return "Hello World"
+
 def loop_user(netID, message, delay, repeats):
     user = get_all_users()[netID]
     for i in range(repeats):
@@ -133,7 +143,7 @@ def loop_users(netIDs, message, delay, repeats):
 def test_test():
     resp = twilio.twiml.Response()
     resp.message("Hi, we got your response!")
-    return str(resp)   
+    return str(resp)
 
 class User:
     def __init__(self, row_entry):
