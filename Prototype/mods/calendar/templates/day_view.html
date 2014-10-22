@@ -9,36 +9,7 @@
     <div class="container">
     <button id = "gotoMonth" type="button" class="btn btn-default"><a href="month">Month View</a></button>
     </div>
-    <div class="container">
-    <table align="center">
-		<tr>
-			<td class="timelabel"></td>
-                        {% for role in roles %}
-			<td class="rolelabel">{{role}}</td>
-                        {% endfor %}
-		</tr>
-		<tr>
-			<td class="timelabel">All Night</td>
-			{% for role in roles %}
-				<td class="inside" id="ALLNIGHT">  </td>
-			{% endfor %}
-		</tr>
-		{% for n in range(17, 29) %}
-			<tr>
-				<td class="timelabel">{{n%24}}:00</td>
-				{% for role in roles %}
-				    <td class="inside top" id="{{n%24}}:00:00">  </td>
-				{% endfor %}
-			</tr>
-			<tr>
-				<td class="timelabel">{{n%24}}:30</td>
-				{% for role in roles %}
-				<td class="inside bottom" id="{{n%24}}:30:00">  </td>
-				{% endfor %}
-			</tr>
-		{% endfor %}
-    </table>
-</div>
+    <div class="dayView"></div>
 
 	<div id="substitution-form" title="Create Substitution">
 	  <p class="validateTips">All form fields are required.</p>
@@ -50,8 +21,12 @@
 				<input type="text" name="start" id="start" readonly class="text ui-widget-content ui-corner-all">
 			</div>
 			<div>
-				<label for="end">End Time</label>
-				<input type="text" name="end" id="end" class="text ui-widget-content ui-corner-all">
+				<label for="duration">Duration</label>
+				<input type="text" name="duration" id="duration" class="text ui-widget-content ui-corner-all">
+			</div>
+			<div>
+				<label for="duration">Role</label>
+				<input type="text" name="duration" id="duration" class="text ui-widget-content ui-corner-all">
 			</div>
 			<div>
 				<label for="sub">Substitute</label>

@@ -5,14 +5,20 @@ import urllib2, datetime
 from httplib2 import Http
 from urllib import urlencode
 import requests
+from flaskext.mysql import MySQL
 import time
 # Find these values at https://twilio.com/user/account
 account_sid = "AC8ec001dd37e80c10a9bf5e47794b6501"
 auth_token = "b0a47efa254507764caa06b8949c788b"
 client = TwilioRestClient(account_sid, auth_token)
 app = Flask(__name__)
-resp = twilio.twiml.Response()
 
+mysql = MySQL()
+app.config['MYSQL_DATABASE_USER'] = 'failsafe'
+app.config['MYSQL_DATABASE_PASSWORD'] = 'efasliaf'
+app.config['MYSQL_DATABASE_DB'] = 'directory'
+app.config['MYSQL_DATABASE_HOST'] = 'colab-sbx-131.oit.duke.edu'
+mysql.init_app(app)
 
 # Try adding your own number to this list!
 callers = {}
@@ -39,6 +45,14 @@ def send_smss(receiving_numbers, message):
     for i in receiving_numbers:
         send_sms(i, message)
 
+def page_all(users, message):
+    for i in users:
+        send_sms(users[i].pagerNumber, message)
+
+def text_all(users, message):
+    for i in users:
+        send_sms(users[i].cellPhone, message)
+
 def make_call(receiving_number, message):
     message = str(urllib2.quote(message)) + "&"
     message = client.calls.create(to=receiving_number, from_=default_from_phone, url=twimlet_default+message)
@@ -47,6 +61,14 @@ def make_call(receiving_number, message):
 def make_calls(receiving_numbers, message):
     for i in receiving_numbers:
         make_call(i, message)
+
+def call_all_home(users, message):
+    for i in users:
+        make_call(users[i].homePhone, message)
+
+def call_all_cell(users, message):
+    for i in users:
+        make_call(users[i].cellPhone, message)
 
 def loop(receiving_number, message, delay, repeats): #delay in seconds
     for i in range(repeats):
@@ -84,15 +106,65 @@ def test_loop_break_check():
     	return twilio.twiml.Response()
 
 @app.route("/", methods=['GET', 'POST'], strict_slashes=False)
+def loop_user(netID, message, delay, repeats):
+    user = get_all_users()[netID]
+    for i in range(repeats):
+        send_sms(user.pagerNumber, message)
+        time.sleep(delay)
+        send_sms(user.cellPhone, message)
+        time.sleep(delay)
+        make_call(user.cellPhone, message)
+        time.sleep(delay)
+        make_call(user.homePhone, message)
+        time.sleep(delay)
+
+def loop_users(netIDs, message, delay, repeats):
+    users = get_all_users()
+    for i in range(repeats):
+        page_all(users, message)
+        time.sleep(delay)
+        text_all(users, message)
+        time.sleep(delay)
+        call_all_users(users, message)
+        time.sleep(delay)
+        call_all_home(users, message)
+
+@app.route("/test_test")
 def test_test():
     resp = twilio.twiml.Response()
     resp.message("Hi, we got your response!")
     return str(resp)   
 
+class User:
+    def __init__(self, row_entry):
+        self.userID = int(row_entry[0])
+        self.role = row_entry[1]
+        self.isAdministrator = row_entry[2]
+        self.firstName = row_entry[3]
+        self.lastName = row_entry[4]
+        self.cellPhone = str(row_entry[5])
+        self.homePhone = str(row_entry[6])
+        self.pagerNumber = str(row_entry[7])
+        self.netID = str(row_entry[8])
+
+def get_all_users():
+    con = mysql.connect()
+    cursor = con.cursor()
+    users = {}
+    cursor.execute("SELECT * from tblUser")
+    data = cursor.fetchall()
+    con.close()
+    for d in data:
+        person_data = list()
+        for i in range(len(d)):
+            person_data.append(d[i])
+        newUser = User(person_data)
+        users[newUser.netID] = newUser
+    return users
+
 @app.route("/sandbox")
 def sandbox():
-    loop_all(others_numbers, "This is a loop. Loops are cool.", 30, 3)
-    return ""
+    get_all_users()
 
 @app.route("/test_send_call", strict_slashes=False)
 def test_send_call():
