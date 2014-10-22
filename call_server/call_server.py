@@ -11,6 +11,8 @@ account_sid = "AC8ec001dd37e80c10a9bf5e47794b6501"
 auth_token = "b0a47efa254507764caa06b8949c788b"
 client = TwilioRestClient(account_sid, auth_token)
 app = Flask(__name__)
+resp = twilio.twiml.Response()
+
 
 # Try adding your own number to this list!
 callers = {}
@@ -21,6 +23,10 @@ numbers = ['+19197978781', '+18473469673', '+13175653154', '+14806486560']
 mynumber = ['+14806486560']
 others_numbers = ['+19197978781', '+18473469673', '+13175653154']
 default_from_phone = '+14138533700'
+loop_breaker_dictionary = {}
+
+for x in mynumber:
+    loop_breaker_dictionary[x] = False
 
 emergency_url = 'http://twimlets.com/message?Message%5B0%5D=There%20is%20an%20emergency%20at%20the%20hospital.%20Please%20go%20there%20immediately%20and%20let%20the%20operator%20know%20that%20you%20are%20on%20your%20way.&'
 twimlet_default = 'http://twimlets.com/message?Message%5B0%5D='
@@ -58,9 +64,30 @@ def loop_all(receiving_numbers, message, delay, repeats): #delay in seconds
         time.sleep(delay)
     return "Loop Ended"
 
-@app.route("/")
+def loop_break_check():
+    from_number = request.values.get('From', None)
+    if from_number in mynumber:
+	message = callers[from_number] + ", thanks for the message!"
+	loop_breaker_dictionary[from_number] = True
+    else:
+	message = "Thanks for the message."
+    resp = twilio.twiml.Response()
+    resp.message(message)
+    return str(resp)
+
+@app.route("/test_loop_break_check", methods=['GET', 'POST'])
+def test_loop_break_check():
+    response = request.values.get('From', None)
+    if response:
+	return response
+    else:
+    	return twilio.twiml.Response()
+
+@app.route("/", methods=['GET', 'POST'], strict_slashes=False)
 def test_test():
-    return "hello world"
+    resp = twilio.twiml.Response()
+    resp.message("Hi, we got your response!")
+    return str(resp)   
 
 @app.route("/sandbox")
 def sandbox():
@@ -69,7 +96,7 @@ def sandbox():
 
 @app.route("/test_send_call", strict_slashes=False)
 def test_send_call():
-    call = client.calls.create(to="+13175653154", from_=default_from_phone, body="One call has been made.", url=emergency_url)
+    call = client.calls.create(to="+14806486560", from_=default_from_phone, body="One call has been made.", url=emergency_url)
     return "Call made!"
 
 @app.route("/test_reply_sms", methods=['GET', 'POST'], strict_slashes=False)
