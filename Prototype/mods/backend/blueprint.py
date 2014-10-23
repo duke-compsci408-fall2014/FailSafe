@@ -1,5 +1,5 @@
 from flask import Flask, redirect, url_for, Blueprint, render_template, request, Response, jsonify
-import config
+from config import mysql, cal_mysql
 import twilio.twiml, random
 from twilio.rest import TwilioRestClient
 import urllib2, datetime
@@ -9,21 +9,8 @@ import requests
 from flaskext.mysql import MySQL
 import time
 from datetime import datetime
-
+from fs_twilio.config import *
 backend = Blueprint('backend', __name__, template_folder='templates', static_folder='static')
-
-# Find these values at https://twilio.com/user/account
-account_sid = "AC8ec001dd37e80c10a9bf5e47794b6501"
-auth_token = "b0a47efa254507764caa06b8949c788b"
-client = TwilioRestClient(account_sid, auth_token)
-
-app = Flask(__name__)
-mysql = MySQL()
-app.config['MYSQL_DATABASE_USER'] = 'failsafe'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'efasliaf'
-app.config['MYSQL_DATABASE_DB'] = 'directory'
-app.config['MYSQL_DATABASE_HOST'] = 'colab-sbx-131.oit.duke.edu'
-mysql.init_app(app)
 
 # Try adding your own number to this list!
 callers = {}
@@ -146,12 +133,6 @@ def loop_users(netIDs, message, delay, repeats):
         time.sleep(delay)
         call_all_home(users, message)
 
-@backend.route("/")
-def test_test():
-    resp = twilio.twiml.Response()
-    resp.message("Hi, we got your response!")
-    return str(resp)
-
 class User:
     def __init__(self, row_entry):
         self.userID = int(row_entry[0])
@@ -198,8 +179,8 @@ def sandbox():
 
 @backend.route("/on_call", methods=['POST'])
 def alert_oncall():
-    send_sms("+18473469673", format_message(request.json))
-    #send_sms("+13175653154", format_message(request.json))
+    #send_sms("+18473469673", format_message(request.json))
+    send_sms("+13175653154", format_message(request.json))
     return ""
 
 def format_message(message_json):
@@ -252,6 +233,3 @@ def test_custom_group_call_with_default():
     for i in numbers:
         message = client.calls.create(to=i, from_=default_from_phone, body="Calls have been made to the team.", url=twimlet_default+custom_message)
     return "Call with message: \"" + original_message + "\"  sent to " + str(numbers)
-
-if __name__ == "__main__":
-  app.run(host="0.0.0.0", debug=True, port=5001)
