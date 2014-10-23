@@ -8,6 +8,7 @@ from urllib import urlencode
 import requests
 from flaskext.mysql import MySQL
 import time
+from datetime import datetime
 
 backend = Blueprint('backend', __name__, template_folder='templates', static_folder='static')
 
@@ -195,6 +196,16 @@ def sandbox():
     print get_all_users()
     return ""
 
+@backend.route("/on_call", methods=['POST'])
+def alert_oncall():
+    send_sms("+18473469673", format_message(request.json))
+    #send_sms("+13175653154", format_message(request.json))
+    return ""
+
+def format_message(message_json):
+    message = "[{}] ETA: {}, TYPE: {}, LOCATION: {}, MSG: {}".format(str(datetime.now())[:-7], message_json['eta'], message_json['type'], message_json['location'], message_json['msg'])
+    return message
+
 @backend.route("/test_send_call", strict_slashes=False)
 def test_send_call():
     call = client.calls.create(to="+14806486560", from_=default_from_phone, body="One call has been made.", url=emergency_url)
@@ -241,7 +252,6 @@ def test_custom_group_call_with_default():
     for i in numbers:
         message = client.calls.create(to=i, from_=default_from_phone, body="Calls have been made to the team.", url=twimlet_default+custom_message)
     return "Call with message: \"" + original_message + "\"  sent to " + str(numbers)
-
 
 if __name__ == "__main__":
   app.run(host="0.0.0.0", debug=True, port=5001)

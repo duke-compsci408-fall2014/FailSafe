@@ -289,7 +289,7 @@ $(document).ready(function() {
 			"msg":$('#msg').val()
 		};
 		$.ajax({
-			url:"/alert/on_call",
+			url:"/backend/on_call",
 			type: "POST",
 			contentType:"application/json",
 			dataType:"json",
