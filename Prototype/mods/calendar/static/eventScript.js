@@ -48,9 +48,9 @@ $(document).ready(function() {
         }
 	
 	function makeDayView() {
-		var schedule = getDaySchedule("/calendar/jsonDaySchedule", 
+		var schedule = getSchedule("/calendar/jsonDaySchedule", 
                         displayTime.date(), displayTime.month() + 1, displayTime.year());
-		var substitutions = getSubstitutions("/calendar/jsonSubSchedule", 
+		var substitutions = getSchedule("/calendar/jsonSubSchedule", 
                         displayTime.date(), displayTime.month() + 1, displayTime.year());
 		
 		var dayView = "<table align='center'>";
@@ -82,44 +82,35 @@ $(document).ready(function() {
 		
 		//times of the day
 		for(n = 1; n < 14; n++) {
-			dayView += "<tr><td class='timelabel'>" + id.format("h[:]mm") + "</td>";
-			for(role = 0; role < roles.length; role++) {
-				dayView += "<td class='inside top' id='" + id.format() + "'>";
-				for(sub = 0; sub < substitutions.length; sub++) {
-					var startTime = moment(substitutions[sub][1]).format();
-					var endTime = moment(substitutions[sub][2]).format();
-					var subRole = substitutions[sub][3];
-					if((id.isSame(startTime) || id.isAfter(startTime)) && (id.isSame(startTime) || id.isBefore(endTime)) && subRole == roles[role]) {
-						dayView += "Sub: " + substitutions[sub][4];
-					}
-				}
-				dayView +=  "</td>";
-			}
-			dayView += "</tr>";
-			id.add(30, 'm');
-			dayView += "<tr><td class='timelabel'>" + id.format("h[:]mm") + "</td>";
-			for(role = 0; role < roles.length; role++) {
-				dayView += "<td class='inside bottom' id='" + id.format() + "'>";
-				for(sub = 0; sub < substitutions.length; sub++) {
-					var startTime = moment(substitutions[sub][1]).format();
-					var endTime = moment(substitutions[sub][2]).format();
-					var subRole = substitutions[sub][3];
-					if((id.isSame(startTime) || id.isAfter(startTime)) && (id.isSame(startTime) || id.isBefore(endTime)) && subRole == roles[role]) {
-						dayView += "Sub: " + substitutions[sub][4];
-					}
-				}
-				dayView +=  "</td>";
-			}
-			dayView += "</tr>";
-			id.add(30, 'm');
+			dayView += makeSubRow(id, 'inside top', substitutions);
+			dayView += makeSubRow(id, 'inside bottom', substitutions);
 		}
 		
 		dayView += "</table>";
 		return dayView;
 	}
 
+	function makeSubRow(id, tdClass, substitutions) {
+		var row = "<tr><td class='timelabel'>" + id.format("h[:]mm") + "</td>";
+		for(role = 0; role < roles.length; role++) {
+			row += "<td class='" + tdClass + "' id='" + id.format() + "'>";
+			for(sub = 0; sub < substitutions.length; sub++) {
+				var startTime = moment(substitutions[sub][1]).format();
+				var endTime = moment(substitutions[sub][2]).format();
+				var subRole = substitutions[sub][3];
+				if((id.isSame(startTime) || id.isAfter(startTime)) && (id.isSame(startTime) || id.isBefore(endTime)) && subRole == roles[role]) {
+					row += "Sub: " + substitutions[sub][4];
+				}
+			}
+			row +=  "</td>";
+		}
+		row += "</tr>";
+		id.add(30, 'm');
+		return row;
+	}
+
 	function makeCalendar() {
-		var schedule = getMonthSchedule("/calendar/jsonMonthSchedule", 
+		var schedule = getSchedule("/calendar/jsonMonthSchedule", 
                         null, displayTime.month() + 1, displayTime.year());
 		var calendarText = "<table align='center'>";
 		
@@ -211,7 +202,7 @@ $(document).ready(function() {
         function handleIndexClick(change, thingToChange, elementId, creationMethod) {
             return function() {
                 displayTime.add(change, thingToChange);
-                document.getElementById(elementId).innerHTML = creationMethod;
+                document.getElementById(elementId).innerHTML = creationMethod();
             };
         }
 

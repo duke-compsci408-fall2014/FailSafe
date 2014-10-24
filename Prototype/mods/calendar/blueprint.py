@@ -42,21 +42,7 @@ def get_directory_list():
 	
 @calendar.route('/monthSchedule')
 def get_month_schedule(month, year):
-    con = mysql.connect()
-    cursor = con.cursor()
-    call_list = list()
-
-    cursor.execute("SELECT * FROM schedule WHERE MONTH(Day) = " + month + " AND YEAR(Day) = " + year)
-    data = cursor.fetchall()
-    for d in data:
-        call_data = list()
-        for i in range(len(d)):
-            if(isinstance(d[i], date)):
-                call_data.append(str(d[i].year) + "-" + str(d[i].month) + "-" + str(d[i].day));
-            else:
-                call_data.append(d[i])
-        call_list.append(call_data)
-    return call_list;
+    return get_any_schedule("schedule", "Day", None, month, year)
 
 @calendar.route('/jsonMonthSchedule')
 def get_json_month_schedule():
@@ -64,21 +50,7 @@ def get_json_month_schedule():
    
 @calendar.route('/daySchedule')
 def get_day_schedule(day, month, year):
-    con = mysql.connect()
-    cursor = con.cursor()
-    call_list = list()
-
-    cursor.execute("SELECT * FROM schedule WHERE DAY(Day) = " + day + " AND MONTH(Day) = " + month + " AND YEAR(Day) = " + year)
-    data = cursor.fetchall()
-    for d in data:
-        call_data = list()
-        for i in range(len(d)):
-            if(isinstance(d[i], date)):
-                call_data.append(str(d[i].year) + "-" + str(d[i].month) + "-" + str(d[i].day));
-            else:
-                call_data.append(d[i])
-        call_list.append(call_data)
-    return call_list;
+    return get_any_schedule("schedule", "Day", day, month, year)
 
 @calendar.route('/jsonDaySchedule')
 def get_json_day_schedule():
@@ -86,21 +58,32 @@ def get_json_day_schedule():
   
 @calendar.route('/subSchedule')
 def get_sub_schedule(day, month, year):
+    return get_any_schedule("substitutions", "StartTime", day, month, year)
+
+def get_any_schedule(table, dateColumn, day, month, year):
     con = mysql.connect()
     cursor = con.cursor()
     call_list = list()
 
-    cursor.execute("SELECT * FROM substitutions WHERE DAY(StartTime) = " + day + " AND MONTH(StartTime) = " + month + " AND YEAR(StartTime) = " + year)
+    if(day != None):
+	cursor.execute("SELECT * FROM {table} WHERE DAY({col}) = {day} \
+            AND MONTH({col}) = {month} AND YEAR({col}) = {year}" \
+            .format(table=table, col=dateColumn, day=day, month=month, year=year))
+    else:
+	cursor.execute("SELECT * FROM {table} WHERE \
+            MONTH({dateColumn}) = {month} AND YEAR({dateColumn}) = {year}" \
+            .format(table=table, dateColumn=dateColumn, month=month, year=year))
     data = cursor.fetchall()
     for d in data:
         call_data = list()
         for i in range(len(d)):
-            if(isinstance(d[i], datetime)):
-                call_data.append(str(d[i]));
+            if(isinstance(d[i], datetime) or isinstance(d[i], date)):
+                call_data.append(str(d[i]))
             else:
                 call_data.append(d[i])
         call_list.append(call_data)
     return call_list;
+
 
 @calendar.route('/jsonSubSchedule')
 def get_json_sub_schedule():
