@@ -11,7 +11,6 @@ $(document).ready(function() {
 	var roles = ["Faculty", "Fellow", "RN1", "RN2", "Tech1", "Tech2"];
 	var clickedSquare;
     var displayTime = moment();
-	var firstDay;
 
 	if(document.getElementById("calendar") != null) {
 		document.getElementById("calendar").innerHTML = makeCalendar();
@@ -19,63 +18,40 @@ $(document).ready(function() {
 	if(document.getElementById("dayView") != null) {
 		document.getElementById("dayView").innerHTML = makeDayView();
 	}
-	
-	function getDaySchedule() {
-		var schedule;
-		$.ajax({
-			url: '/calendar/jsonDaySchedule',
-			async: false,
-			dataType: 'json',
-			data: { 
-				"day": displayTime.date(),
-				"month": displayTime.month() + 1,
-				"year": displayTime.year()
-			},
-			success: function(json) {
-				schedule = json.results;
-			}
-		});
-		return schedule;
-	}
-
-	function getSubstitutions() {
-		var schedule;
-		$.ajax({
-			url: '/calendar/jsonSubSchedule',
-			async: false,
-			dataType: 'json',
-			data: { 
-				"day": displayTime.date(),
-				"month": displayTime.month() + 1,
-				"year": displayTime.year()
-			},
-			success: function(json) {
-				schedule = json.results;
-			}
-		});
-		return schedule;
-	}
-
-	function getMonthSchedule() {
-		var schedule;
-		$.ajax({
-			url: '/calendar/jsonMonthSchedule',
-			async: false,
-			dataType: 'json',
-			data: { 
-				"month": displayTime.month() + 1,
-				"year": displayTime.year()
-			},
-			success: function(json) {
-				schedule = json.results;
-			}
-		});
-		return schedule;
-	}
+        
+        function getSchedule(endpoint, day, month, year) {
+            var schedule;
+            var data;
+            if(day == null) {
+                data = {
+                    "month": month,
+                    "year": year
+                };
+            }
+            else {
+                data = {
+                    "day": day,
+                    "month": month,
+                    "year": year
+                };
+            }
+            $.ajax({
+                url:endpoint,
+                async:false,
+                dataType:'json',
+                data: data,
+                success: function(json) {
+                    schedule = json.results;
+                }
+            });
+            return schedule;
+        }
 	
 	function makeDayView() {
-		var schedule = getDaySchedule();
-		var substitutions = getSubstitutions();
+		var schedule = getDaySchedule("/calendar/jsonDaySchedule", 
+                        displayTime.date(), displayTime.month() + 1, displayTime.year());
+		var substitutions = getSubstitutions("/calendar/jsonSubSchedule", 
+                        displayTime.date(), displayTime.month() + 1, displayTime.year());
 		
 		var dayView = "<table align='center'>";
 		
@@ -143,7 +119,8 @@ $(document).ready(function() {
 	}
 
 	function makeCalendar() {
-		var schedule = getMonthSchedule();
+		var schedule = getMonthSchedule("/calendar/jsonMonthSchedule", 
+                        null, displayTime.month() + 1, displayTime.year());
 		var calendarText = "<table align='center'>";
 		
 		//header
@@ -167,7 +144,7 @@ $(document).ready(function() {
 		var daysInLast = displayTime.subtract(1, "M").daysInMonth();
 		displayTime.add(1, "M"); //revert
 		var date = displayTime.date();
-		firstDay = displayTime.date(1).day();
+		var firstDay = displayTime.date(1).day();
 		displayTime.date(date);
 		var idx = 1;
 		
@@ -223,27 +200,20 @@ $(document).ready(function() {
 		return calendarText;
 	}
 	
-	$("#last-month").click(function(event) {
-		displayTime.subtract(1, "M");
-		document.getElementById("calendar").innerHTML = makeCalendar();
-	});
+	$("#last-month").click(handleIndexClick(-1, "M", "calendar", makeCalendar));
 
-
-	$("#next-month").click(function(event) {
-		displayTime.add(1, "M");
-		document.getElementById("calendar").innerHTML = makeCalendar();
-	});
+	$("#next-month").click(handleIndexClick(1, "M", "calendar", makeCalendar));
 	
-	$("#yesterday").click(function(event) {
-		displayTime.subtract(1, "d");
-		document.getElementById("dayView").innerHTML = makeDayView();
-	});
+	$("#yesterday").click(handleIndexClick(-1, "d", "dayView", makeDayView));
 
-
-	$("#tomorrow").click(function(event) {
-		displayTime.add(1, "d");
-		document.getElementById("dayView").innerHTML = makeDayView();
-	});
+	$("#tomorrow").click(handleIndexClick(1, "d", "dayView", makeDayView));
+        
+        function handleIndexClick(change, thingToChange, elementId, creationMethod) {
+            return function() {
+                displayTime.add(change, thingToChange);
+                document.getElementById(elementId).innerHTML = creationMethod;
+            };
+        }
 
 	//FORMS
 
@@ -281,20 +251,24 @@ $(document).ready(function() {
           }
         }
         
+        function AJAXJSONPost(url, data) {
+            $.ajax({
+                url: url,
+                type: "POST",
+                contentType:"application/json",
+                dataType:"json",
+                data:JSON.stringify(data)
+            });
+        }
+        
 	function alertOnCall() {
-		var test_data = {
+		var alert_data = {
 			"eta":$('#eta').val(),
 			"location":$('#location').val(),
 			"type":$('#type').val(),
 			"msg":$('#msg').val()
 		};
-		$.ajax({
-			url:"/backend/on_call",
-			type: "POST",
-			contentType:"application/json",
-			dataType:"json",
-			data: JSON.stringify(test_data)
-		});
+                AJAXJSONPost("/backend/on_call", alert_data);
 		$alertDialog.dialog( "close" );
 	}
 	
@@ -312,13 +286,7 @@ $(document).ready(function() {
 				"role":$('#role').val(),
 				"sub":$('#sub').val()
 			};
-			$.ajax({
-				url:"/calendar/addSub",
-				type: "POST",
-				contentType:"application/json",
-				dataType:"json",
-				data: JSON.stringify(sub_data)
-			});
+                        AJAXJSONPost("/calendar/addSub", sub_data);
 			$subDialog.dialog( "close" );
 			document.getElementById("dayView").innerHTML = makeDayView();
 		}
@@ -338,14 +306,7 @@ $(document).ready(function() {
 				"tech1":$('#tech1').val(), 
 				"tech2":$('#tech2').val() 
 			};
-			$.ajax({
-				url:"/calendar/addCall",
-				type: "POST",
-				contentType:"application/json",
-				dataType:"json",
-				data: JSON.stringify(oncall_data)
-			});
-			clickedSquare.innerHTML = "Covered!";
+                        AJAXJSONPost("/calendar/addCall", oncall_data);
 			$fullDialog.dialog( "close" );
 			document.getElementById("calendar").innerHTML = makeCalendar();
 		}
@@ -397,7 +358,7 @@ $(document).ready(function() {
 		}
 	  },
 	  close: function() {
-		fullForm[ 0 ].reset();
+		alertForm[ 0 ].reset();
 		allFields.removeClass( "ui-state-error" );
 	  }
 	});
@@ -410,7 +371,7 @@ $(document).ready(function() {
 		event.preventDefault();
 	});
 	
-	var fullForm = $alertDialog.find( "form" ).on( "submit", function( event ) {
+	var alertForm = $alertDialog.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
 	});
 
@@ -418,15 +379,15 @@ $(document).ready(function() {
 		$alertDialog.dialog('open');
 	});
 
-	$('div').on('click', 'td.inside', function(event) {
-		clickedSquare = event.target || event.srcElement;
-    		$subDialog.dialog('open');
-		$('#start').val(clickedSquare.id);
-	});
+	$('div').on('click', 'td.inside', handleCellClick($subDialog, "#start"));
 	
-	$("div").on('click', 'td.day', function(event) {
-		clickedSquare = event.target || event.srcElement;
-		$fullDialog.dialog("open");
-		$('#date').val(clickedSquare.id);
-	});
+	$("div").on('click', 'td.day', handleCellClick($fullDialog, "#date"));
+        
+        function handleCellClick(dialog, fieldToFill) {
+            return function(event) {
+                clickedSquare = event.target || event.srcElement;
+		dialog.dialog("open");
+		$(fieldToFill).val(clickedSquare.id);
+            };
+        }
 });
