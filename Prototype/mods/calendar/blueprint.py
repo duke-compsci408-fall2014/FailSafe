@@ -103,6 +103,7 @@ def addCall():
         con.commit()
     except:
         con.rollback()
+    return ""
 
 @calendar.route('/addSub', methods=['POST'])
 def addSub():
@@ -121,3 +122,4 @@ def addSub():
         con.commit()
     except:
         con.rollback()
+    return ""

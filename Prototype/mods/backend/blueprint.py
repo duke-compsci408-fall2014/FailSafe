@@ -10,7 +10,7 @@ from flaskext.mysql import MySQL
 import time
 from datetime import datetime
 from fs_twilio.config import *
-from mods.directory.blueprint import get_all_staff, User
+from mods.directory.blueprint import get_all_staff, User, reverse_lookup
 backend = Blueprint('backend', __name__, template_folder='templates', static_folder='static')
 
 # Try adding your own number to this list!
@@ -100,11 +100,21 @@ def test_loop_break_check():
 
 @backend.route("/response", methods=['GET', 'POST'])
 def sms_response():
+    print "sms started"
     from_number = request.values.get('From', None)
+    """
+    not sure what this code is supposed to be connected to, but there is nothing called mynumbers
+
     if from_number in mynumbers:
         loop_breaker_dictionary[from_number]=True
+    """
     message = str(request.values.get('Body', None)).lower()
-    message = client.messages.create(to=from_number, from_=default_from_phone, body="Thanks for the message, bro. Your number is " + from_number + ".")
+    sender = reverse_lookup(from_number)
+    if sender == None:
+        message = client.messages.create(to=from_number, from_=default_from_phone, body="Thanks for the message, anon.")
+    else:
+        message = client.messages.create(to=from_number, from_=default_from_phone, body="Thanks for the message, bro. Your netID is " + sender.netID + ".")
+
     return "done"
 
 @backend.route("/")

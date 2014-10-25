@@ -1,5 +1,5 @@
 from flask import Flask, Blueprint, render_template, request, Response, jsonify, session
-import config
+from config import dir_mysql, cal_mysql
 
 class User:
     def __init__(self, row_entry):
@@ -17,7 +17,7 @@ directory = Blueprint('directory',__name__, template_folder='templates', static_
 
 @directory.route('/', methods=['GET', 'POST'])
 def show_directory(staff = None, addstaff = False, editstaff = False):
-    con = config.mysql.connect()
+    con = dir_mysql.connect()
     cursor = con.cursor()
     person_list = list();
 
@@ -76,7 +76,7 @@ def edit_staff():
 @directory.route('/deleteStaff', methods = ['POST'])
 def delete_staff():
     print "i'm here!!"
-    con = config.mysql.connect()
+    con = dir_mysql.connect()
     cursor = con.cursor()
     print request.json['userID']
     query = "DELETE from tblUser where UserID = " + request.json['userID']
@@ -89,7 +89,7 @@ def delete_staff():
     return show_directory()
 
 def get_all_staff():
-    con = config.mysql.connect()
+    con = dir_mysql.connect()
     cursor = con.cursor()
     users = {}
     cursor.execute("SELECT * from tblUser")
@@ -102,3 +102,17 @@ def get_all_staff():
         newUser = User(person_data)
         users[newUser.netID] = newUser
     return users
+
+def reverse_lookup(number):
+    con = dir_mysql.connect()
+    cursor = con.cursor()
+    cursor.execute("SELECT * from tblUser WHERE CellPhone = {}".format(number))
+    data = cursor.fetchall()
+    con.close()
+    if len(data) > 0:
+        person_data = list()
+        for i in range(len(data[0])):
+            person_data.append(data[0][i])
+        newUser = User(person_data)
+        return newUser
+    return None
