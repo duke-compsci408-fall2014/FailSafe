@@ -20,15 +20,15 @@ callers_on = {}
 callers_last = {}
 
 numbers = ['+19197978781', '+18473469673', '+13175653154', '+14806486560']
-mynumber = ['+14806486560']
-others_numbers = ['+19197978781', '+18473469673', '+13175653154']
 default_from_phone = '+14138533700'
 loop_breaker_dictionary = {}
 
 for x in mynumber:
     loop_breaker_dictionary[x] = False
 
+#default emergency url sent to the individual callers
 emergency_url = 'http://twimlets.com/message?Message%5B0%5D=There%20is%20an%20emergency%20at%20the%20hospital.%20Please%20go%20there%20immediately%20and%20let%20the%20operator%20know%20that%20you%20are%20on%20your%20way.&'
+#normal beginning string for message generation
 twimlet_default = 'http://twimlets.com/message?Message%5B0%5D='
 
 def send_sms(receiving_number, message):
