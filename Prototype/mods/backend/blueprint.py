@@ -18,7 +18,7 @@ backend = Blueprint('backend', __name__, template_folder='templates', static_fol
 callers = {}
 callers_on = {}
 callers_last = {}
-
+mynumber = ['+14806486560']
 numbers = ['+19197978781', '+18473469673', '+13175653154', '+14806486560']
 default_from_phone = '+14138533700'
 loop_breaker_dictionary = {}
