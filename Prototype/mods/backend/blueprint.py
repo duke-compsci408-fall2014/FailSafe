@@ -1,4 +1,4 @@
-from flask import Flask, redirect, url_for, Blueprint, render_template, request, Response, jsonify
+from flask import Flask, redirect, url_for, Blueprint, render_template, request, Response, jsonify, session, escape
 from config import mysql, cal_mysql
 import twilio.twiml, random
 from twilio.rest import TwilioRestClient
@@ -110,7 +110,14 @@ def sms_response():
 
 @backend.route("/")
 def index():
-    return "Hello World"
+    if 'user_netid' not in session:
+        return "Hello, Anon. ;)"
+    return "Hello, {}".format(escape(session['user_netid']))
+
+@backend.route("/user/<user_netid>")
+def switch_user(user_netid=""):
+    session['user_netid'] = user_netid
+    return "User {} logged in.".format(user_netid)
 
 def loop_user(netID, message, delay, repeats):
     user = get_all_staff()[netID]

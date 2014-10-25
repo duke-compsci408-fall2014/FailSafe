@@ -1,4 +1,4 @@
-from flask import Flask, Blueprint, render_template, request, Response, jsonify
+from flask import Flask, Blueprint, render_template, request, Response, jsonify, session
 import config
 from mods.calendar.blueprint import User
 
