@@ -19,7 +19,7 @@ mysql.init_app(app)
 
 @calendar.route('/')
 def default():
-    return render_template('month_view.html')
+    return render_template('month_view.html', directory_list=get_directory_list())
 	
 @calendar.route('/day')
 def day_view():
