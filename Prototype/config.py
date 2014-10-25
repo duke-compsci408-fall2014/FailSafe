@@ -1,12 +1,12 @@
 from flask import Flask
 from flaskext.mysql import MySQL
-app = Flask(__name__)
-mysql = MySQL()
-app.config['MYSQL_DATABASE_USER'] = 'failsafe'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'efasliaf'
-app.config['MYSQL_DATABASE_DB'] = 'directory'
-app.config['MYSQL_DATABASE_HOST'] = 'colab-sbx-131.oit.duke.edu'
-mysql.init_app(app)
+dir_app = Flask(__name__)
+dir_mysql = MySQL()
+dir_app.config['MYSQL_DATABASE_USER'] = 'failsafe'
+dir_app.config['MYSQL_DATABASE_PASSWORD'] = 'efasliaf'
+dir_app.config['MYSQL_DATABASE_DB'] = 'directory'
+dir_app.config['MYSQL_DATABASE_HOST'] = 'colab-sbx-131.oit.duke.edu'
+dir_mysql.init_app(dir_app)
 
 cal_app = Flask(__name__)
 cal_mysql = MySQL()

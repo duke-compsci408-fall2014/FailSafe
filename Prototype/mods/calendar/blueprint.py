@@ -5,29 +5,10 @@ from datetime import datetime
 from datetime import date
 from flaskext.mysql import MySQL
 import mods.directory as directory
-import config
+from config import cal_mysql, dir_mysql
+from mods.directory.blueprint import User
 
 calendar = Blueprint('calendar',__name__,template_folder='templates',static_folder='static')
-
-app = Flask(__name__)
-mysql = MySQL()
-app.config['MYSQL_DATABASE_USER'] = 'failsafe'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'efasliaf'
-app.config['MYSQL_DATABASE_DB'] = 'calendar'
-app.config['MYSQL_DATABASE_HOST'] = 'colab-sbx-131.oit.duke.edu'
-mysql.init_app(app)
-
-class User:
-    def __init__(self, row_entry):
-        self.userID = int(row_entry[0])
-        self.role = row_entry[1]
-        self.isAdministrator = row_entry[2]
-        self.firstName = row_entry[3]
-        self.lastName = row_entry[4]
-        self.cellPhone = str(row_entry[5])
-        self.homePhone = str(row_entry[6])
-        self.pagerNumber = str(row_entry[7])
-        self.netID = str(row_entry[8])
 
 @calendar.route('/')
 def default():
@@ -42,7 +23,7 @@ def month_view():
     return render_template('month_view.html', directory_list=get_directory_list())
 
 def get_directory_list():
-    dir_con = config.mysql.connect()
+    dir_con = dir_mysql.connect()
     dir_cursor = dir_con.cursor()
     directory_list = list()
 
@@ -73,7 +54,7 @@ def get_sub_schedule(day, month, year):
     return get_any_schedule("substitutions", "StartTime", day, month, year)
 
 def get_any_schedule(table, dateColumn, day, month, year):
-    con = mysql.connect()
+    con = cal_mysql.connect()
     cursor = con.cursor()
     call_list = list()
 
@@ -104,7 +85,7 @@ def get_json_sub_schedule():
 
 @calendar.route('/addCall', methods=['POST'])
 def addCall():
-    con = mysql.connect()
+    con = cal_mysql.connect()
     cursor = con.cursor()
 
     callData = request.json
@@ -125,7 +106,7 @@ def addCall():
 
 @calendar.route('/addSub', methods=['POST'])
 def addSub():
-    con = mysql.connect()
+    con = cal_mysql.connect()
     cursor = con.cursor()
 
     callData = request.json

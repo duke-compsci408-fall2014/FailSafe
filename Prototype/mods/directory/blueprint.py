@@ -1,6 +1,17 @@
 from flask import Flask, Blueprint, render_template, request, Response, jsonify, session
 import config
-from mods.calendar.blueprint import User
+
+class User:
+    def __init__(self, row_entry):
+        self.userID = int(row_entry[0])
+        self.role = row_entry[1]
+        self.isAdministrator = row_entry[2]
+        self.firstName = row_entry[3]
+        self.lastName = row_entry[4]
+        self.cellPhone = str(row_entry[5])
+        self.homePhone = str(row_entry[6])
+        self.pagerNumber = str(row_entry[7])
+        self.netID = str(row_entry[8])
 
 directory = Blueprint('directory',__name__, template_folder='templates', static_folder='static')
 

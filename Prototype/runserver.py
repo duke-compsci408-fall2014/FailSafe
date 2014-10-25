@@ -2,9 +2,7 @@ from flask import Flask, render_template
 from mods.directory.blueprint import directory
 from mods.calendar.blueprint import calendar
 import mods.backend.blueprint as backend_blueprint
-import config
-
-app = config.app
+from config import dir_app as app
 
 app.register_blueprint(directory, url_prefix='/directory')
 app.register_blueprint(calendar, url_prefix='/calendar')

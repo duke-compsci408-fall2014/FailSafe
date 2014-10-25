@@ -1,5 +1,5 @@
 from flask import Flask, redirect, url_for, Blueprint, render_template, request, Response, jsonify, session, escape
-from config import mysql, cal_mysql
+from config import dir_mysql, cal_mysql
 import twilio.twiml, random
 from twilio.rest import TwilioRestClient
 import urllib2, datetime
@@ -10,8 +10,7 @@ from flaskext.mysql import MySQL
 import time
 from datetime import datetime
 from fs_twilio.config import *
-from mods.calendar.blueprint import User
-from mods.directory.blueprint import get_all_staff
+from mods.directory.blueprint import get_all_staff, User
 backend = Blueprint('backend', __name__, template_folder='templates', static_folder='static')
 
 # Try adding your own number to this list!
