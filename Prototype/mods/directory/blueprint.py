@@ -1,5 +1,6 @@
 from flask import Flask, Blueprint, render_template, request, Response, jsonify
 import config
+from mods.calendar.blueprint import User
 
 directory = Blueprint('directory',__name__, template_folder='templates', static_folder='static')
 
@@ -75,3 +76,18 @@ def delete_staff():
         con.rollback()
     con.close()
     return show_directory()
+
+def get_all_staff():
+    con = config.mysql.connect()
+    cursor = con.cursor()
+    users = {}
+    cursor.execute("SELECT * from tblUser")
+    data = cursor.fetchall()
+    con.close()
+    for d in data:
+        person_data = list()
+        for i in range(len(d)):
+            person_data.append(d[i])
+        newUser = User(person_data)
+        users[newUser.netID] = newUser
+    return users

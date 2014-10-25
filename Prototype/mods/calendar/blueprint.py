@@ -17,10 +17,22 @@ app.config['MYSQL_DATABASE_DB'] = 'calendar'
 app.config['MYSQL_DATABASE_HOST'] = 'colab-sbx-131.oit.duke.edu'
 mysql.init_app(app)
 
+class User:
+    def __init__(self, row_entry):
+        self.userID = int(row_entry[0])
+        self.role = row_entry[1]
+        self.isAdministrator = row_entry[2]
+        self.firstName = row_entry[3]
+        self.lastName = row_entry[4]
+        self.cellPhone = str(row_entry[5])
+        self.homePhone = str(row_entry[6])
+        self.pagerNumber = str(row_entry[7])
+        self.netID = str(row_entry[8])
+
 @calendar.route('/')
 def default():
     return render_template('month_view.html', directory_list=get_directory_list())
-	
+
 @calendar.route('/day')
 def day_view():
     return render_template('day_view.html')
@@ -28,7 +40,7 @@ def day_view():
 @calendar.route('/month')
 def month_view():
     return render_template('month_view.html', directory_list=get_directory_list())
-	
+
 def get_directory_list():
     dir_con = config.mysql.connect()
     dir_cursor = dir_con.cursor()
@@ -39,7 +51,7 @@ def get_directory_list():
     for d in dir_data:
         directory_list.append(d)
     return directory_list
-	
+
 @calendar.route('/monthSchedule')
 def get_month_schedule(month, year):
     return get_any_schedule("schedule", "Day", None, month, year)
@@ -47,7 +59,7 @@ def get_month_schedule(month, year):
 @calendar.route('/jsonMonthSchedule')
 def get_json_month_schedule():
     return jsonify(results=get_month_schedule(request.args.get('month'), request.args.get('year')))
-   
+
 @calendar.route('/daySchedule')
 def get_day_schedule(day, month, year):
     return get_any_schedule("schedule", "Day", day, month, year)
@@ -55,7 +67,7 @@ def get_day_schedule(day, month, year):
 @calendar.route('/jsonDaySchedule')
 def get_json_day_schedule():
     return jsonify(results=get_day_schedule(request.args.get('day'), request.args.get('month'), request.args.get('year')))
-  
+
 @calendar.route('/subSchedule')
 def get_sub_schedule(day, month, year):
     return get_any_schedule("substitutions", "StartTime", day, month, year)
@@ -88,7 +100,7 @@ def get_any_schedule(table, dateColumn, day, month, year):
 @calendar.route('/jsonSubSchedule')
 def get_json_sub_schedule():
     return jsonify(results=get_sub_schedule(request.args.get('day'), request.args.get('month'), request.args.get('year')))
-   
+
 
 @calendar.route('/addCall', methods=['POST'])
 def addCall():
@@ -110,7 +122,7 @@ def addCall():
         con.commit()
     except:
         con.rollback()
-	
+
 @calendar.route('/addSub', methods=['POST'])
 def addSub():
     con = mysql.connect()

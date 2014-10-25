@@ -10,6 +10,8 @@ from flaskext.mysql import MySQL
 import time
 from datetime import datetime
 from fs_twilio.config import *
+from mods.calendar.blueprint import User
+from mods.directory.blueprint import get_all_staff
 backend = Blueprint('backend', __name__, template_folder='templates', static_folder='static')
 
 # Try adding your own number to this list!
@@ -111,7 +113,7 @@ def index():
     return "Hello World"
 
 def loop_user(netID, message, delay, repeats):
-    user = get_all_users()[netID]
+    user = get_all_staff()[netID]
     for i in range(repeats):
         send_sms(user.pagerNumber, message)
         time.sleep(delay)
@@ -123,7 +125,7 @@ def loop_user(netID, message, delay, repeats):
         time.sleep(delay)
 
 def loop_users(netIDs, message, delay, repeats):
-    users = get_all_users()
+    users = get_all_staff()
     for i in range(repeats):
         page_all(users, message)
         time.sleep(delay)
@@ -133,48 +135,9 @@ def loop_users(netIDs, message, delay, repeats):
         time.sleep(delay)
         call_all_home(users, message)
 
-class User:
-    def __init__(self, row_entry):
-        self.userID = int(row_entry[0])
-        self.role = row_entry[1]
-        self.isAdministrator = row_entry[2]
-        self.firstName = row_entry[3]
-        self.lastName = row_entry[4]
-        self.cellPhone = str(row_entry[5])
-        self.homePhone = str(row_entry[6])
-        self.pagerNumber = str(row_entry[7])
-        self.netID = str(row_entry[8])
-
-def get_all_users():
-    con = mysql.connect()
-    cursor = con.cursor()
-    users = {}
-    cursor.execute("SELECT * from tblUser")
-    data = cursor.fetchall()
-    con.close()
-    for d in data:
-        person_data = list()
-        for i in range(len(d)):
-            person_data.append(d[i])
-        newUser = User(person_data)
-        users[newUser.netID] = newUser
-    return users
-
-class User:
-    def __init__(self, row_entry):
-        self.userID = int(row_entry[0])
-        self.role = row_entry[1]
-        self.isAdministrator = row_entry[2]
-        self.firstName = row_entry[3]
-        self.lastName = row_entry[4]
-        self.cellPhone = str(row_entry[5])
-        self.homePhone = str(row_entry[6])
-        self.pagerNumber = str(row_entry[7])
-        self.netID = str(row_entry[8])
-
 @backend.route("/sandbox")
 def sandbox():
-    print get_all_users()
+    print get_all_staff()
     return ""
 
 @backend.route("/on_call", methods=['POST'])
@@ -186,50 +149,3 @@ def alert_oncall():
 def format_message(message_json):
     message = "[{}] ETA: {}, TYPE: {}, LOCATION: {}, MSG: {}".format(str(datetime.now())[:-7], message_json['eta'], message_json['type'], message_json['location'], message_json['msg'])
     return message
-
-@backend.route("/test_send_call", strict_slashes=False)
-def test_send_call():
-    call = client.calls.create(to="+14806486560", from_=default_from_phone, body="One call has been made.", url=emergency_url)
-    return "Call made!"
-
-@backend.route("/test_reply_sms", methods=['GET', 'POST'], strict_slashes=False)
-def test_reply_sms():
-    resp = twilio.twiml.Response()
-    resp.message("Failsafe has received your sms!")
-    return str(resp)
-
-@backend.route("/test_send_sms")
-def test_send_sms():
-    message = client.messages.create(to="+13175653154", from_="+14138533700", body="Hello world!")
-    return "message sent!"
-
-@backend.route("/test_group_calls", strict_slashes=False)
-def test_group_calls():
-    for i in numbers:
-        message = client.calls.create(to=i, from_=default_from_phone, body="Calls have been made to the team.", url=emergency_url)
-    return "Calls made to: " + str(numbers)
-
-@backend.route('/test_custom_call/<custom_message>', strict_slashes=False)
-def test_custom_call(custom_message = 'There is an emergency at the hospital.'):
-    original_message = custom_message
-    custom_message = str(urllib2.quote(custom_message)) + "&"
-    print original_message
-    print custom_message
-    message = client.calls.create(to="+13175653154", from_=default_from_phone, body="Calls have been made to the team.", url=twimlet_default+custom_message)
-    return "Call with message: \"" + original_message + "\"  sent to " + str(numbers)
-
-@backend.route('/test_custom_group_call/<custom_message>', strict_slashes=False)
-def test_custom_group_call(custom_message = 'There is an emergency at the hospital.'):
-    original_message = custom_message
-    custom_message = str(urllib2.quote(custom_message)) + "&"
-    for i in numbers:
-        message = client.calls.create(to=i, from_=default_from_phone, body="Calls have been made to the team.", url=twimlet_default+custom_message)
-    return "Call with message: \"" + original_message + "\"  sent to " + str(numbers)
-
-@backend.route("/test_custom_group_call", strict_slashes=False)
-def test_custom_group_call_with_default():
-    original_message = 'There is an emergency at the hospital.'
-    custom_message = str(urllib2.quote(original_message)) + "&"
-    for i in numbers:
-        message = client.calls.create(to=i, from_=default_from_phone, body="Calls have been made to the team.", url=twimlet_default+custom_message)
-    return "Call with message: \"" + original_message + "\"  sent to " + str(numbers)
