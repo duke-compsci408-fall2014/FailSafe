@@ -6,7 +6,7 @@ import urllib2, datetime
 from httplib2 import Http
 from urllib import urlencode
 import requests
-from flaskext.mysql import MySQL
+import future
 import time
 from datetime import datetime
 from fs_twilio.config import *
@@ -19,6 +19,7 @@ callers_on = {}
 callers_last = {}
 mynumber = ['+14806486560']
 numbers = ['+19197978781', '+18473469673', '+13175653154', '+14806486560']
+david_test_numbers = ['+14806486560', '+19037764658']
 default_from_phone = '+14138533700'
 loop_breaker_dictionary = {}
 
@@ -90,24 +91,12 @@ def loop_break_check():
     resp.message(message)
     return str(resp)
 
-@backend.route("/test_loop_break_check", methods=['GET', 'POST'])
-def test_loop_break_check():
-    response = request.values.get('From', None)
-    if response:
-	return response
-    else:
-    	return twilio.twiml.Response()
-
 @backend.route("/response", methods=['GET', 'POST'])
 def sms_response():
     print "sms started"
     from_number = request.values.get('From', None)
-    """
-    not sure what this code is supposed to be connected to, but there is nothing called mynumbers
-
-    if from_number in mynumbers:
+    if from_number in numbers:
         loop_breaker_dictionary[from_number]=True
-    """
     message = str(request.values.get('Body', None)).lower()
     sender = reverse_lookup(from_number)
     if sender == None:
@@ -130,15 +119,16 @@ def switch_user(user_netid=""):
 
 def loop_user(netID, message, delay, repeats):
     user = get_all_staff()[netID]
-    for i in range(repeats):
-        send_sms(user.pagerNumber, message)
-        time.sleep(delay)
-        send_sms(user.cellPhone, message)
-        time.sleep(delay)
-        make_call(user.cellPhone, message)
-        time.sleep(delay)
-        make_call(user.homePhone, message)
-        time.sleep(delay)
+    if loop_breaker_dictionary[user.cellPhone] != True:
+        for i in range(repeats):
+            #send_sms(user.pagerNumber, message)
+            #time.sleep(delay)
+            send_sms(user.cellPhone, message)
+            time.sleep(delay)
+            make_call(user.cellPhone, message)
+            time.sleep(delay)
+            #make_call(user.homePhone, message)
+            #time.sleep(delay)
 
 def loop_users(netIDs, message, delay, repeats):
     users = get_all_staff()
@@ -153,7 +143,7 @@ def loop_users(netIDs, message, delay, repeats):
 
 @backend.route("/sandbox")
 def sandbox():
-    print get_all_staff()
+    loop_user('dpc22', 'Hospital has a big emergency', 30, 5)
     return ""
 
 @backend.route("/on_call", methods=['POST'])
