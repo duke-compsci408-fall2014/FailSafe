@@ -6,7 +6,6 @@ import urllib2, datetime
 from httplib2 import Http
 from urllib import urlencode
 import requests
-import future
 import time
 from datetime import datetime
 from fs_twilio.config import *
