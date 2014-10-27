@@ -49,7 +49,7 @@ def get_day_schedule(day, month, year):
 def get_json_day_schedule():
     return jsonify(results=get_day_schedule(request.args.get('day'), request.args.get('month'), request.args.get('year')))
 
-@calendar.route('/subSchedule')
+#this doesn't fill in the variables and only returns errors --> @calendar.route('/subSchedule')
 def get_sub_schedule(day, month, year):
     return get_any_schedule("substitutions", "StartTime", day, month, year)
 
@@ -59,11 +59,11 @@ def get_any_schedule(table, dateColumn, day, month, year):
     call_list = list()
 
     if(day != None):
-	cursor.execute("SELECT * FROM {table} WHERE DAY({col}) = {day} \
+	    cursor.execute("SELECT * FROM {table} WHERE DAY({col}) = {day} \
             AND MONTH({col}) = {month} AND YEAR({col}) = {year}" \
             .format(table=table, col=dateColumn, day=day, month=month, year=year))
     else:
-	cursor.execute("SELECT * FROM {table} WHERE \
+	    cursor.execute("SELECT * FROM {table} WHERE \
             MONTH({dateColumn}) = {month} AND YEAR({dateColumn}) = {year}" \
             .format(table=table, dateColumn=dateColumn, month=month, year=year))
     data = cursor.fetchall()
