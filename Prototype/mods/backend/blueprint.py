@@ -10,6 +10,7 @@ import time
 from datetime import datetime
 from fs_twilio.config import *
 from mods.directory.blueprint import get_all_staff, User, reverse_lookup
+from mods.calendar.blueprint import get_oncall_team
 backend = Blueprint('backend', __name__, template_folder='templates', static_folder='static')
 
 # Try adding your own number to this list!
@@ -142,8 +143,8 @@ def loop_users(netIDs, message, delay, repeats):
 
 @backend.route("/sandbox")
 def sandbox():
-    loop_user('dpc22', 'Hospital has a big emergency', 30, 5)
-    return ""
+    print get_oncall_team()
+    return "a"
 
 @backend.route("/on_call", methods=['POST'])
 def alert_oncall():
