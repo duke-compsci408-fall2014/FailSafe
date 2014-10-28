@@ -1,6 +1,7 @@
 from flask import Flask, render_template
 from mods.directory.blueprint import directory
 from mods.calendar.blueprint import calendar
+from mods.dashboard.blueprint import dashboard
 import mods.backend.blueprint as backend_blueprint
 from config import dir_app as app
 
@@ -8,6 +9,7 @@ app = Flask(__name__)
 
 app.register_blueprint(directory, url_prefix='/directory')
 app.register_blueprint(calendar, url_prefix='/calendar')
+app.register_blueprint(dashboard, url_prefix='/dashboard')
 app.register_blueprint(backend_blueprint.backend, url_prefix='/backend')
 
 @app.route('/')

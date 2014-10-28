@@ -10,6 +10,7 @@ import time
 from datetime import datetime
 from fs_twilio.config import *
 from mods.directory.blueprint import get_all_staff, User, reverse_lookup
+from mods.calendar.blueprint import get_oncall_team
 backend = Blueprint('backend', __name__, template_folder='templates', static_folder='static')
 
 # Try adding your own number to this list!
@@ -152,8 +153,8 @@ def loop_users(netIDs, message, delay, repeats):
 '''
 @purpose test for the loop functionality
 '''
-@backend.route("/sandbox")
-def sandbox():
+@backend.route("/sandbox3")
+def sandbox3():
     loop_user("dpc22", "Loop 1 Test", 30, 3)
     return "We are in the first sandbox!"
 
@@ -164,6 +165,11 @@ def sandbox():
 def sandbox2():
     loop_user("dpc22", "Loop 2 Test", 30, 3)
     return "We are in sandbox 2 now!"
+
+@backend.route("/sandbox")
+def sandbox():
+    print get_oncall_team()
+    return "a"
 
 '''
 @purpose calendar calls this method to alert all on-call individuals

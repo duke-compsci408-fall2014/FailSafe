@@ -89,8 +89,13 @@ $(document).ready(function() {
             var id = $(this).attr('id');
             var par = $(this).parent();
             var list = ["#role", "#admin", "#firstName", "#lastName", "#cellNumber", "#homeNumber", "#pager", "#netID"];
+            var prevNetid = '';
             var count = 0;
             par.children(".entry-data").each(function() {
+                if(count == 7) {
+                    $(this).data('prevNetid', $(this).text());
+                    prevNetid = $(this).data('prevNetid');
+                }
                 $(list[count]).val($(this).text());
                 count += 1
             });
@@ -102,10 +107,10 @@ $(document).ready(function() {
                 modal: true,
                 buttons: {
                     "Edit Staff": function() {
-                    var staff_data = {"role":$('#role').val(), "admin":$('#admin').val(),
+                    var staff_data = {"prevNetid":prevNetid, "role":$('#role').val(), "admin":$('#admin').val(),
                                       "firstName":$('#firstName').val(), "lastName":$('#lastName').val(),
                                       "cellNumber":$('#cellNumber').val(), "homeNumber":$('#homeNumber').val(),
-                                      "pager":$('#pager').val(), "netID":$('#netID').val() };
+                                      "pager":$('#pager').val(), "netID":$('#netID').val()};
                     $.ajax({
                         url:"/directory/editStaff",
                         type: "POST",
