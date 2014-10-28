@@ -35,6 +35,11 @@ def show_directory(staff = None, addstaff = False, editstaff = False):
                     "'" + staff['pager'] + "', " + \
                     "'" + staff['netID'] + "' )"
         elif editstaff:
+            cursor.execute("SELECT UserID FROM tblUser WHERE netID = " + "'" + \
+                    staff['prevNetid'] + "'")
+            row = cursor.fetchone()
+            uid = int(row[0])
+            print uid
             sql_query = "UPDATE tblUser SET Role = " + "'" + staff['role'] + "' ," + \
                     "IsAdministrator = " + "'" + staff['admin'] + "' ," + \
                     "FirstName = " + "'" + staff['firstName'] + "' ," + \
@@ -43,7 +48,7 @@ def show_directory(staff = None, addstaff = False, editstaff = False):
                     "HomePhone = " + "'" + staff['homeNumber'] + "' ," +\
                     "PagerNumber = " + "'" + staff['pager'] + "' ," + \
                     "NetID = " + "'" + staff['netID'] + "' " + \
-                    "WHERE netID = " + "'" + staff['netID'] + "'"
+                    "WHERE UserID = " + str(uid)
         try:
             cursor.execute(sql_query)
             con.commit()
