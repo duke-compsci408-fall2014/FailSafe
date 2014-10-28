@@ -82,6 +82,16 @@ def get_any_schedule(table, dateColumn, day, month, year):
 def get_json_sub_schedule():
     return jsonify(results=get_sub_schedule(request.args.get('day'), request.args.get('month'), request.args.get('year')))
 
+def get_oncall_team():
+    con = cal_mysql.connect()
+    cursor = con.cursor()
+    cursor.execute("SELECT * FROM substitutions WHERE CONVERT_TZ(NOW(), '-1:00', '-5:00') > StartTime AND CONVERT_TZ(NOW(), '-1:00', '-5:00') < EndTime")
+    data = cursor.fetchall()
+    team_netIDs = []
+    for i in data:
+        team_netIDs.append(i[4])
+    print(team_netIDs)
+    return team_netIDs
 
 @calendar.route('/addCall', methods=['POST'])
 def addCall():
