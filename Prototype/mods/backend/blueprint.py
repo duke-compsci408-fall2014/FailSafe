@@ -178,6 +178,7 @@ def sandbox():
 def alert_oncall():
     #send_sms("+18473469673", format_message(request.json))
     #send_sms("+13175653154", format_message(request.json))
+    loop_users(get_oncall_team.values(), format_message(request.json), 30, 5)
     return ""
 
 '''
