@@ -85,13 +85,19 @@ def get_json_sub_schedule():
 def get_oncall_team():
     con = cal_mysql.connect()
     cursor = con.cursor()
-    cursor.execute("SELECT * FROM substitutions WHERE CONVERT_TZ(NOW(), '-1:00', '-5:00') > StartTime AND CONVERT_TZ(NOW(), '-1:00', '-5:00') < EndTime")
-    data = cursor.fetchall()
-    team_netIDs = []
-    for i in data:
-        team_netIDs.append(i[4])
-    print(team_netIDs)
-    return team_netIDs
+    roles = ['Faculty', 'Fellow', 'RN1', 'RN2', 'Tech1', 'Tech2']
+    oncall_team = {}
+    for i in roles:
+        cursor.execute("SELECT {} from schedule WHERE DATE(CONVERT_TZ(NOW(), '-1:00', '-5:00'))=Day".format(i))
+        oncall_team[i] = str(cursor.fetchall()[0][0])
+    for i in roles:
+        cursor.execute("SELECT * FROM substitutions WHERE CONVERT_TZ(NOW(), '-1:00', '-5:00') > StartTime AND CONVERT_TZ(NOW(), '-1:00', '-5:00') < EndTime AND Role = '{}'".format(i))
+        data = cursor.fetchall()
+        if len(data) == 0:
+            pass
+        else:
+            oncall_team[i] = str(data[0][4])
+    return oncall_team
 
 @calendar.route('/addCall', methods=['POST'])
 def addCall():
