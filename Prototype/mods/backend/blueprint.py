@@ -21,10 +21,6 @@ mynumber = ['+14806486560']
 numbers = ['+19197978781', '+18473469673', '+13175653154', '+14806486560']
 david_test_numbers = ['+14806486560', '+19037764658']
 default_from_phone = '+14138533700'
-loop_breaker_dictionary = {}
-
-for x in mynumber:
-    loop_breaker_dictionary[x] = False
 
 #default emergency url sent to the individual callers
 emergency_url = 'http://twimlets.com/message?Message%5B0%5D=There%20is%20an%20emergency%20at%20the%20hospital.%20Please%20go%20there%20immediately%20and%20let%20the%20operator%20know%20that%20you%20are%20on%20your%20way.&'
@@ -80,17 +76,10 @@ def loop_all(receiving_numbers, message, delay, repeats): #delay in seconds
         time.sleep(delay)
     return "Loop Ended"
 
-def loop_break_check():
-    from_number = request.values.get('From', None)
-    if from_number in mynumber:
-	message = callers[from_number] + ", thanks for the message!"
-	loop_breaker_dictionary[from_number] = True
-    else:
-	message = "Thanks for the message."
-    resp = twilio.twiml.Response()
-    resp.message(message)
-    return str(resp)
-
+'''
+@purpose link that twilio uses to create a response message to any on-call team member
+         after they close the feedback loop
+'''
 @backend.route("/response", methods=['GET', 'POST'])
 def sms_response():
     print "sms started"
@@ -112,24 +101,44 @@ def index():
         return "Hello, Anon. ;)"
     return "Hello, {}".format(escape(session['user_netid']))
 
+'''
+@purpose login page to
+'''
 @backend.route("/user/<user_netid>")
 def switch_user(user_netid=""):
     session['user_netid'] = user_netid
     return "User {} logged in.".format(user_netid)
 
+'''
+@purpose loops through the contact information of one individual user to
+         create a feedback loop until it is broken by the user
+
+@param-netID   string  contact to be notified
+@param-message string  the message that needs to be sent to the users
+@param-delay   integer number of seconds between each call/page/text
+@param-repeats integer number of times to repeat the full cycle
+'''
 def loop_user(netID, message, delay, repeats):
     user = get_all_staff()[netID]
-    if loop_breaker_dictionary[user.cellPhone] != True:
-        for i in range(repeats):
-            #send_sms(user.pagerNumber, message)
-            #time.sleep(delay)
-            send_sms(user.cellPhone, message)
-            time.sleep(delay)
-            make_call(user.cellPhone, message)
-            time.sleep(delay)
-            #make_call(user.homePhone, message)
-            #time.sleep(delay)
+    for i in range(repeats):
+        #send_sms(user.pagerNumber, message)
+        #time.sleep(delay)
+        send_sms(user.cellPhone, message)
+        time.sleep(delay)
+        #make_call(user.cellPhone, message)
+        #time.sleep(delay)
+        #make_call(user.homePhone, message)
+        #time.sleep(delay)
 
+'''
+@purpose runs through the entire list of users retruend from alert so that they are
+           each given a feedback loop which they can break by responding
+
+@param-netIDs  list of strings contacts to be notified
+@param-message string          the message that needs to be sent to the users
+@param-delay   integer         number of seconds between each call/page/text
+@param-repeats integer         number of times to repeat the full cycle
+'''
 def loop_users(netIDs, message, delay, repeats):
     users = get_all_staff()
     for i in range(repeats):
@@ -141,17 +150,40 @@ def loop_users(netIDs, message, delay, repeats):
         time.sleep(delay)
         call_all_home(users, message)
 
+'''
+@purpose test for the loop functionality
+'''
+@backend.route("/sandbox3")
+def sandbox3():
+    loop_user("dpc22", "Loop 1 Test", 30, 3)
+    return "We are in the first sandbox!"
+
+'''
+@purpose test for simultaneously functionality
+'''
+@backend.route("/sandbox2")
+def sandbox2():
+    loop_user("dpc22", "Loop 2 Test", 30, 3)
+    return "We are in sandbox 2 now!"
+
 @backend.route("/sandbox")
 def sandbox():
     print get_oncall_team()
     return "a"
 
+'''
+@purpose calendar calls this method to alert all on-call individuals
+'''
 @backend.route("/on_call", methods=['POST'])
 def alert_oncall():
     #send_sms("+18473469673", format_message(request.json))
-    send_sms("+13175653154", format_message(request.json))
+    #send_sms("+13175653154", format_message(request.json))
     return ""
 
+'''
+@purpose makes calendar-passed information for on-call emergency notification
+         python compatible
+'''
 def format_message(message_json):
     message = "[{}] ETA: {}, TYPE: {}, LOCATION: {}, MSG: {}".format(str(datetime.now())[:-7], message_json['eta'], message_json['type'], message_json['location'], message_json['msg'])
     return message
