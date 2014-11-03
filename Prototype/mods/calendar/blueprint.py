@@ -49,7 +49,6 @@ def get_day_schedule(day, month, year):
 def get_json_day_schedule():
     return jsonify(results=get_day_schedule(request.args.get('day'), request.args.get('month'), request.args.get('year')))
 
-#this doesn't fill in the variables and only returns errors --> @calendar.route('/subSchedule')
 def get_sub_schedule(day, month, year):
     return get_any_schedule("substitutions", "StartTime", day, month, year)
 
@@ -73,9 +72,25 @@ def get_any_schedule(table, dateColumn, day, month, year):
             if(isinstance(d[i], datetime) or isinstance(d[i], date)):
                 call_data.append(str(d[i]))
             else:
-                call_data.append(d[i])
+                #get name from netID
+		userInfo = getNameForID(d[i])
+                if len(userInfo) == 0: #if couldn't find name, use whatever we have
+                    call_data.append(d[i])
+                else:
+                    firstNameColumn = 3
+                    lastNameColumn = 4
+                    call_data.append('<b>' + userInfo[0][lastNameColumn] + '</b>' + ' ' + d[i])
         call_list.append(call_data)
     return call_list;
+
+def getNameForID(netID):
+    dir_con = dir_mysql.connect()
+    dir_cursor = dir_con.cursor()
+
+    dir_cursor.execute("SELECT * FROM tblUser WHERE NetID = '{netID}'".format(netID = netID))
+    userInfo = dir_cursor.fetchall()
+    return userInfo
+
 
 
 @calendar.route('/jsonSubSchedule')
@@ -87,16 +102,18 @@ def get_oncall_team():
     cursor = con.cursor()
     roles = ['Faculty', 'Fellow', 'RN1', 'RN2', 'Tech1', 'Tech2']
     oncall_team = {}
+    user = 0
     for i in roles:
-        cursor.execute("SELECT {} from schedule WHERE DATE(CONVERT_TZ(NOW(), '-1:00', '-5:00'))=Day".format(i))
-        oncall_team[i] = str(cursor.fetchall()[0][0])
+        cursor.execute("SELECT {role} from schedule WHERE DATE(CONVERT_TZ(NOW(), '-1:00', '-5:00'))=Day".format(role = i))
+        oncall_team[i] = str(cursor.fetchall()[user][0])
     for i in roles:
-        cursor.execute("SELECT * FROM substitutions WHERE CONVERT_TZ(NOW(), '-1:00', '-5:00') > StartTime AND CONVERT_TZ(NOW(), '-1:00', '-5:00') < EndTime AND Role = '{}'".format(i))
+        cursor.execute("SELECT * FROM substitutions WHERE CONVERT_TZ(NOW(), '-1:00', '-5:00') > StartTime AND CONVERT_TZ(NOW(), '-1:00', '-5:00') < EndTime AND Role = '{role}'".format(role=i))
         data = cursor.fetchall()
         if len(data) == 0:
             pass
         else:
-            oncall_team[i] = str(data[0][4])
+	    nameColumn = 4
+            oncall_team[i] = str(data[user][nameColumn])
     return oncall_team
 
 @calendar.route('/addCall', methods=['POST'])

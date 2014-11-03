@@ -99,7 +99,7 @@ $(document).ready(function() {
 				var endTime = moment(substitutions[sub][2]).format();
 				var subRole = substitutions[sub][3];
 				if((id.isSame(startTime) || id.isAfter(startTime)) && (id.isSame(startTime) || id.isBefore(endTime)) && subRole == roles[role]) {
-					row += "Sub: " + substitutions[sub][4];
+					row += substitutions[sub][4];
 				}
 			}
 			row +=  "</td>";
@@ -166,7 +166,7 @@ $(document).ready(function() {
 					for(j = 0; j < schedule.length; j++) {
 						if(currentDay == schedule[j][0].split("-")[2]) {
 							for(role = 0; role < 6; role++){
-								calendarText += "<br>" + roles[role] + ": " + schedule[j][role+1];
+								calendarText += "<br>" + schedule[j][role+1];
 							}
 						}
 					}

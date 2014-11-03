@@ -55,10 +55,13 @@
                         <select name="{{ roleId }}" id="{{ roleId }}">
                             {{ directory_list }}
                             {% for dir_entry in directory_list %}
+				{% set firstName = dir_entry[3] %}
+				{% set lastName = dir_entry[4] %}
+				{% set netID = dir_entry[8] %}
                                 {% if 'tech' in roles[index]|lower and (dir_entry[1]|lower == 'nurse' or dir_entry[1]|lower == 'tech') %}
-                                    <option value="{{dir_entry[3]}} {{dir_entry[4]}}"> {{dir_entry[3]}} {{dir_entry[4]}}</option>
+                                    <option value="{{netID}}"> {{firstName}} {{lastName}}: {{netID}}</option>
                                 {% elif dir_entry[1]|lower in roles[index]|lower%}
-                                    <option value="{{dir_entry[3]}} {{dir_entry[4]}}"> {{dir_entry[3]}} {{dir_entry[4]}}</option>
+                                    <option value="{{netID}}"> {{firstName}} {{lastName}}: {{netID}}</option>
                                 {% endif %}
                             {% endfor %}
                         </select>
