@@ -144,7 +144,7 @@ def addSub():
     cursor = con.cursor()
 
     callData = request.json
-    sql_query = "INSERT INTO substitutions (StartTime, EndTime, Role, SubName \
+    sql_query = "INSERT INTO substitutions (StartTime, EndTime, Role, SubID \
             ) VALUES (" + \
             "'" + callData['start'] + "', " + \
             "'" + callData['end'] + "', " + \

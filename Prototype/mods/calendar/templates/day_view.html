@@ -3,7 +3,7 @@
 {% endblock %}
 {% block body %}
     {% set roles = ['Faculty', 'Fellow', 'Nurse 1', 'Nurse 2', 'Tech 1', 'Tech 2'] %}
-    {% set roleIds = ["faculty", "fellow", "rn1", "rn2", "tech1", "tech2"] %}
+    {% set roleIds = ['Faculty', 'Fellow', 'RN1', 'RN2', 'Tech1', 'Tech2'] %}
 	{% set weekdays =['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] %}
 
     <div class="container">
@@ -29,9 +29,14 @@
 			</div>
 			<div>
 				<label for="role">Role</label>
-				<input type="text" name="role" id="role" class="text ui-widget-content ui-corner-all">
+				<select name="role" id="role">
+					{% for n in range(0,6) %}
+						<option value="{{roleIds[n]}}">{{roles[n]}}</option>
+					{% endfor %}
+				</select>
 			</div>
 			<div>
+				
 				<label for="sub">Substitute</label>
 				<input type="text" name="sub" id="sub" class="text ui-widget-content ui-corner-all">
 			</div>
