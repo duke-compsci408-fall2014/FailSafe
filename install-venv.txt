@@ -1,4 +1,5 @@
 pip install flask
 pip install flask-mysql
 pip install requests
+pip install twilio
 iptables -A INPUT -m state --state NEW -p tcp --dport 5003 -j ACCEPT
