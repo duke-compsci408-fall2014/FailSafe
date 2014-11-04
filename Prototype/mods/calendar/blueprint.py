@@ -16,7 +16,7 @@ def default():
 
 @calendar.route('/day')
 def day_view():
-    return render_template('day_view.html')
+    return render_template('day_view.html', directory_list=get_directory_list())
 
 @calendar.route('/month')
 def month_view():

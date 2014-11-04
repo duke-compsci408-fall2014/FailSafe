@@ -63,7 +63,7 @@ $(document).ready(function() {
 		//labels
 		dayView += "<tr><td class='timelabel'></td>";
 		for(role = 0; role < roles.length; role++) {
-			dayView += "<td class='rolelabel'>" + roles[role] + "</td>";
+			dayView += "<th class='rolelabel'>" + roles[role] + "</th>";
 		}
 		dayView += "</tr>";
 		
@@ -302,23 +302,6 @@ $(document).ready(function() {
 			document.getElementById("calendar").innerHTML = makeCalendar();
 		}
 	}
-
-	var $subDialog = $( "#substitution-form" ).dialog({
-	  autoOpen: false,
-	  height: 300,
-	  width: 350,
-	  modal: true,
-	  buttons: {
-		"Create event": addSub,
-		Cancel: function() {
-		  $subDialog.dialog( "close" );
-		}
-	  },
-	  close: function() {
-		subForm[ 0 ].reset();
-		allFields.removeClass( "ui-state-error" );
-	  }
-	});
 	
 	var $fullDialog = $( "#full-form" ).dialog({
 	  autoOpen: false,
@@ -353,8 +336,130 @@ $(document).ready(function() {
 		allFields.removeClass( "ui-state-error" );
 	  }
 	});
-	
-	var subForm = $subDialog.find( "form" ).on( "submit", function( event ) {
+
+	var $facultyDialog = $( "#Faculty-sub-form" ).dialog({
+		autoOpen: false,
+		height: 300,
+		width: 350,
+		modal: true,
+		buttons: {
+			"Create event": addSub,
+			Cancel: function() {
+			  $facultyDialog.dialog( "close" );
+			}
+		},
+		close: function() {
+			facultyForm[ 0 ].reset();
+			allFields.removeClass( "ui-state-error" );
+		}
+	});
+
+	var facultyForm = $facultyDialog.find( "form" ).on( "submit", function( event ) {
+		event.preventDefault();
+	});
+
+	var $fellowDialog = $( "#Fellow-sub-form" ).dialog({
+		autoOpen: false,
+		height: 300,
+		width: 350,
+		modal: true,
+		buttons: {
+			"Create event": addSub,
+			Cancel: function() {
+			  $fellowDialog.dialog( "close" );
+			}
+		},
+		close: function() {
+			fellowForm[ 0 ].reset();
+			allFields.removeClass( "ui-state-error" );
+		}
+	});
+
+	var fellowForm = $fellowDialog.find( "form" ).on( "submit", function( event ) {
+		event.preventDefault();
+	});
+
+	var $rn1Dialog = $( "#RN1-sub-form" ).dialog({
+		autoOpen: false,
+		height: 300,
+		width: 350,
+		modal: true,
+		buttons: {
+			"Create event": addSub,
+			Cancel: function() {
+			  $rn1Dialog.dialog( "close" );
+			}
+		},
+		close: function() {
+			rn1Form[ 0 ].reset();
+			allFields.removeClass( "ui-state-error" );
+		}
+	});
+
+	var rn1Form = $rn1Dialog.find( "form" ).on( "submit", function( event ) {
+		event.preventDefault();
+	});
+
+	var $rn2Dialog = $( "#RN2-sub-form" ).dialog({
+		autoOpen: false,
+		height: 300,
+		width: 350,
+		modal: true,
+		buttons: {
+			"Create event": addSub,
+			Cancel: function() {
+			  $rn2Dialog.dialog( "close" );
+			}
+		},
+		close: function() {
+			rn2Form[ 0 ].reset();
+			allFields.removeClass( "ui-state-error" );
+		}
+	});
+
+	var rn2Form = $rn2Dialog.find( "form" ).on( "submit", function( event ) {
+		event.preventDefault();
+	});
+
+	var $tech1Dialog = $( "#Tech1-sub-form" ).dialog({
+		autoOpen: false,
+		height: 300,
+		width: 350,
+		modal: true,
+		buttons: {
+			"Create event": addSub,
+			Cancel: function() {
+			  $tech1Dialog.dialog( "close" );
+			}
+		},
+		close: function() {
+			tech1Form[ 0 ].reset();
+			allFields.removeClass( "ui-state-error" );
+		}
+	});
+
+	var tech1Form = $tech1Dialog.find( "form" ).on( "submit", function( event ) {
+		event.preventDefault();
+	});
+
+	var $tech2Dialog = $( "#Tech2-sub-form" ).dialog({
+		autoOpen: false,
+		height: 300,
+		width: 350,
+		modal: true,
+		buttons: {
+			"Create event": addSub,
+			Cancel: function() {
+			  $tech2Dialog.dialog( "close" );
+			}
+		},
+		close: function() {
+			tech2Form[ 0 ].reset();
+			allFields.removeClass( "ui-state-error" );
+		}
+	});
+
+	var tech2Form = $tech2Dialog.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
 	});
 	
@@ -370,15 +475,39 @@ $(document).ready(function() {
 		$alertDialog.dialog('open');
 	});
 
-	$('div').on('click', 'td.inside', handleCellClick($subDialog, "#start"));
+	$('div').on('click', 'td.inside', handleSubClick("#start", "#role"));
 	
-	$("div").on('click', 'td.day', handleCellClick($fullDialog, "#date"));
+	$("div").on('click', 'td.day', handleDateClick($fullDialog, "#date"));
         
-        function handleCellClick(dialog, fieldToFill) {
+        function handleDateClick(dialog, fieldToFill) {
             return function(event) {
                 clickedSquare = event.target || event.srcElement;
 		dialog.dialog("open");
 		$(fieldToFill).val(clickedSquare.id);
             };
         }
+
+	function handleSubClick(startField, roleField) {
+		return function(event) {
+			var columnNumber = $(event.target).index() + 1;
+			var role = $('th:nth-child(' + columnNumber + ')').text();
+			var roleDialog;
+			if(role == "Faculty")
+				roleDialog = $facultyDialog;
+			if(role == "Fellow")
+				roleDialog = $fellowDialog;
+			if(role == "RN1")
+				roleDialog = $rn1Dialog;
+			if(role == "RN2")
+				roleDialog = $rn2Dialog;
+			if(role == "Tech1")
+				roleDialog = $tech1Dialog;
+			if(role == "Tech2")
+				roleDialog = $tech2Dialog;
+			clickedSquare = event.target || event.srcElement;
+			roleDialog.dialog("open");
+			$(startField + role).val(clickedSquare.id);
+			$(roleField + role).val(role);
+		};
+	}
 });

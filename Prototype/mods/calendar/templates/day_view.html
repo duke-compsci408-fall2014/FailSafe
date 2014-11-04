@@ -14,36 +14,46 @@
     </div>
     <div class="container" id="dayView"></div>
 
-	<div id="substitution-form" title="Create Substitution">
+    {% for role in roleIds %}
+	<div id="{{role}}-sub-form" title="Create Substitution">
 	  <p class="validateTips">All form fields are required.</p>
 	
 	  <form action="/addSub" method="post">
 		<fieldset>
+			<div>
+				<label for="role{{role}}">Role</label>
+				<input type="text" name="role{{role}}" id="role{{role}}" readonly class="text ui-widget-content ui-corner-all">
+			</div>
                         <div>
-				<label for="start">Start Time</label>
-				<input type="text" name="start" id="start" readonly class="text ui-widget-content ui-corner-all">
+				<label for="start{{role}}">Start Time</label>
+				<input type="text" name="start{{role}}" id="start{{role}}" readonly class="text ui-widget-content ui-corner-all">
 			</div>
 			<div>
-				<label for="duration">Duration</label>
+				<label for="duration">Duration (hours)</label>
 				<input type="text" name="duration" id="duration" class="text ui-widget-content ui-corner-all">
 			</div>
-			<div>
-				<label for="role">Role</label>
-				<select name="role" id="role">
-					{% for n in range(0,6) %}
-						<option value="{{roleIds[n]}}">{{roles[n]}}</option>
-					{% endfor %}
-				</select>
-			</div>
-			<div>
-				
-				<label for="sub">Substitute</label>
-				<input type="text" name="sub" id="sub" class="text ui-widget-content ui-corner-all">
-			</div>
+		    <div>
+			<label for="sub">Substitute</label>
+			<select name="sub" id="sub">
+			    {{ directory_list }}
+			    {% for dir_entry in directory_list %}
+				{% set entryRole = dir_entry[1] %}
+				{% set firstName = dir_entry[3] %}
+				{% set lastName = dir_entry[4] %}
+				{% set netID = dir_entry[8] %}
+				{% if 'Tech' in role and ('Nurse' in entryRole or 'Tech' in entryRole) %}
+				    <option value="{{netID}}"> {{firstName}} {{lastName}}: {{netID}}</option>
+				{% elif entryRole in role %}
+				    <option value="{{netID}}"> {{firstName}} {{lastName}}: {{netID}}</option>
+				{% endif %}
+			    {% endfor %}
+			</select>
+		    </div>
 	 
 		  <!-- Allow form submission with keyboard without duplicating the dialog button -->
 		  <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
 		</fieldset>
 	  </form>
 	</div>
+    {% endfor %}
 {% endblock %}
