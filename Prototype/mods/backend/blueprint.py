@@ -171,13 +171,21 @@ def loop_user(netID, message, delay, repeats):
 @param-repeats integer         number of times to repeat the full cycle
 '''
 def loop_users(netIDs, message, delay, repeats):
+    print netIDs
     users = get_all_staff()
+    print users
+    valid_users = {}
+    for i in users:
+        if i in netIDs:
+            valid_users[i] = users[i]
+    users = valid_users
+    print users
     for i in range(repeats):
         #page_all(users, message)
         #time.sleep(delay)
         text_all(users, message)
         time.sleep(delay)
-        call_all_users(users, message)
+        call_all_cell(users, message)
         time.sleep(delay)
         call_all_home(users, message)
 
