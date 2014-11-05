@@ -7,11 +7,11 @@
 {% block body %}	
 	<div class="main">
 		<div class="container">
-			<h1>Doctor Directory</h1>
-			<h3>List of Doctors available and their contact information</h3>
+			<h1>Staff Directory</h1>
+			<h3>List of staff members and their contact information</h3>
 			<div class="panel panel-default">
 			  	<!-- Default panel contents -->
-			  	<div class="panel-heading">Doctor Directory</div>
+			  	<div class="panel-heading">Staff Directory</div>
 
 			  	<!-- Table -->
 			  	<table id ="staff" class="table">
@@ -20,9 +20,9 @@
 						<th>Admin</th>
 						<th>First Name</th>
 						<th>Last Name</th>
-						<th>Cell</th>
-						<th>Home</th>
-						<th>Pager</th>
+                        <th>Cell Phone</th>
+						<th>Home Phone</th>
+						<th>Pager Number</th>
                         <th>NetID</th>
                         <th>Edit</th>
                         <th>Delete</th>
@@ -38,13 +38,13 @@
 							<td class="entry-data">{{person[6]}}</td>
 							<td class="entry-data">{{person[7]}}</td>
                             <td class="entry-data">{{person[8]}}</td>
-                            <td class="edit-staff" id="{{person[0]}}"><a href="#" class="btn btn-primary btn-large"><i class="icon-white icon-pencil"></i> Edit</a></td>
-                            <td class="delete-staff" id="{{person[0]}}"><a href="#" class="btn btn-danger btn-large"><i class="icon-white icon-remove"></i> delete</a></td>
+                            <td class="edit-staff" id="{{person[0]}}"><a href="#" class="btn btn-primary btn-large"> Edit &nbsp; <i class="fa fa-pencil"></i></a></td>
+                            <td class="delete-staff" id="{{person[0]}}"><a href="#" class="btn btn-danger btn-large">Delete &nbsp; <i class="fa fa-times"></i></a></td>
 						</tr>
 					{% endfor %}
 				</table>
             </div>
-			<button id = "create-user" type="button" class="btn btn-default btn-lg">Add New Contact</button>
+			<button id = "create-user" type="button" class="btn btn-default btn-lg">Add New Staff</button>
 		</div>
 	</div>
 
