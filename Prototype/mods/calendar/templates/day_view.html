@@ -14,6 +14,7 @@
     </div>
     <div class="container" id="dayView"></div>
 
+    {% set roleIndex = 0 %}
     {% for role in roleIds %}
 	<div id="{{role}}-sub-form" title="Create Substitution">
 	  <p class="validateTips">All form fields are required.</p>
@@ -43,7 +44,7 @@
 				{% set netID = dir_entry[8] %}
 				{% if 'Tech' in role and ('Nurse' in entryRole or 'Tech' in entryRole) %}
 				    <option value="{{netID}}"> {{firstName}} {{lastName}}: {{netID}}</option>
-				{% elif entryRole in role %}
+				{% elif entryRole in roles[roleIndex] %}
 				    <option value="{{netID}}"> {{firstName}} {{lastName}}: {{netID}}</option>
 				{% endif %}
 			    {% endfor %}
@@ -55,5 +56,6 @@
 		</fieldset>
 	  </form>
 	</div>
+    {% set roleIndex = roleIndex + 1 %}
     {% endfor %}
 {% endblock %}
