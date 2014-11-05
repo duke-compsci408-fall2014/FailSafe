@@ -116,6 +116,49 @@ def get_oncall_team():
             oncall_team[i] = str(data[user][nameColumn])
     return oncall_team
 
+@calendar.route('/delete_call', methods=['DELETE'])
+def delete_call():
+    con = cal_mysql.connect()
+    cursor = con.cursor()
+    
+    date = request.json
+    sql_query = "DELETE FROM schedule WHERE Day = '" + date['date'] + "'";
+    
+    try:
+        cursor.execute(sql_query)
+        con.commit()
+    except:
+        con.rollback()
+    return ""
+
+@calendar.route('/json_datetime_schedule')
+def json_datetime_schedule():
+    con = cal_mysql.connect()
+    cursor = con.cursor()
+
+    queryDate = request.args.get('datetime');
+    sql_query = "SELECT * FROM schedule WHERE Day = '" + queryDate + "'";
+    cursor.execute(sql_query);
+
+    data = cursor.fetchall()
+    schedule = []
+    for d in data:
+        call_data = list()
+        for i in range(len(d)):
+            if(isinstance(d[i], datetime) or isinstance(d[i], date)):
+                call_data.append(str(d[i]))
+            else:
+                #get name from netID
+    	        userInfo = getNameForID(d[i])
+                if len(userInfo) == 0: #if couldn't find name, use whatever we have
+                    call_data.append(d[i])
+                else:
+                    firstNameColumn = 3
+                    lastNameColumn = 4
+                    call_data.append('<b>' + userInfo[0][lastNameColumn] + '</b>' + ' ' + d[i])
+        schedule.append(call_data)
+    return jsonify(results=schedule)
+
 @calendar.route('/addCall', methods=['POST'])
 def addCall():
     con = cal_mysql.connect()

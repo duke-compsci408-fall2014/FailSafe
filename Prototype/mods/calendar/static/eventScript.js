@@ -18,6 +18,20 @@ $(document).ready(function() {
 	if(document.getElementById("dayView") != null) {
 		document.getElementById("dayView").innerHTML = makeDayView();
 	}
+
+	function getScheduleWithDatetime(endpoint, date) {
+		var schedule;
+		$.ajax({
+			url:endpoint,
+			async:false,
+			dataType:'json',
+			data: {"datetime": date},
+			success: function(json) {
+				schedule = json.results;
+			}
+		});
+		return schedule;
+	}
         
         function getSchedule(endpoint, day, month, year) {
             var schedule;
@@ -250,9 +264,31 @@ $(document).ready(function() {
         
         function AJAXJSONPost(url, data) {
             $.ajax({
-		async: true,
+		async: false,
                 url: url,
                 type: "POST",
+                contentType:"application/json",
+                dataType:"json",
+                data:JSON.stringify(data)
+            });
+        }
+
+        function AJAXJSONDelete(url, date) {
+            $.ajax({
+		async: false,
+                url: url,
+                type: "DELETE",
+                contentType:"application/json",
+                dataType:"json",
+                data:JSON.stringify(date)
+            });
+        }
+
+        function AJAXJSONUpdate(url, data) {
+            $.ajax({
+		async: false,
+                url: url,
+                type: "PUT",
                 contentType:"application/json",
                 dataType:"json",
                 data:JSON.stringify(data)
@@ -308,6 +344,16 @@ $(document).ready(function() {
 			document.getElementById("calendar").innerHTML = makeCalendar();
 		}
 	}
+
+	function deleteFull() {
+		allFields.removeClass("ui-state-error");
+		AJAXJSONDelete("/calendar/delete_call", {"date": clickedSquare.id});
+		$fullCRUDDialog.dialog("close");
+		document.getElementById("calendar").innerHTML = makeCalendar();
+	}	
+
+	function updateFull() {
+	}
 	
 	var $fullDialog = $( "#full-form" ).dialog({
 	  autoOpen: false,
@@ -322,6 +368,24 @@ $(document).ready(function() {
 	  },
 	  close: function() {
 		fullForm[ 0 ].reset();
+		allFields.removeClass( "ui-state-error" );
+	  }
+	});
+	
+	var $fullCRUDDialog = $( "#full-crud-form" ).dialog({
+	  autoOpen: false,
+	  height: 350,
+	  width: 350,
+	  modal: true,
+	  buttons: {
+		"Edit event": addFull,
+		"Delete": deleteFull,
+		Cancel: function() {
+		  $fullCRUDDialog.dialog( "close" );
+		}
+	  },
+	  close: function() {
+		fullCRUDForm[ 0 ].reset();
 		allFields.removeClass( "ui-state-error" );
 	  }
 	});
@@ -490,6 +554,10 @@ $(document).ready(function() {
 	var fullForm = $fullDialog.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
 	});
+
+	var fullCRUDForm = $fullCRUDDialog.find( "form" ).on( "submit", function( event ) {
+		event.preventDefault();
+	});
 	
 	var alertForm = $alertDialog.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
@@ -501,13 +569,22 @@ $(document).ready(function() {
 
 	$('div').on('click', 'td.inside', handleSubClick("#start", "#role"));
 	
-	$("div").on('click', 'td.day', handleDateClick($fullDialog, "#date"));
+	$("div").on('click', 'td.day', handleDateClick());
         
-        function handleDateClick(dialog, fieldToFill) {
+        function handleDateClick(fieldToFill) {
             return function(event) {
                 clickedSquare = event.target || event.srcElement;
-		dialog.dialog("open");
-		$(fieldToFill).val(clickedSquare.id);
+		var clickedSchedule = getScheduleWithDatetime("/calendar/json_datetime_schedule", clickedSquare.id)[0];
+			//$fullDialog.dialog("open");
+			//$("#date").val(clickedSquare.id);
+		if(clickedSchedule != null) {
+			$fullCRUDDialog.dialog("open");
+			$("#dateCRUD").val(clickedSquare.id);
+		}
+		else {
+			$fullDialog.dialog("open");
+			$("#date").val(clickedSquare.id);
+		}
             };
         }
 
