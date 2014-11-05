@@ -269,14 +269,14 @@ $(document).ready(function() {
 		allFields.removeClass( "ui-state-error" );
 		
 		var start = $('#start' + role).val();
-		var duration = parseInt($('#duration').val());
+		var duration = parseInt($('#duration' + role).val());
 		
 		if(valid) {
 			var sub_data = {
 				"start":start,
 				"end":moment(start).add(duration, 'h').format(),
 				"role":$('#role' + role).val(),
-				"sub":$('#sub').val()
+				"sub":$('#sub' + role).val()
 			};
                         AJAXJSONPost("/calendar/addSub", sub_data);
 			document.getElementById("dayView").innerHTML = makeDayView();
