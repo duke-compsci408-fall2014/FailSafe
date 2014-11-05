@@ -112,7 +112,7 @@ $(document).ready(function() {
 	function makeCalendar() {
 		var schedule = getSchedule("/calendar/jsonMonthSchedule", 
                         null, displayTime.month() + 1, displayTime.year());
-		var calendarText = "<table align='center'>";
+		var calendarText = "<table align='center'><br>";
 		
 		//header
 		calendarText += "<tr><td class='header' colspan='7' id='header'>";
@@ -244,6 +244,7 @@ $(document).ready(function() {
         
         function AJAXJSONPost(url, data) {
             $.ajax({
+		async: true,
                 url: url,
                 type: "POST",
                 contentType:"application/json",
@@ -263,22 +264,21 @@ $(document).ready(function() {
 		$alertDialog.dialog( "close" );
 	}
 	
-	function addSub() {
+	function addSub(role) {
 		var valid = true;
 		allFields.removeClass( "ui-state-error" );
 		
-		var start = $('#start').val();
+		var start = $('#start' + role).val();
 		var duration = parseInt($('#duration').val());
 		
 		if(valid) {
 			var sub_data = {
 				"start":start,
 				"end":moment(start).add(duration, 'h').format(),
-				"role":$('#role').val(),
+				"role":$('#role' + role).val(),
 				"sub":$('#sub').val()
 			};
                         AJAXJSONPost("/calendar/addSub", sub_data);
-			$subDialog.dialog( "close" );
 			document.getElementById("dayView").innerHTML = makeDayView();
 		}
 	}
@@ -343,7 +343,10 @@ $(document).ready(function() {
 		width: 350,
 		modal: true,
 		buttons: {
-			"Create event": addSub,
+			"Create event": function() {
+				addSub("Faculty");
+			  	$facultyDialog.dialog( "close" );
+			},
 			Cancel: function() {
 			  $facultyDialog.dialog( "close" );
 			}
@@ -364,7 +367,10 @@ $(document).ready(function() {
 		width: 350,
 		modal: true,
 		buttons: {
-			"Create event": addSub,
+			"Create event": function() {
+				addSub("Fellow");
+			  	$fellowDialog.dialog( "close" );
+			},
 			Cancel: function() {
 			  $fellowDialog.dialog( "close" );
 			}
@@ -385,7 +391,10 @@ $(document).ready(function() {
 		width: 350,
 		modal: true,
 		buttons: {
-			"Create event": addSub,
+			"Create event": function() {
+				addSub("RN1");
+			  	$rn1Dialog.dialog( "close" );
+			},
 			Cancel: function() {
 			  $rn1Dialog.dialog( "close" );
 			}
@@ -406,7 +415,10 @@ $(document).ready(function() {
 		width: 350,
 		modal: true,
 		buttons: {
-			"Create event": addSub,
+			"Create event": function() {
+				addSub("RN2");
+			  	$rn2Dialog.dialog( "close" );
+			},
 			Cancel: function() {
 			  $rn2Dialog.dialog( "close" );
 			}
@@ -427,7 +439,10 @@ $(document).ready(function() {
 		width: 350,
 		modal: true,
 		buttons: {
-			"Create event": addSub,
+			"Create event": function() {
+				addSub("Tech1");
+			  	$tech1Dialog.dialog( "close" );
+			},
 			Cancel: function() {
 			  $tech1Dialog.dialog( "close" );
 			}
@@ -448,7 +463,10 @@ $(document).ready(function() {
 		width: 350,
 		modal: true,
 		buttons: {
-			"Create event": addSub,
+			"Create event": function() {
+				addSub("Tech2");
+			  	$tech2Dialog.dialog( "close" );
+			},
 			Cancel: function() {
 			  $tech2Dialog.dialog( "close" );
 			}
