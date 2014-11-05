@@ -95,6 +95,36 @@ def sms_response():
 
     return "done"
 
+def get_valid_numbers():
+    """ TODO """
+    return []
+
+def log(log_message):
+    print log_message
+
+@backend.route("/response_actual", methods=['GET', 'POST'])
+def process_response():
+    from_number = request.values.get('From', None)
+    message_body = str(request.values.get('Body', None)).lower()
+    if from_number in get_valid_numbers():
+        log("sender valid")
+        command_string = message_body.split()[0]
+        if command_string == "eta":
+            log("sender reporting eta")
+            client.messages.create(to=from_number, from_=default_from_phone, body="Thank you for your response. You said your eta is " + str(message_body.split()[1]))
+        elif command_string == "status":
+            log("sender requesting team status")
+            client.messages.create(to=from_number, from_=default_from_phone, body="Your text has been received. You requested status.")
+        else:
+            log("invalid command")
+            client.messages.create(to=from_number, from_=default_from_phone, body="Your text is invalid. Please type \"eta X\" or \"status\"")
+    # check to see if the number is valid
+    # check to see if the message is valid
+    # if the message is an ETA update
+    #   update ETA of the individual
+    # if the message is a status request
+    #   update send the text to the sender with status updates
+
 @backend.route("/")
 def index():
     if 'user_netid' not in session:
@@ -142,8 +172,8 @@ def loop_user(netID, message, delay, repeats):
 def loop_users(netIDs, message, delay, repeats):
     users = get_all_staff()
     for i in range(repeats):
-        page_all(users, message)
-        time.sleep(delay)
+        #page_all(users, message)
+        #time.sleep(delay)
         text_all(users, message)
         time.sleep(delay)
         call_all_users(users, message)
