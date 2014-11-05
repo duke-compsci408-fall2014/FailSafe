@@ -52,7 +52,13 @@ $(document).ready(function() {
                         displayTime.date(), displayTime.month() + 1, displayTime.year());
 		var substitutions = getSchedule("/calendar/jsonSubSchedule", 
                         displayTime.date(), displayTime.month() + 1, displayTime.year());
-		
+		var afterMidnight = getSchedule("/calendar/jsonSubSchedule", 
+			displayTime.date() + 1, displayTime.month() + 1, displayTime.year());
+		substitutions = substitutions.concat(afterMidnight);
+		//for (idx = 0; idx < afterMidnight.length; idx++) {
+		//	substitutions.push(afterMidnight[idx]);
+		//}
+
 		var dayView = "<table align='center'>";
 		
 		//header
@@ -98,7 +104,7 @@ $(document).ready(function() {
 				var startTime = moment(substitutions[sub][1]).format();
 				var endTime = moment(substitutions[sub][2]).format();
 				var subRole = substitutions[sub][3];
-				if((id.isSame(startTime) || id.isAfter(startTime)) && (id.isSame(startTime) || id.isBefore(endTime)) && subRole == roles[role]) {
+				if((id.isSame(startTime) || id.isAfter(startTime)) && id.isBefore(endTime) && subRole == roles[role]) {
 					row += substitutions[sub][4];
 				}
 			}
