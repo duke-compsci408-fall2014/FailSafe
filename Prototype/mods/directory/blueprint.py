@@ -56,13 +56,16 @@ def show_directory(staff = None, addstaff = False, editstaff = False):
             con.rollback()
 
     cursor.execute("SELECT * from tblUser")
-    data = cursor.fetchall()
+    columns = [column[0] for column in cursor.description]
+    rows = cursor.fetchall()
     con.close()
-    for d in data:
-        person_data = list()
-        for i in range(len(d)):
-            person_data.append(d[i])
-        person_list.append(person_data)
+    for row in rows:
+        person_list.append(dict(zip(columns, row)))
+        #person_data = list()
+	#person_data.append(d)
+        #for i in range(len(d)):
+        #    person_data.append(d[i])
+        #person_list.append(person_data)
 
     return render_template('directory.html', person_list=person_list)
 

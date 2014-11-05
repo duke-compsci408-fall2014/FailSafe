@@ -18,6 +18,20 @@ $(document).ready(function() {
 	if(document.getElementById("dayView") != null) {
 		document.getElementById("dayView").innerHTML = makeDayView();
 	}
+
+	function getScheduleWithDatetime(endpoint, date) {
+		var schedule;
+		$.ajax({
+			url:endpoint,
+			async:false,
+			dataType:'json',
+			data: {"datetime": date},
+			success: function(json) {
+				schedule = json.results;
+			}
+		});
+		return schedule;
+	}
         
         function getSchedule(endpoint, day, month, year) {
             var schedule;
@@ -52,7 +66,13 @@ $(document).ready(function() {
                         displayTime.date(), displayTime.month() + 1, displayTime.year());
 		var substitutions = getSchedule("/calendar/jsonSubSchedule", 
                         displayTime.date(), displayTime.month() + 1, displayTime.year());
-		
+		var afterMidnight = getSchedule("/calendar/jsonSubSchedule", 
+			displayTime.date() + 1, displayTime.month() + 1, displayTime.year());
+		substitutions = substitutions.concat(afterMidnight);
+		//for (idx = 0; idx < afterMidnight.length; idx++) {
+		//	substitutions.push(afterMidnight[idx]);
+		//}
+
 		var dayView = "<table align='center'>";
 		
 		//header
@@ -63,7 +83,7 @@ $(document).ready(function() {
 		//labels
 		dayView += "<tr><td class='timelabel'></td>";
 		for(role = 0; role < roles.length; role++) {
-			dayView += "<td class='rolelabel'>" + roles[role] + "</td>";
+			dayView += "<th class='rolelabel'>" + roles[role] + "</th>";
 		}
 		dayView += "</tr>";
 		
@@ -98,8 +118,8 @@ $(document).ready(function() {
 				var startTime = moment(substitutions[sub][1]).format();
 				var endTime = moment(substitutions[sub][2]).format();
 				var subRole = substitutions[sub][3];
-				if((id.isSame(startTime) || id.isAfter(startTime)) && (id.isSame(startTime) || id.isBefore(endTime)) && subRole == roles[role]) {
-					row += "Sub: " + substitutions[sub][4];
+				if((id.isSame(startTime) || id.isAfter(startTime)) && id.isBefore(endTime) && subRole == roles[role]) {
+					row += substitutions[sub][4];
 				}
 			}
 			row +=  "</td>";
@@ -112,7 +132,7 @@ $(document).ready(function() {
 	function makeCalendar() {
 		var schedule = getSchedule("/calendar/jsonMonthSchedule", 
                         null, displayTime.month() + 1, displayTime.year());
-		var calendarText = "<table align='center'>";
+		var calendarText = "<table align='center'><br>";
 		
 		//header
 		calendarText += "<tr><td class='header' colspan='7' id='header'>";
@@ -166,7 +186,7 @@ $(document).ready(function() {
 					for(j = 0; j < schedule.length; j++) {
 						if(currentDay == schedule[j][0].split("-")[2]) {
 							for(role = 0; role < 6; role++){
-								calendarText += "<br>" + roles[role] + ": " + schedule[j][role+1];
+								calendarText += "<br>" + schedule[j][role+1];
 							}
 						}
 					}
@@ -244,8 +264,31 @@ $(document).ready(function() {
         
         function AJAXJSONPost(url, data) {
             $.ajax({
+		async: false,
                 url: url,
                 type: "POST",
+                contentType:"application/json",
+                dataType:"json",
+                data:JSON.stringify(data)
+            });
+        }
+
+        function AJAXJSONDelete(url, date) {
+            $.ajax({
+		async: false,
+                url: url,
+                type: "DELETE",
+                contentType:"application/json",
+                dataType:"json",
+                data:JSON.stringify(date)
+            });
+        }
+
+        function AJAXJSONUpdate(url, data) {
+            $.ajax({
+		async: false,
+                url: url,
+                type: "PUT",
                 contentType:"application/json",
                 dataType:"json",
                 data:JSON.stringify(data)
@@ -263,22 +306,21 @@ $(document).ready(function() {
 		$alertDialog.dialog( "close" );
 	}
 	
-	function addSub() {
+	function addSub(role) {
 		var valid = true;
 		allFields.removeClass( "ui-state-error" );
 		
-		var start = $('#start').val();
-		var duration = parseInt($('#duration').val());
+		var start = $('#start' + role).val();
+		var duration = parseInt($('#duration' + role).val());
 		
 		if(valid) {
 			var sub_data = {
 				"start":start,
 				"end":moment(start).add(duration, 'h').format(),
-				"role":$('#role').val(),
-				"sub":$('#sub').val()
+				"role":$('#role' + role).val(),
+				"sub":$('#sub' + role).val()
 			};
                         AJAXJSONPost("/calendar/addSub", sub_data);
-			$subDialog.dialog( "close" );
 			document.getElementById("dayView").innerHTML = makeDayView();
 		}
 	}
@@ -303,22 +345,15 @@ $(document).ready(function() {
 		}
 	}
 
-	var $subDialog = $( "#substitution-form" ).dialog({
-	  autoOpen: false,
-	  height: 300,
-	  width: 350,
-	  modal: true,
-	  buttons: {
-		"Create event": addSub,
-		Cancel: function() {
-		  $subDialog.dialog( "close" );
-		}
-	  },
-	  close: function() {
-		subForm[ 0 ].reset();
-		allFields.removeClass( "ui-state-error" );
-	  }
-	});
+	function deleteFull() {
+		allFields.removeClass("ui-state-error");
+		AJAXJSONDelete("/calendar/delete_call", {"date": clickedSquare.id});
+		$fullCRUDDialog.dialog("close");
+		document.getElementById("calendar").innerHTML = makeCalendar();
+	}	
+
+	function updateFull() {
+	}
 	
 	var $fullDialog = $( "#full-form" ).dialog({
 	  autoOpen: false,
@@ -333,6 +368,24 @@ $(document).ready(function() {
 	  },
 	  close: function() {
 		fullForm[ 0 ].reset();
+		allFields.removeClass( "ui-state-error" );
+	  }
+	});
+	
+	var $fullCRUDDialog = $( "#full-crud-form" ).dialog({
+	  autoOpen: false,
+	  height: 350,
+	  width: 350,
+	  modal: true,
+	  buttons: {
+		"Edit event": addFull,
+		"Delete": deleteFull,
+		Cancel: function() {
+		  $fullCRUDDialog.dialog( "close" );
+		}
+	  },
+	  close: function() {
+		fullCRUDForm[ 0 ].reset();
 		allFields.removeClass( "ui-state-error" );
 	  }
 	});
@@ -353,12 +406,156 @@ $(document).ready(function() {
 		allFields.removeClass( "ui-state-error" );
 	  }
 	});
-	
-	var subForm = $subDialog.find( "form" ).on( "submit", function( event ) {
+
+	var $facultyDialog = $( "#Faculty-sub-form" ).dialog({
+		autoOpen: false,
+		height: 300,
+		width: 350,
+		modal: true,
+		buttons: {
+			"Create event": function() {
+				addSub("Faculty");
+			  	$facultyDialog.dialog( "close" );
+			},
+			Cancel: function() {
+			  $facultyDialog.dialog( "close" );
+			}
+		},
+		close: function() {
+			facultyForm[ 0 ].reset();
+			allFields.removeClass( "ui-state-error" );
+		}
+	});
+
+	var facultyForm = $facultyDialog.find( "form" ).on( "submit", function( event ) {
+		event.preventDefault();
+	});
+
+	var $fellowDialog = $( "#Fellow-sub-form" ).dialog({
+		autoOpen: false,
+		height: 300,
+		width: 350,
+		modal: true,
+		buttons: {
+			"Create event": function() {
+				addSub("Fellow");
+			  	$fellowDialog.dialog( "close" );
+			},
+			Cancel: function() {
+			  $fellowDialog.dialog( "close" );
+			}
+		},
+		close: function() {
+			fellowForm[ 0 ].reset();
+			allFields.removeClass( "ui-state-error" );
+		}
+	});
+
+	var fellowForm = $fellowDialog.find( "form" ).on( "submit", function( event ) {
+		event.preventDefault();
+	});
+
+	var $rn1Dialog = $( "#RN1-sub-form" ).dialog({
+		autoOpen: false,
+		height: 300,
+		width: 350,
+		modal: true,
+		buttons: {
+			"Create event": function() {
+				addSub("RN1");
+			  	$rn1Dialog.dialog( "close" );
+			},
+			Cancel: function() {
+			  $rn1Dialog.dialog( "close" );
+			}
+		},
+		close: function() {
+			rn1Form[ 0 ].reset();
+			allFields.removeClass( "ui-state-error" );
+		}
+	});
+
+	var rn1Form = $rn1Dialog.find( "form" ).on( "submit", function( event ) {
+		event.preventDefault();
+	});
+
+	var $rn2Dialog = $( "#RN2-sub-form" ).dialog({
+		autoOpen: false,
+		height: 300,
+		width: 350,
+		modal: true,
+		buttons: {
+			"Create event": function() {
+				addSub("RN2");
+			  	$rn2Dialog.dialog( "close" );
+			},
+			Cancel: function() {
+			  $rn2Dialog.dialog( "close" );
+			}
+		},
+		close: function() {
+			rn2Form[ 0 ].reset();
+			allFields.removeClass( "ui-state-error" );
+		}
+	});
+
+	var rn2Form = $rn2Dialog.find( "form" ).on( "submit", function( event ) {
+		event.preventDefault();
+	});
+
+	var $tech1Dialog = $( "#Tech1-sub-form" ).dialog({
+		autoOpen: false,
+		height: 300,
+		width: 350,
+		modal: true,
+		buttons: {
+			"Create event": function() {
+				addSub("Tech1");
+			  	$tech1Dialog.dialog( "close" );
+			},
+			Cancel: function() {
+			  $tech1Dialog.dialog( "close" );
+			}
+		},
+		close: function() {
+			tech1Form[ 0 ].reset();
+			allFields.removeClass( "ui-state-error" );
+		}
+	});
+
+	var tech1Form = $tech1Dialog.find( "form" ).on( "submit", function( event ) {
+		event.preventDefault();
+	});
+
+	var $tech2Dialog = $( "#Tech2-sub-form" ).dialog({
+		autoOpen: false,
+		height: 300,
+		width: 350,
+		modal: true,
+		buttons: {
+			"Create event": function() {
+				addSub("Tech2");
+			  	$tech2Dialog.dialog( "close" );
+			},
+			Cancel: function() {
+			  $tech2Dialog.dialog( "close" );
+			}
+		},
+		close: function() {
+			tech2Form[ 0 ].reset();
+			allFields.removeClass( "ui-state-error" );
+		}
+	});
+
+	var tech2Form = $tech2Dialog.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
 	});
 	
 	var fullForm = $fullDialog.find( "form" ).on( "submit", function( event ) {
+		event.preventDefault();
+	});
+
+	var fullCRUDForm = $fullCRUDDialog.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
 	});
 	
@@ -370,15 +567,48 @@ $(document).ready(function() {
 		$alertDialog.dialog('open');
 	});
 
-	$('div').on('click', 'td.inside', handleCellClick($subDialog, "#start"));
+	$('div').on('click', 'td.inside', handleSubClick("#start", "#role"));
 	
-	$("div").on('click', 'td.day', handleCellClick($fullDialog, "#date"));
+	$("div").on('click', 'td.day', handleDateClick());
         
-        function handleCellClick(dialog, fieldToFill) {
+        function handleDateClick(fieldToFill) {
             return function(event) {
                 clickedSquare = event.target || event.srcElement;
-		dialog.dialog("open");
-		$(fieldToFill).val(clickedSquare.id);
+		var clickedSchedule = getScheduleWithDatetime("/calendar/json_datetime_schedule", clickedSquare.id)[0];
+			//$fullDialog.dialog("open");
+			//$("#date").val(clickedSquare.id);
+		if(clickedSchedule != null) {
+			$fullCRUDDialog.dialog("open");
+			$("#dateCRUD").val(clickedSquare.id);
+		}
+		else {
+			$fullDialog.dialog("open");
+			$("#date").val(clickedSquare.id);
+		}
             };
         }
+
+	function handleSubClick(startField, roleField) {
+		return function(event) {
+			var columnNumber = $(event.target).index() + 1;
+			var role = $('th:nth-child(' + columnNumber + ')').text();
+			var roleDialog;
+			if(role == "Faculty")
+				roleDialog = $facultyDialog;
+			if(role == "Fellow")
+				roleDialog = $fellowDialog;
+			if(role == "RN1")
+				roleDialog = $rn1Dialog;
+			if(role == "RN2")
+				roleDialog = $rn2Dialog;
+			if(role == "Tech1")
+				roleDialog = $tech1Dialog;
+			if(role == "Tech2")
+				roleDialog = $tech2Dialog;
+			clickedSquare = event.target || event.srcElement;
+			roleDialog.dialog("open");
+			$(startField + role).val(clickedSquare.id);
+			$(roleField + role).val(role);
+		};
+	}
 });

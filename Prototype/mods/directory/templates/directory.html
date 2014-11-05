@@ -7,44 +7,46 @@
 {% block body %}	
 	<div class="main">
 		<div class="container">
-			<h1>Doctor Directory</h1>
-			<h3>List of Doctors available and their contact information</h3>
+			<h1>Staff Directory</h1>
+			<h3>List of staff members and their contact information</h3>
 			<div class="panel panel-default">
 			  	<!-- Default panel contents -->
-			  	<div class="panel-heading">Doctor Directory</div>
+			  	<div class="panel-heading">Staff Directory</div>
 
 			  	<!-- Table -->
-			  	<table id ="staff" class="table">
-					<tr class="table_headings">
-						<th>Role</th>
-						<th>Admin</th>
-						<th>First Name</th>
-						<th>Last Name</th>
-						<th>Cell</th>
-						<th>Home</th>
-						<th>Pager</th>
-                        <th>NetID</th>
-                        <th>Edit</th>
-                        <th>Delete</th>
-					</tr>
-						
-					{% for person in person_list %}
-						<tr class="entry">
-							<td class="entry-data">{{person[1]}}</td>
-							<td class="entry-data">{{person[2]}}</td>
-							<td class="entry-data">{{person[3]}}</td>
-							<td class="entry-data">{{person[4]}}</td>
-							<td class="entry-data">{{person[5]}}</td>
-							<td class="entry-data">{{person[6]}}</td>
-							<td class="entry-data">{{person[7]}}</td>
-                            <td class="entry-data">{{person[8]}}</td>
-                            <td class="edit-staff" id="{{person[0]}}"><a href="#" class="btn btn-primary btn-large"><i class="icon-white icon-pencil"></i> Edit</a></td>
-                            <td class="delete-staff" id="{{person[0]}}"><a href="#" class="btn btn-danger btn-large"><i class="icon-white icon-remove"></i> delete</a></td>
+			        	{% for group in person_list|groupby("Role") %}
+			  			<table id ="staff" class="table">
+						<tr>
+							<td class="roleGroup" colspan=10>{{group.grouper}}</td>
 						</tr>
-					{% endfor %}
+						<tr class="table_headings">
+							<th>Admin</th>
+							<th>First Name</th>
+							<th>Last Name</th>
+				<th>Cell Phone</th>
+							<th>Home Phone</th>
+							<th>Pager Number</th>
+				<th>NetID</th>
+				<th>Edit</th>
+				<th>Delete</th>
+						</tr>
+						{% for person in group.list %}
+							<tr class="entry">
+								<td class="entry-data">{{person.IsAdministrator}}</td>
+								<td class="entry-data">{{person.FirstName}}</td>
+								<td class="entry-data">{{person.LastName}}</td>
+								<td class="entry-data">{{person.CellPhone}}</td>
+								<td class="entry-data">{{person.HomePhone}}</td>
+								<td class="entry-data">{{person.PagerNumber}}</td>
+							    <td class="entry-data">{{person.NetID}}</td>
+							    <td class="edit-staff" id="{{person.UserID}}"><a href="#" class="btn btn-primary btn-large"> Edit &nbsp; <i class="fa fa-pencil"></i></a></td>
+							    <td class="delete-staff" id="{{person.UserID}}"><a href="#" class="btn btn-danger btn-large">Delete &nbsp; <i class="fa fa-times"></i></a></td>
+							</tr>
+						{% endfor %}
 				</table>
+					{% endfor %}
             </div>
-			<button id = "create-user" type="button" class="btn btn-default btn-lg">Add New Contact</button>
+			<button id = "create-user" type="button" class="btn btn-default btn-lg">Add New Staff</button>
 		</div>
 	</div>
 

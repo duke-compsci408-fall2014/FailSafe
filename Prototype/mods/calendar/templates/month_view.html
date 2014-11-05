@@ -5,8 +5,8 @@
 {% set roles = ['Faculty', 'Fellow', 'Nurse 1', 'Nurse 2', 'Tech 1', 'Tech 2'] %}
 {% set roleIds = ["faculty", "fellow", "rn1", "rn2", "tech1", "tech2"] %}
 	<div class="container">
-		<button id = "alert-button" type="button" class="btn btn-danger pull-right">Alert!</button>
-		<button id = "goToDay" type="button" class="btn btn-default pull-left"><a href="day">Day View</a></button>
+		<button id = "alert-button" type="button" class="btn btn-danger pull-right">Activate</button>
+        <a href="day"><button id = "goToDay" type="button" class="btn btn-default pull-left">Day View</button></a>
 		<button id = "last-month" type="button" class="btn btn-default pull-left">Last</button>
 		<button id = "next-month" type="button" class="btn btn-default pull-left">Next</button>
 	</div>
@@ -55,10 +55,13 @@
                         <select name="{{ roleId }}" id="{{ roleId }}">
                             {{ directory_list }}
                             {% for dir_entry in directory_list %}
+				{% set firstName = dir_entry[3] %}
+				{% set lastName = dir_entry[4] %}
+				{% set netID = dir_entry[8] %}
                                 {% if 'tech' in roles[index]|lower and (dir_entry[1]|lower == 'nurse' or dir_entry[1]|lower == 'tech') %}
-                                    <option value="{{dir_entry[3]}} {{dir_entry[4]}}"> {{dir_entry[3]}} {{dir_entry[4]}}</option>
+                                    <option value="{{netID}}"> {{firstName}} {{lastName}}: {{netID}}</option>
                                 {% elif dir_entry[1]|lower in roles[index]|lower%}
-                                    <option value="{{dir_entry[3]}} {{dir_entry[4]}}"> {{dir_entry[3]}} {{dir_entry[4]}}</option>
+                                    <option value="{{netID}}"> {{firstName}} {{lastName}}: {{netID}}</option>
                                 {% endif %}
                             {% endfor %}
                         </select>
@@ -70,5 +73,42 @@
 			</fieldset>
 		</form>
     </div>
+
+	<div id="full-crud-form" title="Create on call event">
+		<p class="validateTips">All form fields are required.</p>
+	
+		<form action="{{ url_for('calendar.addCall') }} " method="POST">
+			<fieldset>
+				<div>
+					<label for="dateCRUD">Date</label>
+					<input type="text" name="dateCRUD" id="dateCRUD" readonly class="text ui-widget-content ui-corner-all">
+                </div>
+                {% set index = 0 %}
+                {% for roleId in roleIds %}
+                    <div>
+                        <label for="{{ roleId }}">{{roles[loop.index0]}}</label>
+                        <select name="{{ roleId }}" id="{{ roleId }}">
+                            {{ directory_list }}
+                            {% for dir_entry in directory_list %}
+				{% set firstName = dir_entry[3] %}
+				{% set lastName = dir_entry[4] %}
+				{% set netID = dir_entry[8] %}
+                                {% if 'tech' in roles[index]|lower and (dir_entry[1]|lower == 'nurse' or dir_entry[1]|lower == 'tech') %}
+                                    <option value="{{netID}}"> {{firstName}} {{lastName}}: {{netID}}</option>
+                                {% elif dir_entry[1]|lower in roles[index]|lower%}
+                                    <option value="{{netID}}"> {{firstName}} {{lastName}}: {{netID}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% set index = index + 1 %}
+				{% endfor %}
+
+				<input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+			</fieldset>
+		</form>
+    </div>
+
+
     
 {% endblock %}
