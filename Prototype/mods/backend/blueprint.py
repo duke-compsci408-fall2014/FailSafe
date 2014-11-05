@@ -106,7 +106,7 @@ def log(log_message):
 def process_response():
     from_number = request.values.get('From', None)
     message_body = str(request.values.get('Body', None)).lower()
-    if from_number in get_valid_numbers():
+    if True:
         log("sender valid")
         command_string = message_body.split()[0]
         if command_string == "eta":
@@ -118,6 +118,7 @@ def process_response():
         else:
             log("invalid command")
             client.messages.create(to=from_number, from_=default_from_phone, body="Your text is invalid. Please type \"eta X\" or \"status\"")
+    return ""
     # check to see if the number is valid
     # check to see if the message is valid
     # if the message is an ETA update
@@ -208,7 +209,7 @@ def sandbox():
 def alert_oncall():
     #send_sms("+18473469673", format_message(request.json))
     #send_sms("+13175653154", format_message(request.json))
-    loop_users(get_oncall_team.values(), format_message(request.json), 30, 5)
+    loop_users(get_oncall_team().values(), format_message(request.json), 30, 5)
     return ""
 
 '''
