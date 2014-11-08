@@ -7,7 +7,7 @@ from flaskext.mysql import MySQL
 import directory_view as directory
 from config import cal_mysql, dir_mysql
 from directory_view.blueprint import User, get_all_staff
-
+from util.mysql import run_query, run_query_with_commit
 calendar = Blueprint('calendar',__name__,template_folder='templates',static_folder='static')
 
 @calendar.route('/')
@@ -23,15 +23,7 @@ def month_view():
     return render_template('month_view.html', directory_list=get_directory_list())
 
 def get_directory_list():
-    dir_con = dir_mysql.connect()
-    dir_cursor = dir_con.cursor()
-    directory_list = list()
-
-    dir_cursor.execute("SELECT * from tblUser")
-    dir_data = dir_cursor.fetchall()
-    for d in dir_data:
-        directory_list.append(d)
-    return directory_list
+    return run_query(dir_mysql, "SELECT * from tblUser")
 
 @calendar.route('/monthSchedule')
 def get_month_schedule(month, year):
@@ -84,14 +76,7 @@ def get_any_schedule(table, dateColumn, day, month, year):
     return call_list;
 
 def getNameForID(netID):
-    dir_con = dir_mysql.connect()
-    dir_cursor = dir_con.cursor()
-
-    dir_cursor.execute("SELECT * FROM tblUser WHERE NetID = '{netID}'".format(netID = netID))
-    userInfo = dir_cursor.fetchall()
-    return userInfo
-
-
+    return run_query(dir_mysql, "SELECT * FROM tblUser WHERE NetID = '{netID}'".format(netID = netID))
 
 @calendar.route('/jsonSubSchedule')
 def get_json_sub_schedule():
@@ -140,17 +125,9 @@ def get_user_days_oncall(netID, numLimit):
 
 @calendar.route('/delete_call', methods=['DELETE'])
 def delete_call():
-    con = cal_mysql.connect()
-    cursor = con.cursor()
-
     date = request.json
     sql_query = "DELETE FROM schedule WHERE Day = '" + date['date'] + "'";
-
-    try:
-        cursor.execute(sql_query)
-        con.commit()
-    except:
-        con.rollback()
+    run_query_with_commit(cal_mysql, sql_query)
     return ""
 
 @calendar.route('/json_datetime_schedule')
@@ -183,9 +160,6 @@ def json_datetime_schedule():
 
 @calendar.route('/addCall', methods=['POST'])
 def addCall():
-    con = cal_mysql.connect()
-    cursor = con.cursor()
-
     callData = request.json
     sql_query = "INSERT INTO schedule (Day, Faculty, Fellow, RN1, \
             RN2, Tech1, Tech2) VALUES (" + \
@@ -196,18 +170,11 @@ def addCall():
             "'" + callData['rn2'] + "', " + \
             "'" + callData['tech1'] + "', " + \
             "'" + callData['tech2'] + "')"
-    try:
-        cursor.execute(sql_query)
-        con.commit()
-    except:
-        con.rollback()
+    run_query_with_commit(cal_mysql, sql_query)
     return ""
 
 @calendar.route('/addSub', methods=['POST'])
 def addSub():
-    con = cal_mysql.connect()
-    cursor = con.cursor()
-
     callData = request.json
     sql_query = "INSERT INTO substitutions (StartTime, EndTime, Role, SubID \
             ) VALUES (" + \
@@ -215,9 +182,5 @@ def addSub():
             "'" + callData['end'] + "', " + \
             "'" + callData['role'] + "', " + \
             "'" + callData['sub'] + "')"
-    try:
-        cursor.execute(sql_query)
-        con.commit()
-    except:
-        con.rollback()
+    run_query_with_commit(cal_mysql, sql_query)
     return ""
