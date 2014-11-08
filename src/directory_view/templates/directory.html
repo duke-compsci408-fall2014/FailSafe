@@ -1,0 +1,111 @@
+{% extends "layout.html" %}	
+{% block title %} FailSafe: Directory {% endblock %}
+{% block dir_head %}
+	<link rel="stylesheet" href="{{ url_for('directory.static', filename='style.css') }}">
+	<script src='{{ url_for('directory.static', filename='script.js') }}'></script>
+{% endblock %}
+{% block body %}	
+	<div class="main">
+		<div class="container">
+			<h1>Staff Directory</h1>
+			<h3>List of staff members and their contact information</h3>
+			<div class="panel panel-default">
+			  	<!-- Default panel contents -->
+			  	<div class="panel-heading">Staff Directory</div>
+
+			  	<!-- Table -->
+               {% for group in person_list|groupby("Role") %}   
+                     <table id ="staff" class="table">
+						<tr>
+							<td class="roleGroup" colspan=10>{{group.grouper}}</td>
+						</tr>
+						<tr class="table_headings">
+							<th style="display:none">Role</th>
+							<th>Admin</th>
+							<th>First Name</th>
+							<th>Last Name</th>
+            				<th>Cell Phone</th>
+							<th>Home Phone</th>
+							<th>Pager Number</th>
+			            	<th>NetID</th>
+            				<th>Edit</th>
+			            	<th>Delete</th>
+						</tr>
+						{% for person in group.list %}
+							<tr class="entry">
+								<td class ="entry-data" style="display:none">{{person.Role}}</td>
+								<td class="entry-data">{{person.IsAdministrator}}</td>
+								<td class="entry-data">{{person.FirstName}}</td>
+								<td class="entry-data">{{person.LastName}}</td>
+								<td class="entry-data">{{person.CellPhone}}</td>
+								<td class="entry-data">{{person.HomePhone}}</td>
+								<td class="entry-data">{{person.PagerNumber}}</td>
+							    <td class="entry-data">{{person.NetID}}</td>
+							    <td class="edit-staff" id="{{person.UserID}}"><a href="#" class="btn btn-primary btn-large"> Edit &nbsp; <i class="fa fa-pencil"></i></a></td>
+							    <td class="delete-staff" id="{{person.UserID}}"><a href="#" class="btn btn-danger btn-large">Delete &nbsp; <i class="fa fa-times"></i></a></td>
+							</tr>
+						{% endfor %}
+			    	</table>
+				{% endfor %}
+            </div>
+			<button id = "create-user" type="button" class="btn btn-default btn-lg">Add New Staff</button>
+		</div>
+	</div>
+
+	<div id="dialog-form" title="Create new user">
+	  <p class="validateTips">All form fields are required.</p>
+	
+	  <form action="/directory/addStaff" method="post">
+		<fieldset>
+			<div>
+                <label for="role">Role</label>
+                <select id="role">
+                    <option value="Faculty">Faculty</option>
+                    <option value="Fellow">Fellow</option>
+                    <option value="Nurse">Nurse</option>
+                    <option value="Tech">Tech</option>
+                </select>
+			</div>
+			<div>
+                <label for="admin">Is Admin?</label>
+                <select id="admin">
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                </select>
+			</div>
+			<div>
+				<label for="firstName">First Name</label>
+				<input type="text" name="firstName" id="firstName" class="text ui-widget-content ui-corner-all">
+			</div>
+			<div>
+				<label for="lastName">Last Name</label>
+				<input type="text" name="lastName" id="lastName" class="text ui-widget-content ui-corner-all">
+			</div>
+			<div>
+				<label for="cellNumber">Cell Number</label>
+				<input type="text" name="cellNumber" id="cellNumber" class="text ui-widget-content ui-corner-all">
+			</div>
+			<div>
+				<label for="homeNumber">Home Number</label>
+				<input type="text" name="homeNumber" id="homeNumber" class="text ui-widget-content ui-corner-all">
+			</div>
+			<div>
+				<label for="pager">Pager Number</label>
+				<input type="text" name="pager" id="pager" class="text ui-widget-content ui-corner-all">
+			</div>
+			<div>
+				<label for="netID">NetID</label>
+				<input type="text" name="netID" id="netID" class="text ui-widget-content ui-corner-all">
+			</div>
+	 
+		  <!-- Allow form submission with keyboard without duplicating the dialog button -->
+		  <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+		</fieldset>
+	  </form>
+  </div>
+    
+  <div id="delete-dialog" title="Delete this contact?">
+    
+  </div>
+
+{% endblock  %}
