@@ -6,7 +6,7 @@ from datetime import date
 from flaskext.mysql import MySQL
 import mods.directory as directory
 from config import cal_mysql, dir_mysql
-from mods.directory.blueprint import User
+from mods.directory.blueprint import User, get_all_staff
 
 calendar = Blueprint('calendar',__name__,template_folder='templates',static_folder='static')
 
@@ -102,20 +102,39 @@ def get_oncall_team():
     cursor = con.cursor()
     roles = ['Faculty', 'Fellow', 'RN1', 'RN2', 'Tech1', 'Tech2']
     oncall_team = {}
-    user = 0
     for i in roles:
         cursor.execute("SELECT {role} from schedule WHERE DATE(CONVERT_TZ(NOW(), '-1:00', '-5:00'))=Day".format(role = i))
-        oncall_team[i] = str(cursor.fetchall()[user][0])
+        oncall_team[i] = str(cursor.fetchall()[0][0])  #first zero for first entry from fetchall, second zero for the actual value of (netID, )
     for i in roles:
         cursor.execute("SELECT * FROM substitutions WHERE CONVERT_TZ(NOW(), '-1:00', '-5:00') > StartTime AND CONVERT_TZ(NOW(), '-1:00', '-5:00') < EndTime AND Role = '{role}'".format(role=i))
         data = cursor.fetchall()
         if len(data) == 0:
             pass
         else:
-	    nameColumn = 4
-            oncall_team[i] = str(data[user][nameColumn])
+            oncall_team[i] = str(data[0][4]) #data[0][4] refers to the fourth column of the first entry of the fetchall. the fourth column is the netID of the sub
     print oncall_team
     return oncall_team
+
+"""
+    Gets the days user with netID $netID is on call in the future, up to $numLimit days.
+"""
+def get_user_days_oncall(netID, numLimit):
+    con = cal_mysql.connect()
+    cursor = con.cursor()
+    user = get_all_staff()[netID]
+    roles = ['Faculty', 'Fellow', 'Nurse', 'Tech']
+    if user.role == 'Faculty' or user.role == 'Fellow':
+        cursor.execute("SELECT Day FROM schedule WHERE {role} = '{netID}' AND Day >= DATE(NOW()) ORDER BY Day ASC".format(role = user.role, netID = user.netID))
+    elif user.role == 'Tech':
+        cursor.execute("SELECT Day FROM schedule WHERE (Tech1 = '{netID}' OR Tech2 = '{netID}') AND Day >= DATE(NOW()) ORDER BY Day ASC".format(netID = user.netID))
+    else:
+        cursor.execute("SELECT Day FROM schedule WHERE (RN1 = '{netID}' OR RN2 = '{netID}' OR Tech1 = '{netID}' OR Tech2 = '{netID}') AND Day >= DATE(NOW()) ORDER BY Day ASC".format(netID = user.netID))
+    data = cursor.fetchall()[:numLimit]
+    days = []
+    for i in range(len(data)):
+        days.append(data[i][0])
+    return days
+
 
 @calendar.route('/delete_call', methods=['DELETE'])
 def delete_call():

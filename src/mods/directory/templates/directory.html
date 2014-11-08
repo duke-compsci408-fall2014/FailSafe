@@ -14,8 +14,8 @@
 			  	<div class="panel-heading">Staff Directory</div>
 
 			  	<!-- Table -->
-			        	{% for group in person_list|groupby("Role") %}
-			  			<table id ="staff" class="table">
+               {% for group in person_list|groupby("Role") %}   
+                     <table id ="staff" class="table">
 						<tr>
 							<td class="roleGroup" colspan=10>{{group.grouper}}</td>
 						</tr>
@@ -24,12 +24,12 @@
 							<th>Admin</th>
 							<th>First Name</th>
 							<th>Last Name</th>
-				<th>Cell Phone</th>
+            				<th>Cell Phone</th>
 							<th>Home Phone</th>
 							<th>Pager Number</th>
-				<th>NetID</th>
-				<th>Edit</th>
-				<th>Delete</th>
+			            	<th>NetID</th>
+            				<th>Edit</th>
+			            	<th>Delete</th>
 						</tr>
 						{% for person in group.list %}
 							<tr class="entry">
@@ -45,8 +45,8 @@
 							    <td class="delete-staff" id="{{person.UserID}}"><a href="#" class="btn btn-danger btn-large">Delete &nbsp; <i class="fa fa-times"></i></a></td>
 							</tr>
 						{% endfor %}
-				</table>
-					{% endfor %}
+			    	</table>
+				{% endfor %}
             </div>
 			<button id = "create-user" type="button" class="btn btn-default btn-lg">Add New Staff</button>
 		</div>

@@ -7,7 +7,25 @@
 {% block body %}
     <div class="main">
         <div class="container">
-            Dashboard!!
+            <h1>Welcome {{user.firstName}} {{user.lastName}}!</h1>
+            <div class="panel panel-default">
+                <div class="panel-heading">Staff Directory</div>
+                    <table class="table">
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Team</th>
+                        </tr>
+                        {% for day in oncall_days %}
+                        <tr>
+                            <td>{{day}}</td>
+                            <td>All day</td>
+                            <td>Link</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}
