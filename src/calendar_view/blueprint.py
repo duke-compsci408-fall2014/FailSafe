@@ -104,7 +104,9 @@ def get_oncall_team():
     oncall_team = {}
     for i in roles:
         cursor.execute("SELECT {role} from schedule WHERE DATE(CONVERT_TZ(NOW(), '-1:00', '-5:00'))=Day".format(role = i))
-        oncall_team[i] = str(cursor.fetchall()[0][0])  #first zero for first entry from fetchall, second zero for the actual value of (netID, )
+        data = cursor.fetchall()
+        if len(data) > 0:
+            oncall_team[i] = str(data[0][0])  #first zero for first entry from fetchall, second zero for the actual value of (netID, )
     for i in roles:
         cursor.execute("SELECT * FROM substitutions WHERE CONVERT_TZ(NOW(), '-1:00', '-5:00') > StartTime AND CONVERT_TZ(NOW(), '-1:00', '-5:00') < EndTime AND Role = '{role}'".format(role=i))
         data = cursor.fetchall()

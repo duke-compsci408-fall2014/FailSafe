@@ -1,8 +1,8 @@
 from flask import Flask, render_template
-from mods.directory.blueprint import directory
-from mods.calendar.blueprint import calendar
-from mods.dashboard.blueprint import dashboard
-import mods.backend.blueprint as backend_blueprint
+from directory_view.blueprint import directory
+from calendar_view.blueprint import calendar
+from dashboard_view.blueprint import dashboard
+import backend.blueprint as backend_blueprint
 from config import dir_app as app
 
 app.register_blueprint(directory, url_prefix='/directory')
