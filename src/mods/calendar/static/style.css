@@ -1,0 +1,60 @@
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+td {
+    border: 1px solid #ddd;
+    width: 12em;
+}
+td.primary {
+	height: 2em;
+	text-align: center;
+	border-top: 2px double;
+}
+td.inside {
+	height: 2em;
+}
+td.inside:hover {
+	background-color: #CFEDED;
+}
+td.day {
+	height: 5em;
+	text-align: left;
+	vertical-align: top;
+	color: #80848A;
+}
+td.day:hover {
+	background-color: #CFEDED;
+}
+td.disabledDay {
+	height: 5em;
+	text-align: left;
+	vertical-align: top;
+	background-color: #E8E5E2;
+}
+td.header {
+	text-align: center;
+	font-size: 2em;
+	border-top: none;
+	border-left: none;
+	border-right: none;
+}
+td.weekday {
+	text-align: center;
+}
+.top {
+	border-bottom: 1px dotted #ddd;
+}
+.bottom {
+	border-top: 1px dotted #ddd;
+}   
+td.timelabel {
+	text-align: left;
+}
+.rolelabel {
+	text-align: center;
+}
+a {
+	color: black;
+	text-decoration: none;
+}
