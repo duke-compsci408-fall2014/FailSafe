@@ -45,19 +45,17 @@ def get_sub_schedule(day, month, year):
     return get_any_schedule("substitutions", "StartTime", day, month, year)
 
 def get_any_schedule(table, dateColumn, day, month, year):
-    con = cal_mysql.connect()
-    cursor = con.cursor()
-    call_list = list()
+    call_list = []
 
     if(day != None):
-	    cursor.execute("SELECT * FROM {table} WHERE DAY({col}) = {day} \
+        data = run_query(cal_mysql, "SELECT * FROM {table} WHERE DAY({col}) = {day} \
             AND MONTH({col}) = {month} AND YEAR({col}) = {year}" \
             .format(table=table, col=dateColumn, day=day, month=month, year=year))
     else:
-	    cursor.execute("SELECT * FROM {table} WHERE \
+	data = run_query(cal_mysql, "SELECT * FROM {table} WHERE \
             MONTH({dateColumn}) = {month} AND YEAR({dateColumn}) = {year}" \
             .format(table=table, dateColumn=dateColumn, month=month, year=year))
-    data = cursor.fetchall()
+
     for d in data:
         call_data = list()
         for i in range(len(d)):
