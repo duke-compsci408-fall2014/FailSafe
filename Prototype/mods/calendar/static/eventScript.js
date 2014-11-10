@@ -261,39 +261,17 @@ $(document).ready(function() {
 		return true;
           }
         }
-        
-        function AJAXJSONPost(url, data) {
-            $.ajax({
-		async: false,
-                url: url,
-                type: "POST",
-                contentType:"application/json",
-                dataType:"json",
-                data:JSON.stringify(data)
-            });
-        }
 
-        function AJAXJSONDelete(url, date) {
-            $.ajax({
-		async: false,
-                url: url,
-                type: "DELETE",
-                contentType:"application/json",
-                dataType:"json",
-                data:JSON.stringify(date)
-            });
-        }
-
-        function AJAXJSONUpdate(url, data) {
-            $.ajax({
-		async: false,
-                url: url,
-                type: "PUT",
-                contentType:"application/json",
-                dataType:"json",
-                data:JSON.stringify(data)
-            });
-        }
+	function AJAXJSONWrapper(method, url, data) {
+		$.ajax({
+			async: false,
+			url: url,
+			type: method,
+			contentType: "application/json",
+			dataType: "json",
+			data: JSON.stringify(data)
+		});
+	}
         
 	function alertOnCall() {
 		var alert_data = {
@@ -302,7 +280,7 @@ $(document).ready(function() {
 			"type":$('#type').val(),
 			"msg":$('#msg').val()
 		};
-                AJAXJSONPost("/backend/on_call", alert_data);
+                AJAXJSONWrapper("POST", "/backend/on_call", alert_data);
 		$alertDialog.dialog( "close" );
 	}
 	
@@ -312,7 +290,7 @@ $(document).ready(function() {
 		
 		var start = $('#start' + role).val();
 		var duration = parseInt($('#duration' + role).val());
-		
+
 		if(valid) {
 			var sub_data = {
 				"start":start,
@@ -320,7 +298,7 @@ $(document).ready(function() {
 				"role":$('#role' + role).val(),
 				"sub":$('#sub' + role).val()
 			};
-                        AJAXJSONPost("/calendar/addSub", sub_data);
+                        AJAXJSONWrapper("POST", "/calendar/addSub", sub_data);
 			document.getElementById("dayView").innerHTML = makeDayView();
 		}
 	}
@@ -339,7 +317,7 @@ $(document).ready(function() {
 				"tech1":$('#tech1').val(), 
 				"tech2":$('#tech2').val() 
 			};
-                        AJAXJSONPost("/calendar/addCall", oncall_data);
+                        AJAXJSONWrapper("POST", "/calendar/addCall", oncall_data);
 			$fullDialog.dialog( "close" );
 			document.getElementById("calendar").innerHTML = makeCalendar();
 		}
@@ -347,7 +325,7 @@ $(document).ready(function() {
 
 	function deleteFull() {
 		allFields.removeClass("ui-state-error");
-		AJAXJSONDelete("/calendar/delete_call", {"date": clickedSquare.id});
+		AJAXJSONWrapper("DELETE", "/calendar/delete_call", {"date": clickedSquare.id});
 		$fullCRUDDialog.dialog("close");
 		document.getElementById("calendar").innerHTML = makeCalendar();
 	}	
