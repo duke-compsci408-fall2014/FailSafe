@@ -389,167 +389,129 @@ $(document).ready(function() {
 		allFields.removeClass( "ui-state-error" );
 	  }
 	});
-	
-	var $alertDialog = $( "#alert-form" ).dialog({
-	  autoOpen: false,
-	  height: 350,
-	  width: 350,
-	  modal: true,
-	  buttons: {
+
+	var alertButtons = {
 		"Send SMS": alertOnCall,
 		Cancel: function() {
 		  $alertDialog.dialog( "close" );
 		}
-	  },
-	  close: function() {
-		alertForm[ 0 ].reset();
-		allFields.removeClass( "ui-state-error" );
-	  }
-	});
+	};
+	
+	var $alertDialog = $("#alert-form").dialog(createDialog(alertButtons, alertForm));
 
-	var $facultyDialog = $( "#Faculty-sub-form" ).dialog({
-		autoOpen: false,
-		height: 300,
-		width: 350,
-		modal: true,
-		buttons: {
-			"Create event": function() {
-				addSub("Faculty");
-			  	$facultyDialog.dialog( "close" );
-			},
-			Cancel: function() {
-			  $facultyDialog.dialog( "close" );
-			}
-		},
-		close: function() {
-			facultyForm[ 0 ].reset();
-			allFields.removeClass( "ui-state-error" );
-		}
-	});
+//	var facultyButtons = 	{
+//					"Create event": function() {
+//						addSub("Faculty");
+//						$facultyDialog.dialog( "close" );
+//					},
+//					Cancel: function() {
+//					  $facultyDialog.dialog( "close" );
+//					}
+//				};
 
-	var facultyForm = $facultyDialog.find( "form" ).on( "submit", function( event ) {
-		event.preventDefault();
-	});
+//	var $facultyDialog = $( "Faculty-sub-form" ).dialog(createDialog(facultyButtons, facultyForm));
 
-	var $fellowDialog = $( "#Fellow-sub-form" ).dialog({
-		autoOpen: false,
-		height: 300,
-		width: 350,
-		modal: true,
-		buttons: {
-			"Create event": function() {
-				addSub("Fellow");
-			  	$fellowDialog.dialog( "close" );
-			},
-			Cancel: function() {
-			  $fellowDialog.dialog( "close" );
-			}
-		},
-		close: function() {
-			fellowForm[ 0 ].reset();
-			allFields.removeClass( "ui-state-error" );
-		}
-	});
+//	var facultyForm = $facultyDialog.find( "form" ).on( "submit", function( event ) {
+//		event.preventDefault();
+//	});
 
-	var fellowForm = $fellowDialog.find( "form" ).on( "submit", function( event ) {
-		event.preventDefault();
-	});
+//	var fellowButtons = 	{
+//					"Create event": function() {
+//						addSub("Fellow");
+//						$fellowDialog.dialog( "close" );
+//					},
+//					Cancel: function() {
+//					  $fellowDialog.dialog( "close" );
+//					}
+//				};
 
-	var $rn1Dialog = $( "#RN1-sub-form" ).dialog({
-		autoOpen: false,
-		height: 300,
-		width: 350,
-		modal: true,
-		buttons: {
-			"Create event": function() {
-				addSub("RN1");
-			  	$rn1Dialog.dialog( "close" );
-			},
-			Cancel: function() {
-			  $rn1Dialog.dialog( "close" );
-			}
-		},
-		close: function() {
-			rn1Form[ 0 ].reset();
-			allFields.removeClass( "ui-state-error" );
-		}
-	});
+//	var $fellowDialog = $( "Fellow-sub-form" ).dialog(createDialog(fellowButtons, fellowForm));
+
+//	var fellowForm = $fellowDialog.find( "form" ).on( "submit", function( event ) {
+//		event.preventDefault();
+//	});
+
+	var rn1Buttons = 	{
+					"Create event": function() {
+						addSub("RN1");
+						$rn1Dialog.dialog( "close" );
+					},
+					Cancel: function() {
+					  $rn1Dialog.dialog( "close" );
+					}
+				};
+
+	var $rn1Dialog = $( "RN1-sub-form" ).dialog(createDialog(rn1Buttons, rn1Form));
 
 	var rn1Form = $rn1Dialog.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
 	});
 
-	var $rn2Dialog = $( "#RN2-sub-form" ).dialog({
-		autoOpen: false,
-		height: 300,
-		width: 350,
-		modal: true,
-		buttons: {
-			"Create event": function() {
-				addSub("RN2");
-			  	$rn2Dialog.dialog( "close" );
-			},
-			Cancel: function() {
-			  $rn2Dialog.dialog( "close" );
-			}
-		},
-		close: function() {
-			rn2Form[ 0 ].reset();
-			allFields.removeClass( "ui-state-error" );
-		}
-	});
+	var rn2Buttons = 	{
+					"Create event": function() {
+						addSub("RN2");
+						$rn2Dialog.dialog( "close" );
+					},
+					Cancel: function() {
+					  $rn2Dialog.dialog( "close" );
+					}
+				};
+
+	var $rn2Dialog = $( "RN2-sub-form" ).dialog(createDialog(rn2Buttons, rn2Form));
 
 	var rn2Form = $rn2Dialog.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
 	});
 
-	var $tech1Dialog = $( "#Tech1-sub-form" ).dialog({
-		autoOpen: false,
-		height: 300,
-		width: 350,
-		modal: true,
-		buttons: {
-			"Create event": function() {
-				addSub("Tech1");
-			  	$tech1Dialog.dialog( "close" );
-			},
-			Cancel: function() {
-			  $tech1Dialog.dialog( "close" );
-			}
-		},
-		close: function() {
-			tech1Form[ 0 ].reset();
-			allFields.removeClass( "ui-state-error" );
-		}
-	});
+	var tech1Buttons = 	{
+					"Create event": function() {
+						addSub("Tech1");
+						$tech1Dialog.dialog( "close" );
+					},
+					Cancel: function() {
+					  $tech1Dialog.dialog( "close" );
+					}
+				};
+
+	var $tech1Dialog = $( "#Tech1-sub-form" ).dialog(createDialog(tech1Buttons, tech1Form));
 
 	var tech1Form = $tech1Dialog.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
 	});
 
-	var $tech2Dialog = $( "#Tech2-sub-form" ).dialog({
-		autoOpen: false,
-		height: 300,
-		width: 350,
-		modal: true,
-		buttons: {
-			"Create event": function() {
-				addSub("Tech2");
-			  	$tech2Dialog.dialog( "close" );
-			},
-			Cancel: function() {
-			  $tech2Dialog.dialog( "close" );
-			}
-		},
-		close: function() {
-			tech2Form[ 0 ].reset();
-			allFields.removeClass( "ui-state-error" );
-		}
-	});
-
+	var tech2Buttons = {
+				"Create event": function() {
+					addSub("Tech2");
+				  	$tech2Dialog.dialog( "close" );
+				},
+				Cancel: function() {
+				  $tech2Dialog.dialog( "close" );
+				}
+			   };
+	
+	var $tech2Dialog = $( "#Tech2-sub-form" ).dialog(createDialog(tech2Buttons, tech2Form));
+	
 	var tech2Form = $tech2Dialog.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
 	});
+
+	function createCloseAction(form) {
+		return function() {
+			form[0].reset();
+			allFields.removeClass("ui-state-error");
+		};
+	}
+
+	function createDialog(buttonsList, form) {
+		return {
+			autoOpen: false,
+			height: 300,
+			width: 350,
+			modal: true,
+			buttons: buttonsList,
+			close: createCloseAction(form)
+		};
+	}
 	
 	var fullForm = $fullDialog.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
