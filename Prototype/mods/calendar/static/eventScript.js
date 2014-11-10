@@ -354,41 +354,25 @@ $(document).ready(function() {
 
 	function updateFull() {
 	}
-	
-	var $fullDialog = $( "#full-form" ).dialog({
-	  autoOpen: false,
-	  height: 350,
-	  width: 350,
-	  modal: true,
-	  buttons: {
+
+	function cancel() {
+		$(this).dialog("close");
+	}
+
+	var fullButtons = {
 		"Create event": addFull,
-		Cancel: function() {
-		  $fullDialog.dialog( "close" );
-		}
-	  },
-	  close: function() {
-		fullForm[ 0 ].reset();
-		allFields.removeClass( "ui-state-error" );
-	  }
-	});
-	
-	var $fullCRUDDialog = $( "#full-crud-form" ).dialog({
-	  autoOpen: false,
-	  height: 350,
-	  width: 350,
-	  modal: true,
-	  buttons: {
-		"Edit event": addFull,
+		Cancel: cancel
+	};
+
+	var $fullDialog = $("#full-form").dialog(createDialog(fullButtons, fullForm));
+
+	var CRUDButtons = {
+		"Edit event": updateFull,
 		"Delete": deleteFull,
-		Cancel: function() {
-		  $fullCRUDDialog.dialog( "close" );
-		}
-	  },
-	  close: function() {
-		fullCRUDForm[ 0 ].reset();
-		allFields.removeClass( "ui-state-error" );
-	  }
-	});
+		Cancel: cancel
+	};
+
+	var $fullCRUDDialog = $("#full-crud-form").dialog(createDialog(CRUDButtons, fullCRUDForm));
 
 	var alertButtons = {
 		"Send SMS": alertOnCall,
@@ -399,107 +383,53 @@ $(document).ready(function() {
 	
 	var $alertDialog = $("#alert-form").dialog(createDialog(alertButtons, alertForm));
 
-//	var facultyButtons = 	{
-//					"Create event": function() {
-//						addSub("Faculty");
-//						$facultyDialog.dialog( "close" );
-//					},
-//					Cancel: function() {
-//					  $facultyDialog.dialog( "close" );
-//					}
-//				};
+	var $facultyDialog = $( "#Faculty-sub-form" ).dialog(createDialog(createSubButtons("Faculty"), facultyForm));
 
-//	var $facultyDialog = $( "Faculty-sub-form" ).dialog(createDialog(facultyButtons, facultyForm));
+	var facultyForm = $facultyDialog.find( "form" ).on( "submit", function( event ) {
+		event.preventDefault();
+	});
 
-//	var facultyForm = $facultyDialog.find( "form" ).on( "submit", function( event ) {
-//		event.preventDefault();
-//	});
+	var $fellowDialog = $( "#Fellow-sub-form" ).dialog(createDialog(createSubButtons("Fellow"), fellowForm));
 
-//	var fellowButtons = 	{
-//					"Create event": function() {
-//						addSub("Fellow");
-//						$fellowDialog.dialog( "close" );
-//					},
-//					Cancel: function() {
-//					  $fellowDialog.dialog( "close" );
-//					}
-//				};
+	var fellowForm = $fellowDialog.find( "form" ).on( "submit", function( event ) {
+		event.preventDefault();
+	});
 
-//	var $fellowDialog = $( "Fellow-sub-form" ).dialog(createDialog(fellowButtons, fellowForm));
-
-//	var fellowForm = $fellowDialog.find( "form" ).on( "submit", function( event ) {
-//		event.preventDefault();
-//	});
-
-	var rn1Buttons = 	{
-					"Create event": function() {
-						addSub("RN1");
-						$rn1Dialog.dialog( "close" );
-					},
-					Cancel: function() {
-					  $rn1Dialog.dialog( "close" );
-					}
-				};
-
-	var $rn1Dialog = $( "RN1-sub-form" ).dialog(createDialog(rn1Buttons, rn1Form));
+	var $rn1Dialog = $( "#RN1-sub-form" ).dialog(createDialog(createSubButtons("RN1"), rn1Form));
 
 	var rn1Form = $rn1Dialog.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
 	});
 
-	var rn2Buttons = 	{
-					"Create event": function() {
-						addSub("RN2");
-						$rn2Dialog.dialog( "close" );
-					},
-					Cancel: function() {
-					  $rn2Dialog.dialog( "close" );
-					}
-				};
-
-	var $rn2Dialog = $( "RN2-sub-form" ).dialog(createDialog(rn2Buttons, rn2Form));
+	var $rn2Dialog = $( "#RN2-sub-form" ).dialog(createDialog(createSubButtons("RN2"), rn2Form));
 
 	var rn2Form = $rn2Dialog.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
 	});
 
-	var tech1Buttons = 	{
-					"Create event": function() {
-						addSub("Tech1");
-						$tech1Dialog.dialog( "close" );
-					},
-					Cancel: function() {
-					  $tech1Dialog.dialog( "close" );
-					}
-				};
-
-	var $tech1Dialog = $( "#Tech1-sub-form" ).dialog(createDialog(tech1Buttons, tech1Form));
+	var $tech1Dialog = $( "#Tech1-sub-form" ).dialog(createDialog(createSubButtons("Tech1"), tech1Form));
 
 	var tech1Form = $tech1Dialog.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
 	});
 
-	var tech2Buttons = {
-				"Create event": function() {
-					addSub("Tech2");
-				  	$tech2Dialog.dialog( "close" );
-				},
-				Cancel: function() {
-				  $tech2Dialog.dialog( "close" );
-				}
-			   };
 	
-	var $tech2Dialog = $( "#Tech2-sub-form" ).dialog(createDialog(tech2Buttons, tech2Form));
+	var $tech2Dialog = $( "#Tech2-sub-form" ).data("form", tech2Form).dialog(createDialog(createSubButtons("Tech2"), tech2Form));
 	
 	var tech2Form = $tech2Dialog.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
 	});
 
-	function createCloseAction(form) {
-		return function() {
-			form[0].reset();
-			allFields.removeClass("ui-state-error");
-		};
+	function createSubButtons(role) {
+		return	   {
+				"Create event": function() {
+					addSub(role);
+					$(this).dialog( "close" );
+				},
+				Cancel: function() {
+				  $(this).dialog( "close" );
+				}
+			   };
 	}
 
 	function createDialog(buttonsList, form) {
@@ -509,7 +439,9 @@ $(document).ready(function() {
 			width: 350,
 			modal: true,
 			buttons: buttonsList,
-			close: createCloseAction(form)
+			close: function() {
+				allFields.removeClass("ui-state-error");
+			}
 		};
 	}
 	
@@ -537,8 +469,6 @@ $(document).ready(function() {
             return function(event) {
                 clickedSquare = event.target || event.srcElement;
 		var clickedSchedule = getScheduleWithDatetime("/calendar/json_datetime_schedule", clickedSquare.id)[0];
-			//$fullDialog.dialog("open");
-			//$("#date").val(clickedSquare.id);
 		if(clickedSchedule != null) {
 			$fullCRUDDialog.dialog("open");
 			$("#dateCRUD").val(clickedSquare.id);
