@@ -69,9 +69,6 @@ $(document).ready(function() {
 		var afterMidnight = getSchedule("/calendar/jsonSubSchedule", 
 			displayTime.date() + 1, displayTime.month() + 1, displayTime.year());
 		substitutions = substitutions.concat(afterMidnight);
-		//for (idx = 0; idx < afterMidnight.length; idx++) {
-		//	substitutions.push(afterMidnight[idx]);
-		//}
 
 		var dayView = "<table align='center'>";
 		
@@ -152,39 +149,24 @@ $(document).ready(function() {
 
 		//days of the month
 		var daysInThis = displayTime.daysInMonth();
-		var daysInLast = displayTime.subtract(1, "M").daysInMonth();
-		displayTime.add(1, "M"); //revert
-		var date = displayTime.date();
-		var firstDay = displayTime.date(1).day();
-		displayTime.date(date);
-		var idx = 1;
-		
-		while (idx <= firstDay + daysInThis) {
+		var endMonthDate = moment(displayTime.format()).date(daysInThis);
+		var tempDate = moment(displayTime.format()).date(1);
+		var firstDay = tempDate.day();
+		tempDate.subtract(firstDay, "days");
+
+		while (tempDate.isBefore(endMonthDate) || tempDate.isSame(endMonthDate)) {
+			
 			calendarText += "<tr>";
 			for(i=0; i < 7; i++) {
-				
-				var currentDay;
-				var id;				
 
-				if(idx <= firstDay) {
-					currentDay = daysInLast - firstDay + idx;
-					
-					if(displayTime.month() == 0) {
-						id = moment(currentDay + " 12 " + (displayTime.year() - 1), "DD MM YYYY").format("YYYY[-]MM[-]DD");
-					}
-					else {
-						id = moment(currentDay + " " + displayTime.month() + " " + displayTime.year(), "DD MM YYYY").format("YYYY[-]MM[-]DD");
-					}
-					calendarText += "<td class='disabledDay' id=\"" + id + "\">";
-					calendarText += currentDay;
-				}
-				else if(idx <= firstDay + daysInThis) {
-					currentDay = idx - firstDay;
-					id = moment(currentDay + " " + (displayTime.month() + 1) + " " + displayTime.year(), "DD MM YYYY").format("YYYY[-]MM[-]DD");
+				var currentDay = tempDate.date();
+				var id = tempDate.format("YYYY[-]MM[-]DD");
+				
+				if(tempDate.month() == displayTime.month()) {
 					calendarText += "<td class='day' id=\"" + id + "\">";
 					calendarText += currentDay;
 					for(j = 0; j < schedule.length; j++) {
-						if(currentDay == schedule[j][0].split("-")[2]) {
+						if(id == schedule[j][0]) {
 							for(role = 0; role < 6; role++){
 								calendarText += "<br>" + schedule[j][role+1];
 							}
@@ -192,18 +174,11 @@ $(document).ready(function() {
 					}
 				}
 				else {
-					currentDay = idx - firstDay - daysInThis;
-					if(displayTime.month() == 11) {
-						id = moment(currentDay + " 1 " + (displayTime.year() + 1), "DD MM YYYY").format("YYYY[-]MM[-]DD");
-					}
-					else {
-						id = moment(currentDay + " " + (displayTime.month() + 2) + " " + displayTime.year(), "DD MM YYYY").format("YYYY[-]MM[-]DD");
-					}
 					calendarText += "<td class='disabledDay' id=\"" + id + "\">";
 					calendarText += currentDay;
 				}
 				calendarText += "</td>";
-				idx += 1;
+				tempDate.add(1, "d");
 			}
 			calendarText += "</tr>";
 		}
