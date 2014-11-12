@@ -6,7 +6,7 @@ from datetime import date
 from flaskext.mysql import MySQL
 import directory_view as directory
 from config import cal_mysql, dir_mysql
-from directory_view.blueprint import User, get_all_staff
+from directory_view.blueprint import User, get_all_staff, get_user_from_netID
 from util.mysql import run_query, run_query_with_commit
 calendar = Blueprint('calendar',__name__,template_folder='templates',static_folder='static')
 
@@ -42,7 +42,7 @@ def get_json_day_schedule():
     return jsonify(results=get_day_schedule(request.args.get('day'), request.args.get('month'), request.args.get('year')))
 
 def get_sub_schedule(day, month, year):
-    return get_any_schedule("substitutions", "StartTime", day, month, year)
+    return get_substitutions_schedule_for_date(day, month, year)
 
 def get_any_schedule(table, dateColumn, day, month, year):
     call_list = []
@@ -72,6 +72,21 @@ def get_any_schedule(table, dateColumn, day, month, year):
                     call_data.append('<b>' + userInfo[0][lastNameColumn] + '</b>' + ' ' + d[i])
         call_list.append(call_data)
     return call_list;
+
+def get_substitutions_schedule_for_date(day, month, year):
+    data = run_query(cal_mysql, "SELECT * FROM substitutions WHERE DAY(StartTime)={} AND MONTH(StartTime)={} AND YEAR(StartTime)={}".format(day, month, year))
+    shifts = []
+    for i in data:
+        shift = []
+        shift.append(i[0])      #uid
+        shift.append(str(i[1])) #start time
+        shift.append(str(i[2])) #end time
+        shift.append(i[3])      #role
+        user = get_user_from_netID(i[4])
+        shift_message = '<b>{}</b> {}'.format(user.lastName, user.netID)
+        shift.append(shift_message)
+        shifts.append(shift)
+    return shifts
 
 def getNameForID(netID):
     return run_query(dir_mysql, "SELECT * FROM tblUser WHERE NetID = '{netID}'".format(netID = netID))

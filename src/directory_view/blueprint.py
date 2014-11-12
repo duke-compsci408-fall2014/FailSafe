@@ -1,5 +1,6 @@
 from flask import Flask, Blueprint, render_template, request, Response, jsonify, session
 from config import dir_mysql, cal_mysql
+from util.mysql import *
 
 class User:
     def __init__(self, row_entry):
@@ -124,3 +125,8 @@ def get_user_from_number(number):
         newUser = User(person_data)
         return newUser
     return None
+
+def get_user_from_netID(netID):
+    data = run_query(dir_mysql, "SELECT * FROM tblUser WHERE NetID = '{netID}'".format(netID = netID))
+    newUser = User(data[0])
+    return newUser
