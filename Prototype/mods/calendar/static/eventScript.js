@@ -9,6 +9,7 @@ $(document).ready(function() {
 		allFields = $( [] ).add( faculty ).add( fellow ).add( rn1 ).add( rn2 ).add( tech1 ).add( tech2 ),
 		tips = $( ".validateTips" );
 	var roles = ["Faculty", "Fellow", "RN1", "RN2", "Tech1", "Tech2"];
+	var roleIds = ["faculty", "fellow", "rn1", "rn2", "tech1", "tech2"];
 	var clickedSquare;
     var displayTime = moment();
 
@@ -278,24 +279,29 @@ $(document).ready(function() {
 		}
 	}
 
-	function addFull() {
+	function getInputtedCall(suffix) {
 		var valid = true;
 		allFields.removeClass( "ui-state-error" );
 		
 		if(valid) {
 			var oncall_data = {
-				"date":$('#date').val(),
-				"faculty":$('#faculty').val(), 
-				"fellow":$('#fellow').val(), 
-				"rn1":$('#rn1').val(), 
-				"rn2":$('#rn2').val(),
-				"tech1":$('#tech1').val(), 
-				"tech2":$('#tech2').val() 
+				"date":$('#date' + suffix).val(),
+				"faculty":$('#faculty' + suffix).val(), 
+				"fellow":$('#fellow' + suffix).val(), 
+				"rn1":$('#rn1' + suffix).val(), 
+				"rn2":$('#rn2' + suffix).val(),
+				"tech1":$('#tech1' + suffix).val(), 
+				"tech2":$('#tech2'+ suffix).val() 
 			};
-                        AJAXJSONWrapper("POST", "/calendar/addCall", oncall_data);
-			$fullDialog.dialog( "close" );
-			document.getElementById("calendar").innerHTML = makeCalendar();
+			return oncall_data;
 		}
+	}
+
+	function addFull() {
+		oncall_data = getInputtedCall("");
+		AJAXJSONWrapper("POST", "/calendar/addCall", oncall_data);
+		$fullDialog.dialog( "close" );
+		document.getElementById("calendar").innerHTML = makeCalendar();
 	}
 
 	function deleteFull() {
@@ -306,6 +312,10 @@ $(document).ready(function() {
 	}	
 
 	function updateFull() {
+		oncall_data = getInputtedCall("CRUD");
+		AJAXJSONWrapper("PUT", "/calendar/updateCall", oncall_data);
+		$fullCRUDDialog.dialog( "close" );
+		document.getElementById("calendar").innerHTML = makeCalendar();
 	}
 
 	function cancel() {
@@ -423,8 +433,12 @@ $(document).ready(function() {
                 clickedSquare = event.target || event.srcElement;
 		var clickedSchedule = getScheduleWithDatetime("/calendar/json_datetime_schedule", clickedSquare.id)[0];
 		if(clickedSchedule != null) {
-			$fullCRUDDialog.dialog("open");
 			$("#dateCRUD").val(clickedSquare.id);
+			for(i = 0; i < 6; i++) {
+				$("#" + roleIds[i] + "CRUD").val(clickedSchedule[i+1]);
+			}
+			
+			$fullCRUDDialog.dialog("open");
 		}
 		else {
 			$fullDialog.dialog("open");

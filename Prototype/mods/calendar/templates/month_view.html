@@ -87,7 +87,7 @@
                 {% for roleId in roleIds %}
                     <div>
                         <label for="{{ roleId }}">{{roles[loop.index0]}}</label>
-                        <select name="{{ roleId }}" id="{{ roleId }}">
+                        <select name="{{ roleId }}CRUD" id="{{ roleId }}CRUD">
                             {{ directory_list }}
                             {% for dir_entry in directory_list %}
 				{% set firstName = dir_entry[3] %}
