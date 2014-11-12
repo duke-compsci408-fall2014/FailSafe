@@ -9,6 +9,7 @@ $(document).ready(function() {
 		allFields = $( [] ).add( faculty ).add( fellow ).add( rn1 ).add( rn2 ).add( tech1 ).add( tech2 ),
 		tips = $( ".validateTips" );
 	var roles = ["Faculty", "Fellow", "RN1", "RN2", "Tech1", "Tech2"];
+	var roleIds = ["faculty", "fellow", "rn1", "rn2", "tech1", "tech2"];
 	var clickedSquare;
     var displayTime = moment();
 
@@ -69,9 +70,6 @@ $(document).ready(function() {
 		var afterMidnight = getSchedule("/calendar/jsonSubSchedule", 
 			displayTime.date() + 1, displayTime.month() + 1, displayTime.year());
 		substitutions = substitutions.concat(afterMidnight);
-		//for (idx = 0; idx < afterMidnight.length; idx++) {
-		//	substitutions.push(afterMidnight[idx]);
-		//}
 
 		var dayView = "<table align='center'>";
 		
@@ -152,39 +150,24 @@ $(document).ready(function() {
 
 		//days of the month
 		var daysInThis = displayTime.daysInMonth();
-		var daysInLast = displayTime.subtract(1, "M").daysInMonth();
-		displayTime.add(1, "M"); //revert
-		var date = displayTime.date();
-		var firstDay = displayTime.date(1).day();
-		displayTime.date(date);
-		var idx = 1;
-		
-		while (idx <= firstDay + daysInThis) {
+		var endMonthDate = moment(displayTime.format()).date(daysInThis);
+		var tempDate = moment(displayTime.format()).date(1);
+		var firstDay = tempDate.day();
+		tempDate.subtract(firstDay, "days");
+
+		while (tempDate.isBefore(endMonthDate) || tempDate.isSame(endMonthDate)) {
+			
 			calendarText += "<tr>";
 			for(i=0; i < 7; i++) {
-				
-				var currentDay;
-				var id;				
 
-				if(idx <= firstDay) {
-					currentDay = daysInLast - firstDay + idx;
-					
-					if(displayTime.month() == 0) {
-						id = moment(currentDay + " 12 " + (displayTime.year() - 1), "DD MM YYYY").format("YYYY[-]MM[-]DD");
-					}
-					else {
-						id = moment(currentDay + " " + displayTime.month() + " " + displayTime.year(), "DD MM YYYY").format("YYYY[-]MM[-]DD");
-					}
-					calendarText += "<td class='disabledDay' id=\"" + id + "\">";
-					calendarText += currentDay;
-				}
-				else if(idx <= firstDay + daysInThis) {
-					currentDay = idx - firstDay;
-					id = moment(currentDay + " " + (displayTime.month() + 1) + " " + displayTime.year(), "DD MM YYYY").format("YYYY[-]MM[-]DD");
+				var currentDay = tempDate.date();
+				var id = tempDate.format("YYYY[-]MM[-]DD");
+				
+				if(tempDate.month() == displayTime.month()) {
 					calendarText += "<td class='day' id=\"" + id + "\">";
 					calendarText += currentDay;
 					for(j = 0; j < schedule.length; j++) {
-						if(currentDay == schedule[j][0].split("-")[2]) {
+						if(id == schedule[j][0]) {
 							for(role = 0; role < 6; role++){
 								calendarText += "<br>" + schedule[j][role+1];
 							}
@@ -192,18 +175,11 @@ $(document).ready(function() {
 					}
 				}
 				else {
-					currentDay = idx - firstDay - daysInThis;
-					if(displayTime.month() == 11) {
-						id = moment(currentDay + " 1 " + (displayTime.year() + 1), "DD MM YYYY").format("YYYY[-]MM[-]DD");
-					}
-					else {
-						id = moment(currentDay + " " + (displayTime.month() + 2) + " " + displayTime.year(), "DD MM YYYY").format("YYYY[-]MM[-]DD");
-					}
 					calendarText += "<td class='disabledDay' id=\"" + id + "\">";
 					calendarText += currentDay;
 				}
 				calendarText += "</td>";
-				idx += 1;
+				tempDate.add(1, "d");
 			}
 			calendarText += "</tr>";
 		}
@@ -261,39 +237,17 @@ $(document).ready(function() {
 		return true;
           }
         }
-        
-        function AJAXJSONPost(url, data) {
-            $.ajax({
-		async: false,
-                url: url,
-                type: "POST",
-                contentType:"application/json",
-                dataType:"json",
-                data:JSON.stringify(data)
-            });
-        }
 
-        function AJAXJSONDelete(url, date) {
-            $.ajax({
-		async: false,
-                url: url,
-                type: "DELETE",
-                contentType:"application/json",
-                dataType:"json",
-                data:JSON.stringify(date)
-            });
-        }
-
-        function AJAXJSONUpdate(url, data) {
-            $.ajax({
-		async: false,
-                url: url,
-                type: "PUT",
-                contentType:"application/json",
-                dataType:"json",
-                data:JSON.stringify(data)
-            });
-        }
+	function AJAXJSONWrapper(method, url, data) {
+		$.ajax({
+			async: false,
+			url: url,
+			type: method,
+			contentType: "application/json",
+			dataType: "json",
+			data: JSON.stringify(data)
+		});
+	}
         
 	function alertOnCall() {
 		var alert_data = {
@@ -302,7 +256,7 @@ $(document).ready(function() {
 			"type":$('#type').val(),
 			"msg":$('#msg').val()
 		};
-                AJAXJSONPost("/backend/on_call", alert_data);
+                AJAXJSONWrapper("POST", "/backend/on_call", alert_data);
 		$alertDialog.dialog( "close" );
 	}
 	
@@ -312,7 +266,7 @@ $(document).ready(function() {
 		
 		var start = $('#start' + role).val();
 		var duration = parseInt($('#duration' + role).val());
-		
+
 		if(valid) {
 			var sub_data = {
 				"start":start,
@@ -320,236 +274,139 @@ $(document).ready(function() {
 				"role":$('#role' + role).val(),
 				"sub":$('#sub' + role).val()
 			};
-                        AJAXJSONPost("/calendar/addSub", sub_data);
+                        AJAXJSONWrapper("POST", "/calendar/addSub", sub_data);
 			document.getElementById("dayView").innerHTML = makeDayView();
 		}
 	}
 
-	function addFull() {
+	function getInputtedCall(suffix) {
 		var valid = true;
 		allFields.removeClass( "ui-state-error" );
 		
 		if(valid) {
 			var oncall_data = {
-				"date":$('#date').val(),
-				"faculty":$('#faculty').val(), 
-				"fellow":$('#fellow').val(), 
-				"rn1":$('#rn1').val(), 
-				"rn2":$('#rn2').val(),
-				"tech1":$('#tech1').val(), 
-				"tech2":$('#tech2').val() 
+				"date":$('#date' + suffix).val(),
+				"faculty":$('#faculty' + suffix).val(), 
+				"fellow":$('#fellow' + suffix).val(), 
+				"rn1":$('#rn1' + suffix).val(), 
+				"rn2":$('#rn2' + suffix).val(),
+				"tech1":$('#tech1' + suffix).val(), 
+				"tech2":$('#tech2'+ suffix).val() 
 			};
-                        AJAXJSONPost("/calendar/addCall", oncall_data);
-			$fullDialog.dialog( "close" );
-			document.getElementById("calendar").innerHTML = makeCalendar();
+			return oncall_data;
 		}
+	}
+
+	function addFull() {
+		oncall_data = getInputtedCall("");
+		AJAXJSONWrapper("POST", "/calendar/addCall", oncall_data);
+		$fullDialog.dialog( "close" );
+		document.getElementById("calendar").innerHTML = makeCalendar();
 	}
 
 	function deleteFull() {
 		allFields.removeClass("ui-state-error");
-		AJAXJSONDelete("/calendar/delete_call", {"date": clickedSquare.id});
+		AJAXJSONWrapper("DELETE", "/calendar/delete_call", {"date": clickedSquare.id});
 		$fullCRUDDialog.dialog("close");
 		document.getElementById("calendar").innerHTML = makeCalendar();
 	}	
 
 	function updateFull() {
+		oncall_data = getInputtedCall("CRUD");
+		AJAXJSONWrapper("PUT", "/calendar/updateCall", oncall_data);
+		$fullCRUDDialog.dialog( "close" );
+		document.getElementById("calendar").innerHTML = makeCalendar();
 	}
-	
-	var $fullDialog = $( "#full-form" ).dialog({
-	  autoOpen: false,
-	  height: 350,
-	  width: 350,
-	  modal: true,
-	  buttons: {
+
+	function cancel() {
+		$(this).dialog("close");
+	}
+
+	var fullButtons = {
 		"Create event": addFull,
-		Cancel: function() {
-		  $fullDialog.dialog( "close" );
-		}
-	  },
-	  close: function() {
-		fullForm[ 0 ].reset();
-		allFields.removeClass( "ui-state-error" );
-	  }
-	});
-	
-	var $fullCRUDDialog = $( "#full-crud-form" ).dialog({
-	  autoOpen: false,
-	  height: 350,
-	  width: 350,
-	  modal: true,
-	  buttons: {
-		"Edit event": addFull,
+		Cancel: cancel
+	};
+
+	var $fullDialog = $("#full-form").dialog(createDialog(fullButtons, fullForm));
+
+	var CRUDButtons = {
+		"Edit event": updateFull,
 		"Delete": deleteFull,
-		Cancel: function() {
-		  $fullCRUDDialog.dialog( "close" );
-		}
-	  },
-	  close: function() {
-		fullCRUDForm[ 0 ].reset();
-		allFields.removeClass( "ui-state-error" );
-	  }
-	});
-	
-	var $alertDialog = $( "#alert-form" ).dialog({
-	  autoOpen: false,
-	  height: 350,
-	  width: 350,
-	  modal: true,
-	  buttons: {
+		Cancel: cancel
+	};
+
+	var $fullCRUDDialog = $("#full-crud-form").dialog(createDialog(CRUDButtons, fullCRUDForm));
+
+	var alertButtons = {
 		"Send SMS": alertOnCall,
 		Cancel: function() {
 		  $alertDialog.dialog( "close" );
 		}
-	  },
-	  close: function() {
-		alertForm[ 0 ].reset();
-		allFields.removeClass( "ui-state-error" );
-	  }
-	});
+	};
+	
+	var $alertDialog = $("#alert-form").dialog(createDialog(alertButtons, alertForm));
 
-	var $facultyDialog = $( "#Faculty-sub-form" ).dialog({
-		autoOpen: false,
-		height: 300,
-		width: 350,
-		modal: true,
-		buttons: {
-			"Create event": function() {
-				addSub("Faculty");
-			  	$facultyDialog.dialog( "close" );
-			},
-			Cancel: function() {
-			  $facultyDialog.dialog( "close" );
-			}
-		},
-		close: function() {
-			facultyForm[ 0 ].reset();
-			allFields.removeClass( "ui-state-error" );
-		}
-	});
+	var $facultyDialog = $( "#Faculty-sub-form" ).dialog(createDialog(createSubButtons("Faculty"), facultyForm));
 
 	var facultyForm = $facultyDialog.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
 	});
 
-	var $fellowDialog = $( "#Fellow-sub-form" ).dialog({
-		autoOpen: false,
-		height: 300,
-		width: 350,
-		modal: true,
-		buttons: {
-			"Create event": function() {
-				addSub("Fellow");
-			  	$fellowDialog.dialog( "close" );
-			},
-			Cancel: function() {
-			  $fellowDialog.dialog( "close" );
-			}
-		},
-		close: function() {
-			fellowForm[ 0 ].reset();
-			allFields.removeClass( "ui-state-error" );
-		}
-	});
+	var $fellowDialog = $( "#Fellow-sub-form" ).dialog(createDialog(createSubButtons("Fellow"), fellowForm));
 
 	var fellowForm = $fellowDialog.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
 	});
 
-	var $rn1Dialog = $( "#RN1-sub-form" ).dialog({
-		autoOpen: false,
-		height: 300,
-		width: 350,
-		modal: true,
-		buttons: {
-			"Create event": function() {
-				addSub("RN1");
-			  	$rn1Dialog.dialog( "close" );
-			},
-			Cancel: function() {
-			  $rn1Dialog.dialog( "close" );
-			}
-		},
-		close: function() {
-			rn1Form[ 0 ].reset();
-			allFields.removeClass( "ui-state-error" );
-		}
-	});
+	var $rn1Dialog = $( "#RN1-sub-form" ).dialog(createDialog(createSubButtons("RN1"), rn1Form));
 
 	var rn1Form = $rn1Dialog.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
 	});
 
-	var $rn2Dialog = $( "#RN2-sub-form" ).dialog({
-		autoOpen: false,
-		height: 300,
-		width: 350,
-		modal: true,
-		buttons: {
-			"Create event": function() {
-				addSub("RN2");
-			  	$rn2Dialog.dialog( "close" );
-			},
-			Cancel: function() {
-			  $rn2Dialog.dialog( "close" );
-			}
-		},
-		close: function() {
-			rn2Form[ 0 ].reset();
-			allFields.removeClass( "ui-state-error" );
-		}
-	});
+	var $rn2Dialog = $( "#RN2-sub-form" ).dialog(createDialog(createSubButtons("RN2"), rn2Form));
 
 	var rn2Form = $rn2Dialog.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
 	});
 
-	var $tech1Dialog = $( "#Tech1-sub-form" ).dialog({
-		autoOpen: false,
-		height: 300,
-		width: 350,
-		modal: true,
-		buttons: {
-			"Create event": function() {
-				addSub("Tech1");
-			  	$tech1Dialog.dialog( "close" );
-			},
-			Cancel: function() {
-			  $tech1Dialog.dialog( "close" );
-			}
-		},
-		close: function() {
-			tech1Form[ 0 ].reset();
-			allFields.removeClass( "ui-state-error" );
-		}
-	});
+	var $tech1Dialog = $( "#Tech1-sub-form" ).dialog(createDialog(createSubButtons("Tech1"), tech1Form));
 
 	var tech1Form = $tech1Dialog.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
 	});
 
-	var $tech2Dialog = $( "#Tech2-sub-form" ).dialog({
-		autoOpen: false,
-		height: 300,
-		width: 350,
-		modal: true,
-		buttons: {
-			"Create event": function() {
-				addSub("Tech2");
-			  	$tech2Dialog.dialog( "close" );
-			},
-			Cancel: function() {
-			  $tech2Dialog.dialog( "close" );
-			}
-		},
-		close: function() {
-			tech2Form[ 0 ].reset();
-			allFields.removeClass( "ui-state-error" );
-		}
-	});
-
+	
+	var $tech2Dialog = $( "#Tech2-sub-form" ).data("form", tech2Form).dialog(createDialog(createSubButtons("Tech2"), tech2Form));
+	
 	var tech2Form = $tech2Dialog.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
 	});
+
+	function createSubButtons(role) {
+		return	   {
+				"Create event": function() {
+					addSub(role);
+					$(this).dialog( "close" );
+				},
+				Cancel: function() {
+				  $(this).dialog( "close" );
+				}
+			   };
+	}
+
+	function createDialog(buttonsList, form) {
+		return {
+			autoOpen: false,
+			height: 300,
+			width: 350,
+			modal: true,
+			buttons: buttonsList,
+			close: function() {
+				allFields.removeClass("ui-state-error");
+			}
+		};
+	}
 	
 	var fullForm = $fullDialog.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
@@ -575,11 +432,13 @@ $(document).ready(function() {
             return function(event) {
                 clickedSquare = event.target || event.srcElement;
 		var clickedSchedule = getScheduleWithDatetime("/calendar/json_datetime_schedule", clickedSquare.id)[0];
-			//$fullDialog.dialog("open");
-			//$("#date").val(clickedSquare.id);
 		if(clickedSchedule != null) {
-			$fullCRUDDialog.dialog("open");
 			$("#dateCRUD").val(clickedSquare.id);
+			for(i = 0; i < 6; i++) {
+				$("#" + roleIds[i] + "CRUD").val(clickedSchedule[i+1]);
+			}
+			
+			$fullCRUDDialog.dialog("open");
 		}
 		else {
 			$fullDialog.dialog("open");

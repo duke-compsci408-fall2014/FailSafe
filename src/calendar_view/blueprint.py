@@ -142,17 +142,11 @@ def json_datetime_schedule():
     for d in data:
         call_data = list()
         for i in range(len(d)):
-            if(isinstance(d[i], datetime) or isinstance(d[i], date)):
-                call_data.append(str(d[i]))
+            detail = d[i]
+            if(isinstance(detail, datetime) or isinstance(detail, date)):
+                call_data.append(str(detail))
             else:
-                #get name from netID
-    	        userInfo = getNameForID(d[i])
-                if len(userInfo) == 0: #if couldn't find name, use whatever we have
-                    call_data.append(d[i])
-                else:
-                    firstNameColumn = 3
-                    lastNameColumn = 4
-                    call_data.append('<b>' + userInfo[0][lastNameColumn] + '</b>' + ' ' + d[i])
+	        call_data.append(detail)
         schedule.append(call_data)
     return jsonify(results=schedule)
 
@@ -170,6 +164,25 @@ def addCall():
             "'" + callData['tech2'] + "')"
     run_query_with_commit(cal_mysql, sql_query)
     return ""
+
+@calendar.route('/updateCall', methods=['PUT'])
+def updateCall():
+    con = cal_mysql.connect()
+    cursor = con.cursor()
+
+    callData = request.json
+    sql_query = "UPDATE schedule \
+        SET Faculty='{faculty}', Fellow='{fellow}', RN1='{rn1}', RN2='{rn2}', Tech1='{tech1}', Tech2='{tech2}' \
+        WHERE Day='{date}'".format(faculty=callData['faculty'], fellow=callData['fellow'],
+        rn1=callData['rn1'], rn2=callData['rn2'], tech1=callData['tech1'], tech2=callData['tech2'],
+        date=callData['date']);
+    try:
+        cursor.execute(sql_query)
+        con.commit()
+    except:
+        con.rollback()
+    return ""
+    
 
 @calendar.route('/addSub', methods=['POST'])
 def addSub():
