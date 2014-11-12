@@ -130,7 +130,7 @@ $(document).ready(function() {
 	function makeCalendar() {
 		var schedule = getSchedule("/calendar/jsonMonthSchedule", 
                         null, displayTime.month() + 1, displayTime.year());
-		var calendarText = "<table align='center'><br>";
+		var calendarText = "<table align='center'>";
 		
 		//header
 		calendarText += "<tr><td class='header' colspan='7' id='header'>";
