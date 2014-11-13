@@ -27,7 +27,7 @@ def get_directory_list():
 
 @calendar.route('/monthSchedule')
 def get_month_schedule(month, year):
-    return get_any_schedule("schedule", "Day", None, month, year)
+    return get_default_schedule_for_month(month, year)
 
 @calendar.route('/jsonMonthSchedule')
 def get_json_month_schedule():
@@ -35,7 +35,7 @@ def get_json_month_schedule():
 
 @calendar.route('/daySchedule')
 def get_day_schedule(day, month, year):
-    return get_any_schedule("schedule", "Day", day, month, year)
+    return get_default_schedule_for_date(day, month, year)
 
 @calendar.route('/jsonDaySchedule')
 def get_json_day_schedule():
@@ -44,34 +44,31 @@ def get_json_day_schedule():
 def get_sub_schedule(day, month, year):
     return get_substitutions_schedule_for_date(day, month, year)
 
-def get_any_schedule(table, dateColumn, day, month, year):
-    call_list = []
+def get_default_schedule_for_month(month, year):
+    data = run_query(cal_mysql, "SELECT * FROM schedule WHERE MONTH(Day)={} AND YEAR(Day)={}".format(month, year))
+    processed_schedules = []
+    for i in data:
+        processed_schedule = []
+        date = str(i[0])
+        processed_schedule.append(date)
+        for j in range(6):
+            user = get_user_from_netID(i[j + 1])
+            shift_message = '<b>{}</b> {}'.format(user.lastName, user.netID)
+            processed_schedule.append(shift_message)
+        processed_schedules.append(processed_schedule)
+    return processed_schedules
 
-    if(day != None):
-        data = run_query(cal_mysql, "SELECT * FROM {table} WHERE DAY({col}) = {day} \
-            AND MONTH({col}) = {month} AND YEAR({col}) = {year}" \
-            .format(table=table, col=dateColumn, day=day, month=month, year=year))
-    else:
-	data = run_query(cal_mysql, "SELECT * FROM {table} WHERE \
-            MONTH({dateColumn}) = {month} AND YEAR({dateColumn}) = {year}" \
-            .format(table=table, dateColumn=dateColumn, month=month, year=year))
-
-    for d in data:
-        call_data = list()
-        for i in range(len(d)):
-            if(isinstance(d[i], datetime) or isinstance(d[i], date)):
-                call_data.append(str(d[i]))
-            else:
-                #get name from netID
-		userInfo = getNameForID(d[i])
-                if len(userInfo) == 0: #if couldn't find name, use whatever we have
-                    call_data.append(d[i])
-                else:
-                    firstNameColumn = 3
-                    lastNameColumn = 4
-                    call_data.append('<b>' + userInfo[0][lastNameColumn] + '</b>' + ' ' + d[i])
-        call_list.append(call_data)
-    return call_list;
+def get_default_schedule_for_date(day, month, year):
+    data = run_query(cal_mysql, "SELECT * FROM schedule WHERE DAY(Day)={} AND MONTH(Day)={} AND YEAR(Day)={}".format(day, month, year))
+    schedule = data[0]
+    processed_schedule = [[]]
+    date = str(schedule[0])
+    processed_schedule[0].append(date)
+    for i in range(6):
+        user = get_user_from_netID(schedule[i + 1])
+        shift_message = '<b>{}</b> {}'.format(user.lastName, user.netID)
+        processed_schedule[0].append(shift_message)
+    return processed_schedule
 
 def get_substitutions_schedule_for_date(day, month, year):
     data = run_query(cal_mysql, "SELECT * FROM substitutions WHERE DAY(StartTime)={} AND MONTH(StartTime)={} AND YEAR(StartTime)={}".format(day, month, year))
