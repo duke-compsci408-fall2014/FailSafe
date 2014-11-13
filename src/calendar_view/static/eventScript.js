@@ -20,13 +20,13 @@ $(document).ready(function() {
 		document.getElementById("dayView").innerHTML = makeDayView();
 	}
 
-	function getScheduleWithDatetime(endpoint, date) {
+	function getScheduleWithDatetime(endpoint, requestParams) {
 		var schedule;
 		$.ajax({
 			url:endpoint,
 			async:false,
 			dataType:'json',
-			data: {"datetime": date},
+			data: requestParams,
 			success: function(json) {
 				schedule = json.results;
 			}
@@ -333,7 +333,7 @@ $(document).ready(function() {
 			"type":$('#type').val(),
 			"msg":$('#msg').val()
 		};
-                AJAXJSONWrapper("POST", "/backend/on_call", alert_data);
+		AJAXJSONWrapper("POST", "/backend/on_call", alert_data);
 		$alertDialog.dialog( "close" );
 	}
 
@@ -343,43 +343,6 @@ $(document).ready(function() {
 	};
 	
 	var $alertDialog = $("#alert-form").dialog(createDialog(alertButtons, alertForm));
-
-	var $facultyCRUDDialog = $( "#Faculty-sub-CRUD-form" ).dialog(createDialog(createCRUDSubButtons("Faculty"), facultyForm));
-
-	var facultyCRUDForm = $facultyCRUDDialog.find( "form" ).on( "submit", function( event ) {
-		event.preventDefault();
-	});
-
-	var $fellowCRUDDialog = $( "#Fellow-sub-CRUD-form" ).dialog(createDialog(createCRUDSubButtons("Fellow"), fellowForm));
-
-	var fellowCRUDForm = $fellowCRUDDialog.find( "form" ).on( "submit", function( event ) {
-		event.preventDefault();
-	});
-
-	var $rn1CRUDDialog = $( "#RN1-sub-CRUD-form" ).dialog(createDialog(createCRUDSubButtons("RN1"), rn1Form));
-
-	var rn1CRUDForm = $rn1CRUDDialog.find( "form" ).on( "submit", function( event ) {
-		event.preventDefault();
-	});
-
-	var $rn2CRUDDialog = $( "#RN2-sub-CRUD-form" ).dialog(createDialog(createCRUDSubButtons("RN2"), rn2Form));
-
-	var rn2CRUDForm = $rn2CRUDDialog.find( "form" ).on( "submit", function( event ) {
-		event.preventDefault();
-	});
-
-	var $tech1CRUDDialog = $( "#Tech1-sub-CRUD-form" ).dialog(createDialog(createCRUDSubButtons("Tech1"), tech1Form));
-
-	var tech1CRUDForm = $tech1CRUDDialog.find( "form" ).on( "submit", function( event ) {
-		event.preventDefault();
-	});
-
-	
-	var $tech2CRUDDialog = $( "#Tech2-sub-CRUD-form" ).dialog(createDialog(createCRUDSubButtons("Tech2"), tech2Form));
-	
-	var tech2CRUDForm = $tech2CRUDDialog.find( "form" ).on( "submit", function( event ) {
-		event.preventDefault();
-	});
 
 	function createSubButtons(role) {
 		return	   {
@@ -441,7 +404,7 @@ $(document).ready(function() {
         function handleDateClick(fieldToFill) {
             return function(event) {
                 clickedSquare = event.target || event.srcElement;
-		var clickedSchedule = getScheduleWithDatetime("/calendar/json_datetime_schedule", clickedSquare.id)[0];
+		var clickedSchedule = getScheduleWithDatetime("/calendar/json_datetime_schedule", {"datetime": clickedSquare.id})[0];
 		if(clickedSchedule != null) {
 			$("#dateCRUD").val(clickedSquare.id);
 			for(i = 0; i < 6; i++) {
@@ -456,20 +419,27 @@ $(document).ready(function() {
 		}
             };
         }
-
+	
 	function handleSubClick(startField, roleField) {
 		return function(event) {
 			var columnNumber = $(event.target).index() + 1;
 			var role = $('th:nth-child(' + columnNumber + ')').text();
-			var $dialog = $( "#" + role + "-sub-form" ).dialog(createDialog(createSubButtons(role), null));
+			var roleID = role;
+			var buttons = createSubButtons(role);
+			clickedSquare = event.target || event.srcElement;
+			var clickedSchedule = getScheduleWithDatetime("/calendar/json_datetime_substitute", {"datetime": clickedSquare.id, "role": role})[0];
+			if(clickedSchedule != null) {
+				roleID = "CRUD" + role;
+				buttons = createCRUDSubButtons(role);
+			}
+			var $dialog = $( "#" + roleID + "-sub-form" ).dialog(createDialog(buttons, null));
 
 			var form = $dialog.find( "form" ).on( "submit", function( event ) {
 				event.preventDefault();
 			});
-			clickedSquare = event.target || event.srcElement;
 			$dialog.dialog("open");
-			$(startField + role).val(clickedSquare.id);
-			$(roleField + role).val(role);
+			$(startField + roleID).val(clickedSquare.id);
+			$(roleField + roleID).val(role);
 		};
 	}
 });

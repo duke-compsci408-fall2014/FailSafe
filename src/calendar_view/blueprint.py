@@ -132,24 +132,12 @@ def get_user_days_oncall(netID, numLimit):
         days.append(data[i][0])
     return days
 
-
-@calendar.route('/delete_call', methods=['DELETE'])
-def delete_call():
-    date = request.json
-    sql_query = "DELETE FROM schedule WHERE Day = '" + date['date'] + "'";
-    run_query_with_commit(cal_mysql, sql_query)
-    return ""
-
 @calendar.route('/json_datetime_schedule')
 def json_datetime_schedule():
-    con = cal_mysql.connect()
-    cursor = con.cursor()
-
     queryDate = request.args.get('datetime');
     sql_query = "SELECT * FROM schedule WHERE Day = '" + queryDate + "'";
-    cursor.execute(sql_query);
 
-    data = cursor.fetchall()
+    data = run_query(cal_mysql, sql_query)
     schedule = []
     for d in data:
         call_data = list()
@@ -161,6 +149,51 @@ def json_datetime_schedule():
 	        call_data.append(detail)
         schedule.append(call_data)
     return jsonify(results=schedule)
+
+@calendar.route('/json_datetime_substitute')
+def json_datetime_substitute():
+    time = request.args.get('datetime');
+    role = request.args.get('role');
+    sql_query = "SELECT * FROM substitutions WHERE '" + time + "' BETWEEN StartTime AND EndTime AND Role='" + role + "'";
+
+    data = run_query(cal_mysql, sql_query)
+    schedule = []
+    for d in data:
+        sub_data = list()
+        for i in range(len(d)):
+            detail = d[i]
+            if(isinstance(detail, datetime) or isinstance(detail, date)):
+                sub_data.append(str(detail))
+            else:
+	        sub_data.append(detail)
+        schedule.append(sub_data)
+    return jsonify(results=schedule)
+
+
+@calendar.route('/delete_call', methods=['DELETE'])
+def delete_call():
+    date = request.json
+    sql_query = "DELETE FROM schedule WHERE Day = '" + date['date'] + "'";
+    run_query_with_commit(cal_mysql, sql_query)
+    return ""
+
+@calendar.route('/delete_substitute', methods=['DELETE'])
+def delete_substitute():
+    time = request.json
+    sql_query = "DELETE FROM substitutions WHERE '" +  time['time'] +  "' BETWEEN StartTime AND EndTime";
+    run_query_with_commit(cal_mysql, sql_query)
+    return ""
+
+@calendar.route('/updateCall', methods=['PUT'])
+def updateCall():
+    callData = request.json
+    sql_query = "UPDATE schedule \
+        SET Faculty='{faculty}', Fellow='{fellow}', RN1='{rn1}', RN2='{rn2}', Tech1='{tech1}', Tech2='{tech2}' \
+        WHERE Day='{date}'".format(faculty=callData['faculty'], fellow=callData['fellow'],
+        rn1=callData['rn1'], rn2=callData['rn2'], tech1=callData['tech1'], tech2=callData['tech2'],
+        date=callData['date']);
+    run_query_with_commit(cal_mysql, sql_query)
+    return ""
 
 @calendar.route('/addCall', methods=['POST'])
 def addCall():
@@ -176,18 +209,6 @@ def addCall():
             "'" + callData['tech2'] + "')"
     run_query_with_commit(cal_mysql, sql_query)
     return ""
-
-@calendar.route('/updateCall', methods=['PUT'])
-def updateCall():
-    callData = request.json
-    sql_query = "UPDATE schedule \
-        SET Faculty='{faculty}', Fellow='{fellow}', RN1='{rn1}', RN2='{rn2}', Tech1='{tech1}', Tech2='{tech2}' \
-        WHERE Day='{date}'".format(faculty=callData['faculty'], fellow=callData['fellow'],
-        rn1=callData['rn1'], rn2=callData['rn2'], tech1=callData['tech1'], tech2=callData['tech2'],
-        date=callData['date']);
-    run_query_with_commit(cal_mysql, sql_query)
-    return ""
-
 
 @calendar.route('/addSub', methods=['POST'])
 def addSub():
