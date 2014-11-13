@@ -179,22 +179,15 @@ def addCall():
 
 @calendar.route('/updateCall', methods=['PUT'])
 def updateCall():
-    con = cal_mysql.connect()
-    cursor = con.cursor()
-
     callData = request.json
     sql_query = "UPDATE schedule \
         SET Faculty='{faculty}', Fellow='{fellow}', RN1='{rn1}', RN2='{rn2}', Tech1='{tech1}', Tech2='{tech2}' \
         WHERE Day='{date}'".format(faculty=callData['faculty'], fellow=callData['fellow'],
         rn1=callData['rn1'], rn2=callData['rn2'], tech1=callData['tech1'], tech2=callData['tech2'],
         date=callData['date']);
-    try:
-        cursor.execute(sql_query)
-        con.commit()
-    except:
-        con.rollback()
+    run_query_with_commit(cal_mysql, sql_query)
     return ""
-    
+
 
 @calendar.route('/addSub', methods=['POST'])
 def addSub():
