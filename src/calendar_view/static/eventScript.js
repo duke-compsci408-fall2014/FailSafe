@@ -11,7 +11,7 @@ $(document).ready(function() {
 	var roles = ["Faculty", "Fellow", "RN1", "RN2", "Tech1", "Tech2"];
 	var roleIds = ["faculty", "fellow", "rn1", "rn2", "tech1", "tech2"];
 	var clickedSquare;
-    var displayTime = moment();
+   	var displayTime = moment();
 
 	if(document.getElementById("calendar") != null) {
 		document.getElementById("calendar").innerHTML = makeCalendar();
@@ -248,17 +248,6 @@ $(document).ready(function() {
 			data: JSON.stringify(data)
 		});
 	}
-        
-	function alertOnCall() {
-		var alert_data = {
-			"eta":$('#eta').val(),
-			"location":$('#location').val(),
-			"type":$('#type').val(),
-			"msg":$('#msg').val()
-		};
-                AJAXJSONWrapper("POST", "/backend/on_call", alert_data);
-		$alertDialog.dialog( "close" );
-	}
 	
 	function addSub(role) {
 		var valid = true;
@@ -304,6 +293,17 @@ $(document).ready(function() {
 		document.getElementById("calendar").innerHTML = makeCalendar();
 	}
 
+	function cancel() {
+		$(this).dialog("close");
+	}
+
+	var fullButtons = {
+		"Create event": addFull,
+		Cancel: cancel
+	};
+
+	var $fullDialog = $("#full-form").dialog(createDialog(fullButtons, fullForm));
+
 	function deleteFull() {
 		allFields.removeClass("ui-state-error");
 		AJAXJSONWrapper("DELETE", "/calendar/delete_call", {"date": clickedSquare.id});
@@ -318,17 +318,6 @@ $(document).ready(function() {
 		document.getElementById("calendar").innerHTML = makeCalendar();
 	}
 
-	function cancel() {
-		$(this).dialog("close");
-	}
-
-	var fullButtons = {
-		"Create event": addFull,
-		Cancel: cancel
-	};
-
-	var $fullDialog = $("#full-form").dialog(createDialog(fullButtons, fullForm));
-
 	var CRUDButtons = {
 		"Edit event": updateFull,
 		"Delete": deleteFull,
@@ -336,50 +325,59 @@ $(document).ready(function() {
 	};
 
 	var $fullCRUDDialog = $("#full-crud-form").dialog(createDialog(CRUDButtons, fullCRUDForm));
+        
+	function alertOnCall() {
+		var alert_data = {
+			"eta":$('#eta').val(),
+			"location":$('#location').val(),
+			"type":$('#type').val(),
+			"msg":$('#msg').val()
+		};
+                AJAXJSONWrapper("POST", "/backend/on_call", alert_data);
+		$alertDialog.dialog( "close" );
+	}
 
 	var alertButtons = {
 		"Send SMS": alertOnCall,
-		Cancel: function() {
-		  $alertDialog.dialog( "close" );
-		}
+		Cancel: cancel 
 	};
 	
 	var $alertDialog = $("#alert-form").dialog(createDialog(alertButtons, alertForm));
 
-	var $facultyDialog = $( "#Faculty-sub-form" ).dialog(createDialog(createSubButtons("Faculty"), facultyForm));
+	var $facultyCRUDDialog = $( "#Faculty-sub-CRUD-form" ).dialog(createDialog(createCRUDSubButtons("Faculty"), facultyForm));
 
-	var facultyForm = $facultyDialog.find( "form" ).on( "submit", function( event ) {
+	var facultyCRUDForm = $facultyCRUDDialog.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
 	});
 
-	var $fellowDialog = $( "#Fellow-sub-form" ).dialog(createDialog(createSubButtons("Fellow"), fellowForm));
+	var $fellowCRUDDialog = $( "#Fellow-sub-CRUD-form" ).dialog(createDialog(createCRUDSubButtons("Fellow"), fellowForm));
 
-	var fellowForm = $fellowDialog.find( "form" ).on( "submit", function( event ) {
+	var fellowCRUDForm = $fellowCRUDDialog.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
 	});
 
-	var $rn1Dialog = $( "#RN1-sub-form" ).dialog(createDialog(createSubButtons("RN1"), rn1Form));
+	var $rn1CRUDDialog = $( "#RN1-sub-CRUD-form" ).dialog(createDialog(createCRUDSubButtons("RN1"), rn1Form));
 
-	var rn1Form = $rn1Dialog.find( "form" ).on( "submit", function( event ) {
+	var rn1CRUDForm = $rn1CRUDDialog.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
 	});
 
-	var $rn2Dialog = $( "#RN2-sub-form" ).dialog(createDialog(createSubButtons("RN2"), rn2Form));
+	var $rn2CRUDDialog = $( "#RN2-sub-CRUD-form" ).dialog(createDialog(createCRUDSubButtons("RN2"), rn2Form));
 
-	var rn2Form = $rn2Dialog.find( "form" ).on( "submit", function( event ) {
+	var rn2CRUDForm = $rn2CRUDDialog.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
 	});
 
-	var $tech1Dialog = $( "#Tech1-sub-form" ).dialog(createDialog(createSubButtons("Tech1"), tech1Form));
+	var $tech1CRUDDialog = $( "#Tech1-sub-CRUD-form" ).dialog(createDialog(createCRUDSubButtons("Tech1"), tech1Form));
 
-	var tech1Form = $tech1Dialog.find( "form" ).on( "submit", function( event ) {
+	var tech1CRUDForm = $tech1CRUDDialog.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
 	});
 
 	
-	var $tech2Dialog = $( "#Tech2-sub-form" ).data("form", tech2Form).dialog(createDialog(createSubButtons("Tech2"), tech2Form));
+	var $tech2CRUDDialog = $( "#Tech2-sub-CRUD-form" ).dialog(createDialog(createCRUDSubButtons("Tech2"), tech2Form));
 	
-	var tech2Form = $tech2Dialog.find( "form" ).on( "submit", function( event ) {
+	var tech2CRUDForm = $tech2CRUDDialog.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
 	});
 
@@ -389,9 +387,21 @@ $(document).ready(function() {
 					addSub(role);
 					$(this).dialog( "close" );
 				},
-				Cancel: function() {
-				  $(this).dialog( "close" );
-				}
+				Cancel: cancel
+			   };
+	}
+
+	function createCRUDSubButtons(role) {
+		return     {
+				"Update Sub": function() {
+					updateSub(role);
+					cancel();
+				},
+				"Delete Sub": function() {
+					deleteSub(role);
+					cancel();
+				},
+				Cancel: cancel
 			   };
 	}
 
@@ -451,21 +461,13 @@ $(document).ready(function() {
 		return function(event) {
 			var columnNumber = $(event.target).index() + 1;
 			var role = $('th:nth-child(' + columnNumber + ')').text();
-			var roleDialog;
-			if(role == "Faculty")
-				roleDialog = $facultyDialog;
-			if(role == "Fellow")
-				roleDialog = $fellowDialog;
-			if(role == "RN1")
-				roleDialog = $rn1Dialog;
-			if(role == "RN2")
-				roleDialog = $rn2Dialog;
-			if(role == "Tech1")
-				roleDialog = $tech1Dialog;
-			if(role == "Tech2")
-				roleDialog = $tech2Dialog;
+			var $dialog = $( "#" + role + "-sub-form" ).dialog(createDialog(createSubButtons(role), null));
+
+			var form = $dialog.find( "form" ).on( "submit", function( event ) {
+				event.preventDefault();
+			});
 			clickedSquare = event.target || event.srcElement;
-			roleDialog.dialog("open");
+			$dialog.dialog("open");
 			$(startField + role).val(clickedSquare.id);
 			$(roleField + role).val(role);
 		};
