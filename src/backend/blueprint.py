@@ -78,6 +78,7 @@ def loop_users(netIDs, message, delay, repeats):
 
 @backend.route("/sandbox")
 def sandbox():
+    send_page("9199707723", "PAGING WORKSSSSSS")
     log(get_oncall_team())
     return "a"
 
