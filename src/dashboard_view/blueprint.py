@@ -5,10 +5,13 @@ dashboard = Blueprint('dashboard',__name__, template_folder='templates', static_
 
 @dashboard.route('/', methods=['GET', 'POST'])
 def show_dashboard():
-    session['user_netid'] = str(request.environ['REMOTE_USER'][:request.environ['REMOTE_USER'].index('@')])
-    if 'user_netid' in session:
-        netID = session['user_netid']
-        user = get_all_staff()[netID]
-        oncall_days = get_user_days_oncall(netID, 5)
-        return render_template('dashboard.html', user=user, oncall_days=oncall_days)
-    return render_template('dashboard.html')
+    try:
+        session['user_netid'] = str(request.environ['REMOTE_USER'][:request.environ['REMOTE_USER'].index('@')])
+        if 'user_netid' in session and session['user_netid'] in get_all_staff():
+            netID = session['user_netid']
+            user = get_all_staff()[netID]
+            oncall_days = get_user_days_oncall(netID, 5)
+            return render_template('dashboard.html', user=user, oncall_days=oncall_days)
+        return "user not valid"
+    except Exception as a:
+        return str(a.message)
