@@ -179,8 +179,9 @@ def delete_call():
 
 @calendar.route('/delete_substitute', methods=['DELETE'])
 def delete_substitute():
-    time = request.json
-    sql_query = "DELETE FROM substitutions WHERE '" +  time['time'] +  "' BETWEEN StartTime AND EndTime";
+    time = request.json['time']
+    role = request.json['role']
+    sql_query = "DELETE FROM substitutions WHERE Role='" + role + "' AND '" +  time +  "' BETWEEN StartTime AND EndTime";
     run_query_with_commit(cal_mysql, sql_query)
     return ""
 

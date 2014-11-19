@@ -351,21 +351,30 @@ $(document).ready(function() {
 					$(this).dialog( "close" );
 				},
 				Cancel: cancel
-			   };
+		};
 	}
+
+    function deleteSub(role) {
+        var role_data = {
+            "time":$('#startCRUD' + role).val(),
+            "role":role
+        };
+        AJAXJSONWrapper("DELETE", "delete_substitute", role_data);
+		document.getElementById("dayView").innerHTML = makeDayView();
+    }
 
 	function createCRUDSubButtons(role) {
 		return     {
 				"Update Sub": function() {
 					updateSub(role);
-					cancel();
+					$(this).dialog( "close" );
 				},
 				"Delete Sub": function() {
 					deleteSub(role);
-					cancel();
+					$(this).dialog( "close" );
 				},
 				Cancel: cancel
-			   };
+		};
 	}
 
 	function createDialog(buttonsList, form) {
@@ -397,49 +406,60 @@ $(document).ready(function() {
 		$alertDialog.dialog('open');
 	});
 
-	$('div').on('click', 'td.inside', handleSubClick("#start", "#role"));
+	$('div').on('click', 'td.inside', handleSubClick("#start", "#role", "#duration", "#sub"));
 	
 	$("div").on('click', 'td.day', handleDateClick());
         
-        function handleDateClick(fieldToFill) {
-            return function(event) {
-                clickedSquare = event.target || event.srcElement;
-		var clickedSchedule = getScheduleWithDatetime("/calendar/json_datetime_schedule", {"datetime": clickedSquare.id})[0];
-		if(clickedSchedule != null) {
-			$("#dateCRUD").val(clickedSquare.id);
-			for(i = 0; i < 6; i++) {
-				$("#" + roleIds[i] + "CRUD").val(clickedSchedule[i+1]);
-			}
-			
-			$fullCRUDDialog.dialog("open");
-		}
-		else {
-			$fullDialog.dialog("open");
-			$("#date").val(clickedSquare.id);
-		}
-            };
-        }
+    function handleDateClick(fieldToFill) {
+        return function(event) {
+            clickedSquare = event.target || event.srcElement;
+            var clickedSchedule = getScheduleWithDatetime("/calendar/json_datetime_schedule", {"datetime": clickedSquare.id})[0];
+            if(clickedSchedule != null) {
+                $("#dateCRUD").val(clickedSquare.id);
+                for(i = 0; i < 6; i++) {
+                    $("#" + roleIds[i] + "CRUD").val(clickedSchedule[i+1]);
+                }
+                
+                $fullCRUDDialog.dialog("open");
+            }
+            else {
+                $fullDialog.dialog("open");
+                $("#date").val(clickedSquare.id);
+            }
+        };
+    }
 	
-	function handleSubClick(startField, roleField) {
+	function handleSubClick(startField, roleField, durationField, subField) {
 		return function(event) {
 			var columnNumber = $(event.target).index() + 1;
 			var role = $('th:nth-child(' + columnNumber + ')').text();
-			var roleID = role;
-			var buttons = createSubButtons(role);
 			clickedSquare = event.target || event.srcElement;
-			var clickedSchedule = getScheduleWithDatetime("/calendar/json_datetime_substitute", {"datetime": clickedSquare.id, "role": role})[0];
+			
+            var startTime = clickedSquare.id;
+            var roleID = role;
+            var duration = "1";
+            var buttons = createSubButtons(role);
+			
+            var clickedSchedule = getScheduleWithDatetime("/calendar/json_datetime_substitute", {"datetime": moment(clickedSquare.id).add(1, 's').format(), "role": role})[0];
 			if(clickedSchedule != null) {
 				roleID = "CRUD" + role;
+                startTime = clickedSchedule[1];
+                var endTime = clickedSchedule[2];
+                var duration = moment(endTime).hours() - moment(startTime).hours();
+                $(subField + roleID).val(clickedSchedule[4]);
 				buttons = createCRUDSubButtons(role);
 			}
-			var $dialog = $( "#" + roleID + "-sub-form" ).dialog(createDialog(buttons, null));
-
-			var form = $dialog.find( "form" ).on( "submit", function( event ) {
+            
+            $(startField + roleID).val(startTime);
+			$(roleField + roleID).val(role);
+            $(durationField + roleID).val(duration);
+			
+            var $dialog = $( "#" + roleID + "-sub-form" ).dialog(createDialog(buttons, null));
+            var form = $dialog.find( "form" ).on( "submit", function( event ) {
 				event.preventDefault();
 			});
-			$dialog.dialog("open");
-			$(startField + roleID).val(clickedSquare.id);
-			$(roleField + roleID).val(role);
+			
+            $dialog.dialog("open");
 		};
 	}
 });
