@@ -60,15 +60,17 @@ def get_default_schedule_for_month(month, year):
 
 def get_default_schedule_for_date(day, month, year):
     data = run_query(cal_mysql, "SELECT * FROM schedule WHERE DAY(Day)={} AND MONTH(Day)={} AND YEAR(Day)={}".format(day, month, year))
-    schedule = data[0]
-    processed_schedule = [[]]
-    date = str(schedule[0])
-    processed_schedule[0].append(date)
-    for i in range(6):
-        user = get_user_from_netID(schedule[i + 1])
-        shift_message = '<b>{}</b> {}'.format(user.lastName, user.netID)
-        processed_schedule[0].append(shift_message)
-    return processed_schedule
+    if(len(data) > 0):
+        schedule = data[0]
+        processed_schedule = [[]]
+        date = str(schedule[0])
+        processed_schedule[0].append(date)
+        for i in range(6):
+            user = get_user_from_netID(schedule[i + 1])
+            shift_message = '<b>{}</b> {}'.format(user.lastName, user.netID)
+            processed_schedule[0].append(shift_message)
+        return processed_schedule
+    return "";
 
 def get_substitutions_schedule_for_date(day, month, year):
     data = run_query(cal_mysql, "SELECT * FROM substitutions WHERE DAY(StartTime)={} AND MONTH(StartTime)={} AND YEAR(StartTime)={}".format(day, month, year))
@@ -132,24 +134,12 @@ def get_user_days_oncall(netID, numLimit):
         days.append(data[i][0])
     return days
 
-
-@calendar.route('/delete_call', methods=['DELETE'])
-def delete_call():
-    date = request.json
-    sql_query = "DELETE FROM schedule WHERE Day = '" + date['date'] + "'";
-    run_query_with_commit(cal_mysql, sql_query)
-    return ""
-
 @calendar.route('/json_datetime_schedule')
 def json_datetime_schedule():
-    con = cal_mysql.connect()
-    cursor = con.cursor()
-
     queryDate = request.args.get('datetime');
     sql_query = "SELECT * FROM schedule WHERE Day = '" + queryDate + "'";
-    cursor.execute(sql_query);
 
-    data = cursor.fetchall()
+    data = run_query(cal_mysql, sql_query)
     schedule = []
     for d in data:
         call_data = list()
@@ -162,8 +152,65 @@ def json_datetime_schedule():
         schedule.append(call_data)
     return jsonify(results=schedule)
 
-@calendar.route('/addCall', methods=['POST'])
-def addCall():
+@calendar.route('/json_datetime_substitute')
+def json_datetime_substitute():
+    time = request.args.get('datetime');
+    role = request.args.get('role');
+    sql_query = "SELECT * FROM substitutions WHERE '" + time + "' BETWEEN StartTime AND EndTime AND Role='" + role + "'";
+
+    data = run_query(cal_mysql, sql_query)
+    schedule = []
+    for d in data:
+        sub_data = list()
+        for i in range(len(d)):
+            detail = d[i]
+            if(isinstance(detail, datetime) or isinstance(detail, date)):
+                sub_data.append(str(detail))
+            else:
+	        sub_data.append(detail)
+        schedule.append(sub_data)
+    return jsonify(results=schedule)
+
+
+@calendar.route('/delete_call', methods=['DELETE'])
+def delete_call():
+    date = request.json
+    sql_query = "DELETE FROM schedule WHERE Day = '" + date['date'] + "'";
+    run_query_with_commit(cal_mysql, sql_query)
+    return ""
+
+@calendar.route('/delete_substitute', methods=['DELETE'])
+def delete_substitute():
+    time = request.json['time']
+    role = request.json['role']
+    sql_query = "DELETE FROM substitutions WHERE Role='" + role + "' AND '" +  time +  "' BETWEEN StartTime AND EndTime";
+    run_query_with_commit(cal_mysql, sql_query)
+    return ""
+
+@calendar.route('/update_call', methods=['PUT'])
+def update_call():
+    callData = request.json
+    sql_query = "UPDATE schedule \
+        SET Faculty='{faculty}', Fellow='{fellow}', RN1='{rn1}', RN2='{rn2}', Tech1='{tech1}', Tech2='{tech2}' \
+        WHERE Day='{date}'".format(faculty=callData['faculty'], fellow=callData['fellow'],
+        rn1=callData['rn1'], rn2=callData['rn2'], tech1=callData['tech1'], tech2=callData['tech2'],
+        date=callData['date']);
+    run_query_with_commit(cal_mysql, sql_query)
+    return ""
+
+@calendar.route('/update_substitute', methods=['PUT'])
+def update_substitute():
+    subData = request.json
+    sql_query = "UPDATE substitutions \
+            SET StartTime='{start}', EndTime='{end}', SubID='{sub}' \
+            WHERE Role='{role}' AND StartTime='{originalStart}'".format(
+            start=subData['start'], end=subData['end'], sub=subData['sub'],
+            role=subData['role'], originalStart=subData['originalStart']);
+    run_query_with_commit(cal_mysql, sql_query)
+    return ""
+
+@calendar.route('/add_call', methods=['POST'])
+def add_call():
     callData = request.json
     sql_query = "INSERT INTO schedule (Day, Faculty, Fellow, RN1, \
             RN2, Tech1, Tech2) VALUES (" + \
@@ -177,19 +224,7 @@ def addCall():
     run_query_with_commit(cal_mysql, sql_query)
     return ""
 
-@calendar.route('/updateCall', methods=['PUT'])
-def updateCall():
-    callData = request.json
-    sql_query = "UPDATE schedule \
-        SET Faculty='{faculty}', Fellow='{fellow}', RN1='{rn1}', RN2='{rn2}', Tech1='{tech1}', Tech2='{tech2}' \
-        WHERE Day='{date}'".format(faculty=callData['faculty'], fellow=callData['fellow'],
-        rn1=callData['rn1'], rn2=callData['rn2'], tech1=callData['tech1'], tech2=callData['tech2'],
-        date=callData['date']);
-    run_query_with_commit(cal_mysql, sql_query)
-    return ""
-
-
-@calendar.route('/addSub', methods=['POST'])
+@calendar.route('/add_substitute', methods=['POST'])
 def addSub():
     callData = request.json
     sql_query = "INSERT INTO substitutions (StartTime, EndTime, Role, SubID \
