@@ -3,13 +3,15 @@
 {% block dir_head %}
     <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='style.css') }}">
     <script src='{{ url_for('dashboard.static', filename='script.js') }}'></script>
+    <script type=text/javascript src="{{ url_for('dashboard.static', filename='moment-with-locales.js') }}"></script>
+    <script src='{{ url_for('dashboard.static', filename='eventScript.js') }}'></script>
 {% endblock %}
 {% block body %}
     <div class="main">
         <div class="container">
             <h1>Welcome {{user.firstName}} {{user.lastName}}!</h1>
-            <div class="panel panel-default">
-                <div class="panel-heading">Staff Directory</div>
+            <div class="panel panel-default" id="on-call-table">
+                <div class="panel-heading">Your On-call Schedule</div>
                     <table class="table">
                         <tr>
                             <th>Date</th>
@@ -20,7 +22,7 @@
                         <tr>
                             <td>{{day}}</td>
                             <td>All day</td>
-                            <td>Link</td>
+                            <td><a href="/calendar/day" id="oncall-day">View Team</a></td>
                         </tr>
                         {% endfor %}
                     </table>
