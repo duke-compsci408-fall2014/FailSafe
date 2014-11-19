@@ -3,8 +3,9 @@
 {% endblock %}
 {% block body %}
     {% set roles = ['Faculty', 'Fellow', 'Nurse 1', 'Nurse 2', 'Tech 1', 'Tech 2'] %}
-    {% set roleIds = ['Faculty', 'Fellow', 'RN1', 'RN2', 'Tech1', 'Tech2'] %}
-	{% set weekdays =['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] %}
+    {% set forms = ['Faculty', 'Fellow', 'RN1', 'RN2', 'Tech1', 'Tech2', 'CRUDFaculty', 'CRUDFellow', 'CRUDRN1', 'CRUDRN2', 'CRUDTech1', 'CRUDTech2'] %}
+    {% set formRoles = roles + roles %}
+    {% set weekdays =['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] %}
 
     <div class="container">
 	<button id = "alert-button" type="button" class="btn btn-danger pull-left">Activate</button>
@@ -15,7 +16,7 @@
     </div>
     <div class="container" id="dayView"></div>
 
-	<div id="alert-form" title="Alert">
+	<div style="display:none;" id="alert-form" title="Alert">
 		<p class="validateTips">All form fields are required.</p>
 		<form action="superman" method="post">
 			<fieldset>
@@ -43,8 +44,8 @@
 	</div>
 
     {% set roleIndex = 0 %}
-    {% for role in roleIds %}
-	<div id="{{role}}-sub-form" title="Create Substitution">
+    {% for role in forms %}
+	<div style="display:none;" id="{{role}}-sub-form" title="Create Substitution">
 	  <p class="validateTips">All form fields are required.</p>
 	
 	  <form action="/addSub" method="post">
@@ -55,7 +56,7 @@
 			</div>
                         <div>
 				<label for="start{{role}}">Start Time</label>
-				<input type="text" name="start{{role}}" id="start{{role}}" readonly class="text ui-widget-content ui-corner-all">
+				<input type="text" name="start{{role}}" id="start{{role}}" class="text ui-widget-content ui-corner-all">
 			</div>
 			<div>
 				<label for="duration{{role}}">Duration (hours)</label>
@@ -72,7 +73,7 @@
 				{% set netID = dir_entry[8] %}
 				{% if 'Tech' in role and ('Nurse' in entryRole or 'Tech' in entryRole) %}
 				    <option value="{{netID}}"> {{firstName}} {{lastName}}: {{netID}}</option>
-				{% elif entryRole in roles[roleIndex] %}
+				{% elif entryRole in formRoles[roleIndex] %}
 				    <option value="{{netID}}"> {{firstName}} {{lastName}}: {{netID}}</option>
 				{% endif %}
 			    {% endfor %}

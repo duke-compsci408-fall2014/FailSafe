@@ -11,7 +11,7 @@ $(document).ready(function() {
 	var roles = ["Faculty", "Fellow", "RN1", "RN2", "Tech1", "Tech2"];
 	var roleIds = ["faculty", "fellow", "rn1", "rn2", "tech1", "tech2"];
 	var clickedSquare;
-    var displayTime = moment();
+   	var displayTime = moment();
 
 	if(document.getElementById("calendar") != null) {
 		document.getElementById("calendar").innerHTML = makeCalendar();
@@ -20,13 +20,13 @@ $(document).ready(function() {
 		document.getElementById("dayView").innerHTML = makeDayView();
 	}
 
-	function getScheduleWithDatetime(endpoint, date) {
+	function getScheduleWithDatetime(endpoint, requestParams) {
 		var schedule;
 		$.ajax({
 			url:endpoint,
 			async:false,
 			dataType:'json',
-			data: {"datetime": date},
+			data: requestParams,
 			success: function(json) {
 				schedule = json.results;
 			}
@@ -248,36 +248,6 @@ $(document).ready(function() {
 			data: JSON.stringify(data)
 		});
 	}
-        
-	function alertOnCall() {
-		var alert_data = {
-			"eta":$('#eta').val(),
-			"location":$('#location').val(),
-			"type":$('#type').val(),
-			"msg":$('#msg').val()
-		};
-                AJAXJSONWrapper("POST", "/backend/on_call", alert_data);
-		$alertDialog.dialog( "close" );
-	}
-	
-	function addSub(role) {
-		var valid = true;
-		allFields.removeClass( "ui-state-error" );
-		
-		var start = $('#start' + role).val();
-		var duration = parseInt($('#duration' + role).val());
-
-		if(valid) {
-			var sub_data = {
-				"start":start,
-				"end":moment(start).add(duration, 'h').format(),
-				"role":$('#role' + role).val(),
-				"sub":$('#sub' + role).val()
-			};
-                        AJAXJSONWrapper("POST", "/calendar/addSub", sub_data);
-			document.getElementById("dayView").innerHTML = makeDayView();
-		}
-	}
 
 	function getInputtedCall(suffix) {
 		var valid = true;
@@ -299,22 +269,8 @@ $(document).ready(function() {
 
 	function addFull() {
 		oncall_data = getInputtedCall("");
-		AJAXJSONWrapper("POST", "/calendar/addCall", oncall_data);
+		AJAXJSONWrapper("POST", "/calendar/add_call", oncall_data);
 		$fullDialog.dialog( "close" );
-		document.getElementById("calendar").innerHTML = makeCalendar();
-	}
-
-	function deleteFull() {
-		allFields.removeClass("ui-state-error");
-		AJAXJSONWrapper("DELETE", "/calendar/delete_call", {"date": clickedSquare.id});
-		$fullCRUDDialog.dialog("close");
-		document.getElementById("calendar").innerHTML = makeCalendar();
-	}	
-
-	function updateFull() {
-		oncall_data = getInputtedCall("CRUD");
-		AJAXJSONWrapper("PUT", "/calendar/updateCall", oncall_data);
-		$fullCRUDDialog.dialog( "close" );
 		document.getElementById("calendar").innerHTML = makeCalendar();
 	}
 
@@ -329,6 +285,20 @@ $(document).ready(function() {
 
 	var $fullDialog = $("#full-form").dialog(createDialog(fullButtons, fullForm));
 
+	function deleteFull() {
+		allFields.removeClass("ui-state-error");
+		AJAXJSONWrapper("DELETE", "/calendar/delete_call", {"date": clickedSquare.id});
+		$fullCRUDDialog.dialog("close");
+		document.getElementById("calendar").innerHTML = makeCalendar();
+	}	
+
+	function updateFull() {
+		oncall_data = getInputtedCall("CRUD");
+		AJAXJSONWrapper("PUT", "/calendar/update_call", oncall_data);
+		$fullCRUDDialog.dialog( "close" );
+		document.getElementById("calendar").innerHTML = makeCalendar();
+	}
+
 	var CRUDButtons = {
 		"Edit event": updateFull,
 		"Delete": deleteFull,
@@ -336,63 +306,118 @@ $(document).ready(function() {
 	};
 
 	var $fullCRUDDialog = $("#full-crud-form").dialog(createDialog(CRUDButtons, fullCRUDForm));
+        
+	function alertOnCall() {
+		var alert_data = {
+			"eta":$('#eta').val(),
+			"location":$('#location').val(),
+			"type":$('#type').val(),
+			"msg":$('#msg').val()
+		};
+		AJAXJSONWrapper("POST", "/backend/on_call", alert_data);
+		$alertDialog.dialog( "close" );
+	}
 
 	var alertButtons = {
 		"Send SMS": alertOnCall,
-		Cancel: function() {
-		  $alertDialog.dialog( "close" );
-		}
+		Cancel: cancel 
 	};
 	
 	var $alertDialog = $("#alert-form").dialog(createDialog(alertButtons, alertForm));
 
-	var $facultyDialog = $( "#Faculty-sub-form" ).dialog(createDialog(createSubButtons("Faculty"), facultyForm));
+    function getSubVals(prefix, role) {
+        var start = $('#start' + prefix + role).val();
+        var duration = parseInt($('#duration' + prefix + role).val());
+        var sub = $('#sub' + prefix + role).val();
 
-	var facultyForm = $facultyDialog.find( "form" ).on( "submit", function( event ) {
-		event.preventDefault();
-	});
+        return {
+            "start": start,
+            "end": moment(start).add(duration, 'h').format(),
+            "role": role,
+            "sub":sub
+        };
+    }
 
-	var $fellowDialog = $( "#Fellow-sub-form" ).dialog(createDialog(createSubButtons("Fellow"), fellowForm));
-
-	var fellowForm = $fellowDialog.find( "form" ).on( "submit", function( event ) {
-		event.preventDefault();
-	});
-
-	var $rn1Dialog = $( "#RN1-sub-form" ).dialog(createDialog(createSubButtons("RN1"), rn1Form));
-
-	var rn1Form = $rn1Dialog.find( "form" ).on( "submit", function( event ) {
-		event.preventDefault();
-	});
-
-	var $rn2Dialog = $( "#RN2-sub-form" ).dialog(createDialog(createSubButtons("RN2"), rn2Form));
-
-	var rn2Form = $rn2Dialog.find( "form" ).on( "submit", function( event ) {
-		event.preventDefault();
-	});
-
-	var $tech1Dialog = $( "#Tech1-sub-form" ).dialog(createDialog(createSubButtons("Tech1"), tech1Form));
-
-	var tech1Form = $tech1Dialog.find( "form" ).on( "submit", function( event ) {
-		event.preventDefault();
-	});
-
+    function checkTimeValidity(role, sub_data) {
+        var valid = true;
+        allFields.removeClass("ui-state-error");
+        var tempTime = moment(sub_data['start']);
+        var endTime = moment(sub_data['end']);
+        while(tempTime.isBefore(endTime)) {
+            var tempSchedule = getScheduleWithDatetime("/calendar/json_datetime_substitute", {"datetime": moment(tempTime).add(1, 's').format(), "role": role})[0];
+			if(tempSchedule != null && tempSchedule[4] != sub_data['sub']) {
+                valid = false;
+                updateTips("Conflicts with existing substitution of " + tempSchedule[4]);
+            }
+            if(tempSchedule != null && tempSchedule[4] == sub_data['sub']) {
+                var role_data = {
+                    "time":tempSchedule[1],
+                    "role":role
+                };
+                AJAXJSONWrapper("DELETE", "delete_substitute", role_data);
+                var otherEndTime = moment(tempSchedule[2]);
+                endTime = moment.max(endTime, otherEndTime);
+                sub_data['end'] = endTime.format();
+                
+            }
+            tempTime.add(30, 'm');
+        }
+        return valid;
+    }
 	
-	var $tech2Dialog = $( "#Tech2-sub-form" ).data("form", tech2Form).dialog(createDialog(createSubButtons("Tech2"), tech2Form));
-	
-	var tech2Form = $tech2Dialog.find( "form" ).on( "submit", function( event ) {
-		event.preventDefault();
-	});
+	function addSub(role) {
+        sub_data = getSubVals("", role);
+        
+        var valid = checkTimeValidity(role, sub_data);
+
+        if(valid) {
+            AJAXJSONWrapper("POST", "/calendar/add_substitute", sub_data);
+            document.getElementById("dayView").innerHTML = makeDayView();
+        }
+	}
 
 	function createSubButtons(role) {
 		return	   {
 				"Create event": function() {
 					addSub(role);
+			        $(this).dialog( "close" );
+				},
+				Cancel: cancel
+		};
+	}
+
+    function updateSub(role, originalStart) {
+        sub_data = getSubVals("CRUD", role);
+        sub_data['originalStart'] = originalStart;
+        var valid = checkTimeValidity(role, sub_data);
+
+        if(valid) {
+            AJAXJSONWrapper("PUT", "/calendar/update_substitute", sub_data);
+            document.getElementById("dayView").innerHTML = makeDayView();
+        }
+    }
+
+    function deleteSub(role) {
+        var role_data = {
+            "time":$('#startCRUD' + role).val(),
+            "role":role
+        };
+        AJAXJSONWrapper("DELETE", "delete_substitute", role_data);
+		document.getElementById("dayView").innerHTML = makeDayView();
+    }
+
+	function createCRUDSubButtons(role, originalStart) {
+		return     {
+				"Update Sub": function() {
+					updateSub(role, originalStart);
+			        $(this).dialog( "close" );
+				},
+				"Delete Sub": function() {
+					deleteSub(role);
 					$(this).dialog( "close" );
 				},
-				Cancel: function() {
-				  $(this).dialog( "close" );
-				}
-			   };
+				Cancel: cancel
+		};
 	}
 
 	function createDialog(buttonsList, form) {
@@ -424,50 +449,60 @@ $(document).ready(function() {
 		$alertDialog.dialog('open');
 	});
 
-	$('div').on('click', 'td.inside', handleSubClick("#start", "#role"));
+	$('div').on('click', 'td.inside', handleSubClick("#start", "#role", "#duration", "#sub"));
 	
 	$("div").on('click', 'td.day', handleDateClick());
         
-        function handleDateClick(fieldToFill) {
-            return function(event) {
-                clickedSquare = event.target || event.srcElement;
-		var clickedSchedule = getScheduleWithDatetime("/calendar/json_datetime_schedule", clickedSquare.id)[0];
-		if(clickedSchedule != null) {
-			$("#dateCRUD").val(clickedSquare.id);
-			for(i = 0; i < 6; i++) {
-				$("#" + roleIds[i] + "CRUD").val(clickedSchedule[i+1]);
-			}
-			
-			$fullCRUDDialog.dialog("open");
-		}
-		else {
-			$fullDialog.dialog("open");
-			$("#date").val(clickedSquare.id);
-		}
-            };
-        }
-
-	function handleSubClick(startField, roleField) {
+    function handleDateClick(fieldToFill) {
+        return function(event) {
+            clickedSquare = event.target || event.srcElement;
+            var clickedSchedule = getScheduleWithDatetime("/calendar/json_datetime_schedule", {"datetime": clickedSquare.id})[0];
+            if(clickedSchedule != null) {
+                $("#dateCRUD").val(clickedSquare.id);
+                for(i = 0; i < 6; i++) {
+                    $("#" + roleIds[i] + "CRUD").val(clickedSchedule[i+1]);
+                }
+                
+                $fullCRUDDialog.dialog("open");
+            }
+            else {
+                $fullDialog.dialog("open");
+                $("#date").val(clickedSquare.id);
+            }
+        };
+    }
+	
+	function handleSubClick(startField, roleField, durationField, subField) {
 		return function(event) {
 			var columnNumber = $(event.target).index() + 1;
 			var role = $('th:nth-child(' + columnNumber + ')').text();
-			var roleDialog;
-			if(role == "Faculty")
-				roleDialog = $facultyDialog;
-			if(role == "Fellow")
-				roleDialog = $fellowDialog;
-			if(role == "RN1")
-				roleDialog = $rn1Dialog;
-			if(role == "RN2")
-				roleDialog = $rn2Dialog;
-			if(role == "Tech1")
-				roleDialog = $tech1Dialog;
-			if(role == "Tech2")
-				roleDialog = $tech2Dialog;
 			clickedSquare = event.target || event.srcElement;
-			roleDialog.dialog("open");
-			$(startField + role).val(clickedSquare.id);
-			$(roleField + role).val(role);
+			
+            var startTime = clickedSquare.id;
+            var roleID = role;
+            var duration = "1";
+            var buttons = createSubButtons(role);
+			
+            var clickedSchedule = getScheduleWithDatetime("/calendar/json_datetime_substitute", {"datetime": moment(clickedSquare.id).add(1, 's').format(), "role": role})[0];
+			if(clickedSchedule != null) {
+				roleID = "CRUD" + role;
+                startTime = clickedSchedule[1];
+                var endTime = clickedSchedule[2];
+                var duration = moment(endTime).hours() - moment(startTime).hours();
+                $(subField + roleID).val(clickedSchedule[4]);
+				buttons = createCRUDSubButtons(role, startTime);
+			}
+            
+            $(startField + roleID).val(startTime);
+			$(roleField + roleID).val(role);
+            $(durationField + roleID).val(duration);
+			
+            var $dialog = $( "#" + roleID + "-sub-form" ).dialog(createDialog(buttons, null));
+            var form = $dialog.find( "form" ).on( "submit", function( event ) {
+				event.preventDefault();
+			});
+			
+            $dialog.dialog("open");
 		};
 	}
 });
