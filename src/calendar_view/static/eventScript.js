@@ -12,6 +12,8 @@ $(document).ready(function() {
 	var roleIds = ["faculty", "fellow", "rn1", "rn2", "tech1", "tech2"];
 	var clickedSquare;
    	var displayTime = moment();
+    var alertFrequency = 30000; //30 seconds
+    var alertingIDs = {};
 
 	if(document.getElementById("calendar") != null) {
 		document.getElementById("calendar").innerHTML = makeCalendar();
@@ -329,13 +331,26 @@ $(document).ready(function() {
 		};
 		AJAXJSONWrapper("POST", "/backend/start_alert", alert_data);
         var pending = AJAXGetWrapper("/backend/pending_staff");
-        alert("made it!");
-        for(i = 0; i < pending.length; i++) {
-            alert("made it!");
-            AJAXJSONWrapper("POST", "/backend/contact", {'netID':pending[i]});
+        for(var id in pending) {
+            alertingIDs[id] = setInterval(function() {
+                call(id)
+            }, alertFrequency);
         }
 		$alertDialog.dialog( "close" );
 	}
+
+    function call(id) {
+        var pending = AJAXGetWrapper("/backend/pending_staff");
+        if(pending[id] == -1){
+            clearInterval(alertingIDs[id]);
+        }
+        else {
+            var data = {
+                "netID": id
+            }
+            AJAXJSONWrapper("POST", "/backend/contact", data);
+        }
+    }
 
 	var alertButtons = {
 		"Send SMS": alertOnCall,
@@ -408,7 +423,7 @@ $(document).ready(function() {
     function updateSub(role, originalStart) {
         sub_data = getSubVals("CRUD", role);
         sub_data['originalStart'] = originalStart;
-        var valid = checkTimeValidity(role, sub_data);
+        var valid = true;
 
         if(valid) {
             AJAXJSONWrapper("PUT", "/calendar/update_substitute", sub_data);

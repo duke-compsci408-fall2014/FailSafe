@@ -3,7 +3,7 @@ import urllib2
 import time
 from datetime import datetime
 from fs_twilio.config import *
-from directory_view.blueprint import get_all_staff, get_user_from_number
+from directory_view.blueprint import get_all_staff, get_user_from_number, get_user_from_netID
 from calendar_view.blueprint import get_oncall_team
 from util.logger import log
 import os
@@ -111,13 +111,14 @@ def start_alert():
 @backend.route("/pending_staff", methods=['GET'])
 def pending_staff():
     global team_status
-    return jsonify(team_status)
+    return jsonify(results=team_status)
 
 @backend.route("/contact", methods=['POST'])
 def contact():
     global team_status, alert_message
-    if request.form['netID'] in team_status:
-        user = get_user_from_netID(request.form['netID'])
+    netID = request.json['netID']
+    if netID in team_status:
+        user = get_user_from_netID(netID)
         if team_status[user.netID] >= 0:
             if team_status[user.netID] == 0:
                 send_page(user.pagerNumber, alert_message)
