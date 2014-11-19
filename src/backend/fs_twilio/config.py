@@ -16,7 +16,10 @@ twimlet_default = 'http://twimlets.com/message?Message%5B0%5D='
 ### SMS Functionality ##################################
 
 def send_sms(receiving_number, message):
-    client.messages.create(to=receiving_number, from_=default_from_phone, body=message)
+    try:
+        client.messages.create(to=receiving_number, from_=default_from_phone, body=message)
+    except:
+        pass
 
 def send_sms_user(user, message):
     send_sms(user.cellPhone, message)
@@ -32,8 +35,11 @@ def send_group_sms_users(users, message):
 ### Call Functionality #################################
 
 def make_call(receiving_number, message):
-    message = str(urllib2.quote(message)) + "&"
-    client.calls.create(to=receiving_number, from_=default_from_phone, url=twimlet_default+message)
+    try:
+        message = str(urllib2.quote(message)) + "&"
+        client.calls.create(to=receiving_number, from_=default_from_phone, url=twimlet_default+message)
+    except:
+        pass
 
 def make_multiple_calls(receiving_numbers, message):
     for i in receiving_numbers:
