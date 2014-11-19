@@ -109,7 +109,7 @@ $(document).ready(function() {
 	}
 
 	function makeSubRow(id, tdClass, substitutions) {
-		var row = "<tr><td class='timelabel'>" + id.format("h[:]mm") + "</td>";
+		var row = "<tr><td class='timelabel'>" + id.format("h[:]mma") + "</td>";
 		for(role = 0; role < roles.length; role++) {
 			row += "<td class='" + tdClass + "' id='" + id.format() + "'>";
 			for(sub = 0; sub < substitutions.length; sub++) {
