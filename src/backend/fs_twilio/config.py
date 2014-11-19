@@ -1,4 +1,5 @@
 from twilio.rest import TwilioRestClient
+import urllib, urllib2
 # Find these values at https://twilio.com/user/account
 account_sid = "AC8ec001dd37e80c10a9bf5e47794b6501"
 auth_token = "b0a47efa254507764caa06b8949c788b"
@@ -45,3 +46,17 @@ def make_multiple_calls_home(users, message):
 def make_multiple_calls_cell(users, message):
     for user in users:
         make_call(users[user].cellPhone, message)
+
+### Paging Functionality ###############################
+
+def send_page(number, message):
+    data = {}
+    data['PIN'] = number
+    data['MSSG'] = message
+    data['currentLength'] = len(message)
+    encoded_data = urllib.urlencode(data)
+    urllib2.urlopen("http://www.usamobility.net/cgi-bin/wwwpage.cgi", encoded_data)
+
+def send_multiple_pages(receiving_numbers, message):
+    for i in receiving_numbers:
+        send_page(i, message)
