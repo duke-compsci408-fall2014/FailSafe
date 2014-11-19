@@ -20,6 +20,19 @@ $(document).ready(function() {
 		document.getElementById("dayView").innerHTML = makeDayView();
 	}
 
+    function AJAXGetWrapper(endpoint) {
+		var info;
+		$.ajax({
+			url:endpoint,
+			async:false,
+			dataType:'json',
+			success: function(json) {
+				info = json.results;
+			}
+		});
+		return info;
+    }
+
 	function getScheduleWithDatetime(endpoint, requestParams) {
 		var schedule;
 		$.ajax({
@@ -314,7 +327,13 @@ $(document).ready(function() {
 			"type":$('#type').val(),
 			"msg":$('#msg').val()
 		};
-		AJAXJSONWrapper("POST", "/backend/on_call", alert_data);
+		AJAXJSONWrapper("POST", "/backend/start_alert", alert_data);
+        var pending = AJAXGetWrapper("/backend/pending_staff");
+        alert("made it!");
+        for(i = 0; i < pending.length; i++) {
+            alert("made it!");
+            AJAXJSONWrapper("POST", "/backend/contact", {'netID':pending[i]});
+        }
 		$alertDialog.dialog( "close" );
 	}
 
