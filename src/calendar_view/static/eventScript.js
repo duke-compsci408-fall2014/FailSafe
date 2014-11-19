@@ -298,7 +298,7 @@ $(document).ready(function() {
 		Cancel: cancel
 	};
 
-	var $fullDialog = $("#full-form").dialog(createDialog(fullButtons, fullForm));
+	var $fullDialog = $("#full-form").dialog(createDialog(fullButtons, fullForm, 350, 350));
 
 	function deleteFull() {
 		allFields.removeClass("ui-state-error");
@@ -320,7 +320,7 @@ $(document).ready(function() {
 		Cancel: cancel
 	};
 
-	var $fullCRUDDialog = $("#full-crud-form").dialog(createDialog(CRUDButtons, fullCRUDForm));
+	var $fullCRUDDialog = $("#full-crud-form").dialog(createDialog(CRUDButtons, fullCRUDForm, 350, 350));
         
 	function alertOnCall() {
 		var alert_data = {
@@ -357,7 +357,7 @@ $(document).ready(function() {
 		Cancel: cancel 
 	};
 	
-	var $alertDialog = $("#alert-form").dialog(createDialog(alertButtons, alertForm));
+	var $alertDialog = $("#alert-form").dialog(createDialog(alertButtons, alertForm, 275, 350));
 
     function getSubVals(prefix, role) {
         var start = $('#start' + prefix + role).val();
@@ -454,11 +454,11 @@ $(document).ready(function() {
 		};
 	}
 
-	function createDialog(buttonsList, form) {
+	function createDialog(buttonsList, form, height, width) {
 		return {
 			autoOpen: false,
-			height: 300,
-			width: 350,
+			height: height,
+			width: width,
 			modal: true,
 			buttons: buttonsList,
 			close: function() {
@@ -531,7 +531,7 @@ $(document).ready(function() {
 			$(roleField + roleID).val(role);
             $(durationField + roleID).val(duration);
 			
-            var $dialog = $( "#" + roleID + "-sub-form" ).dialog(createDialog(buttons, null));
+            var $dialog = $( "#" + roleID + "-sub-form" ).dialog(createDialog(buttons, null, 275, 350));
             var form = $dialog.find( "form" ).on( "submit", function( event ) {
 				event.preventDefault();
 			});
