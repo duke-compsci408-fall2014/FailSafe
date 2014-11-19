@@ -78,9 +78,7 @@ def loop_users(netIDs, message, delay, repeats):
 
 @backend.route("/sandbox")
 def sandbox():
-    log(get_oncall_team())
-    return "a"
-
+    return str(request.environ['REMOTE_USER'][:request.environ['REMOTE_USER'].index('@')])
 '''
 @purpose calendar calls this method to alert all on-call individuals
 '''

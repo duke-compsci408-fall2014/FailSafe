@@ -5,6 +5,7 @@ dashboard = Blueprint('dashboard',__name__, template_folder='templates', static_
 
 @dashboard.route('/', methods=['GET', 'POST'])
 def show_dashboard():
+    session['user_netid'] = str(request.environ['REMOTE_USER'][:request.environ['REMOTE_USER'].index('@')])
     if 'user_netid' in session:
         netID = session['user_netid']
         user = get_all_staff()[netID]
