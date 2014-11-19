@@ -55,15 +55,26 @@ $(document).ready(function() {
 								  "firstName":$('#firstName').val(), "lastName":$('#lastName').val(),
 								  "cellNumber":$('#cellNumber').val(), "homeNumber":$('#homeNumber').val(), 
 								  "pager":$('#pager').val(), "netID":$('#netID').val() };
-				$.ajax({
-                    url:"/directory/addStaff",
-                    type: "POST",
-                    contentType:"application/json",
-                    dataType:"json",
-                    data: JSON.stringify(staff_data),
-          		});
-          		dialog.dialog( "close" );
-          		window.location.reload(true);
+                var valid = true;
+                for(var key in staff_data){
+                    data = staff_data[key];
+                    if(!data) {
+                        valid = false;
+                    }
+                }
+                if(valid) {
+				    $.ajax({
+                        url:"/directory/addStaff",
+                        type: "POST",
+                        contentType:"application/json",
+                        dataType:"json",
+                        data: JSON.stringify(staff_data),
+          		    });
+              		dialog.dialog( "close" );
+              		window.location.reload(true);
+                } else {
+                    alert("All fields are required.");
+                }
           	
 			},
 			Cancel: function() {
@@ -107,19 +118,30 @@ $(document).ready(function() {
                 modal: true,
                 buttons: {
                     "Edit Staff": function() {
-                    var staff_data = {"prevNetid":prevNetid, "role":$('#role').val(), "admin":$('#admin').val(),
-                                      "firstName":$('#firstName').val(), "lastName":$('#lastName').val(),
-                                      "cellNumber":$('#cellNumber').val(), "homeNumber":$('#homeNumber').val(),
-                                      "pager":$('#pager').val(), "netID":$('#netID').val()};
-                    $.ajax({
-                        url:"/directory/editStaff",
-                        type: "POST",
-                        contentType:"application/json",
-                        dataType:"json",
-                        data: JSON.stringify(staff_data),
-                    }); 
-                    dialog.dialog( "close" );
-                    window.location.reload(true);                                                                                                                 
+                        var staff_data = {"prevNetid":prevNetid, "role":$('#role').val(), "admin":$('#admin').val(),
+                                          "firstName":$('#firstName').val(), "lastName":$('#lastName').val(),
+                                          "cellNumber":$('#cellNumber').val(), "homeNumber":$('#homeNumber').val(),
+                                          "pager":$('#pager').val(), "netID":$('#netID').val()};
+                        var valid = true;
+                        for(var key in staff_data){
+                            data = staff_data[key];
+                            if(!data) {
+                                valid = false;
+                            }
+                        }
+                        if(valid) {
+                            $.ajax({
+                                url:"/directory/editStaff",
+                                type: "POST",
+                                contentType:"application/json",
+                                dataType:"json",
+                                data: JSON.stringify(staff_data),
+                            }); 
+                            dialog.dialog( "close" );
+                            window.location.reload(true);
+                        } else {
+                            alert("All fields are required.");
+                        }
                     },
                     Cancel: function() {
                         dialog.dialog( "close" );
