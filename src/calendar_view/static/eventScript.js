@@ -14,6 +14,7 @@ $(document).ready(function() {
    	var displayTime = moment();
     var alertFrequency = 30000; //30 seconds
     var alertingIDs = {};
+    var showCancel = false;
 
 	if(document.getElementById("calendar") != null) {
 		document.getElementById("calendar").innerHTML = makeCalendar();
@@ -515,7 +516,18 @@ $(document).ready(function() {
 	$('div').on('click', 'td.inside', handleSubClick("#start", "#role", "#duration", "#sub"));
 	
 	$("div").on('click', 'td.day', handleDateClick());
-        
+ 
+    $('#cancel-alert-button').click( function() {
+        alert("Alert successfully cancelled. No more messages will be sent.");
+        cancelAll();
+    });
+
+    function cancelAll() {
+        for(var id in alertingIDs) {
+            clearInterval(alertingIDs[id]);
+        }
+    }
+
     function handleDateClick(fieldToFill) {
         return function(event) {
             clickedSquare = event.target || event.srcElement;
