@@ -164,3 +164,9 @@ $(document).ready(function() {
         });
 	});
 });
+
+$(document).keypress(function(e) { 
+    if (e.keyCode == 27) { 
+        window.close();
+    } 
+});
