@@ -13,7 +13,7 @@
 	</div>
 	<div class="container" id="calendar"></div>
 
-	<div id="alert-form" title="Alert">
+	<div style="display:none;" id="alert-form" title="Alert">
 		<p class="validateTips">All form fields are required.</p>
 		<form action="superman" method="post">
 			<fieldset>
@@ -40,10 +40,10 @@
 		</form>
 	</div>
 	
-	<div id="full-form" title="Create on call event">
+	<div style="display:none;" id="full-form" title="Create on call event">
 		<p class="validateTips">All form fields are required.</p>
 	
-		<form action="{{ url_for('calendar.addCall') }} " method="POST">
+		<form action="{{ url_for('calendar.add_call') }} " method="POST">
 			<fieldset>
 				<div>
 					<label for="date">Date</label>
@@ -75,10 +75,10 @@
 		</form>
     </div>
 
-	<div id="full-crud-form" title="Create on call event">
+	<div style="display:none;" id="full-crud-form" title="Create on call event">
 		<p class="validateTips">All form fields are required.</p>
 	
-		<form action="{{ url_for('calendar.addCall') }} " method="POST">
+		<form action="{{ url_for('calendar.add_call') }} " method="POST">
 			<fieldset>
 				<div>
 					<label for="dateCRUD">Date</label>

@@ -337,25 +337,50 @@ $(document).ready(function() {
             "sub":sub
         };
     }
+
+    function checkTimeValidity(role, sub_data) {
+        var valid = true;
+        allFields.removeClass("ui-state-error");
+        var tempTime = moment(sub_data['start']);
+        var endTime = moment(sub_data['end']);
+        while(tempTime.isBefore(endTime)) {
+            var tempSchedule = getScheduleWithDatetime("/calendar/json_datetime_substitute", {"datetime": moment(tempTime).add(1, 's').format(), "role": role})[0];
+			if(tempSchedule != null && tempSchedule[4] != sub_data['sub']) {
+                valid = false;
+                updateTips("Conflicts with existing substitution of " + tempSchedule[4]);
+            }
+            if(tempSchedule != null && tempSchedule[4] == sub_data['sub']) {
+                var role_data = {
+                    "time":tempSchedule[1],
+                    "role":role
+                };
+                AJAXJSONWrapper("DELETE", "delete_substitute", role_data);
+                var otherEndTime = moment(tempSchedule[2]);
+                endTime = moment.max(endTime, otherEndTime);
+                sub_data['end'] = endTime.format();
+                
+            }
+            tempTime.add(30, 'm');
+        }
+        return valid;
+    }
 	
 	function addSub(role) {
         sub_data = getSubVals("", role);
         
-        var valid = true;
-        allFields.removeClass("ui-state-error");
-        
-        
+        var valid = checkTimeValidity(role, sub_data);
 
-
-        AJAXJSONWrapper("POST", "/calendar/add_substitute", sub_data);
-        document.getElementById("dayView").innerHTML = makeDayView();
+        if(valid) {
+            AJAXJSONWrapper("POST", "/calendar/add_substitute", sub_data);
+            document.getElementById("dayView").innerHTML = makeDayView();
+        }
 	}
 
 	function createSubButtons(role) {
 		return	   {
 				"Create event": function() {
 					addSub(role);
-					$(this).dialog( "close" );
+			        $(this).dialog( "close" );
 				},
 				Cancel: cancel
 		};
@@ -364,8 +389,12 @@ $(document).ready(function() {
     function updateSub(role, originalStart) {
         sub_data = getSubVals("CRUD", role);
         sub_data['originalStart'] = originalStart;
-        AJAXJSONWrapper("PUT", "/calendar/update_substitute", sub_data);
-        document.getElementById("dayView").innerHTML = makeDayView();
+        var valid = checkTimeValidity(role, sub_data);
+
+        if(valid) {
+            AJAXJSONWrapper("PUT", "/calendar/update_substitute", sub_data);
+            document.getElementById("dayView").innerHTML = makeDayView();
+        }
     }
 
     function deleteSub(role) {
@@ -381,7 +410,7 @@ $(document).ready(function() {
 		return     {
 				"Update Sub": function() {
 					updateSub(role, originalStart);
-					$(this).dialog( "close" );
+			        $(this).dialog( "close" );
 				},
 				"Delete Sub": function() {
 					deleteSub(role);

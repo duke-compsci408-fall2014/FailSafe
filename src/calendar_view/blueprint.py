@@ -60,15 +60,17 @@ def get_default_schedule_for_month(month, year):
 
 def get_default_schedule_for_date(day, month, year):
     data = run_query(cal_mysql, "SELECT * FROM schedule WHERE DAY(Day)={} AND MONTH(Day)={} AND YEAR(Day)={}".format(day, month, year))
-    schedule = data[0]
-    processed_schedule = [[]]
-    date = str(schedule[0])
-    processed_schedule[0].append(date)
-    for i in range(6):
-        user = get_user_from_netID(schedule[i + 1])
-        shift_message = '<b>{}</b> {}'.format(user.lastName, user.netID)
-        processed_schedule[0].append(shift_message)
-    return processed_schedule
+    if(len(data) > 0):
+        schedule = data[0]
+        processed_schedule = [[]]
+        date = str(schedule[0])
+        processed_schedule[0].append(date)
+        for i in range(6):
+            user = get_user_from_netID(schedule[i + 1])
+            shift_message = '<b>{}</b> {}'.format(user.lastName, user.netID)
+            processed_schedule[0].append(shift_message)
+        return processed_schedule
+    return "";
 
 def get_substitutions_schedule_for_date(day, month, year):
     data = run_query(cal_mysql, "SELECT * FROM substitutions WHERE DAY(StartTime)={} AND MONTH(StartTime)={} AND YEAR(StartTime)={}".format(day, month, year))

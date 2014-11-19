@@ -16,7 +16,7 @@
     </div>
     <div class="container" id="dayView"></div>
 
-	<div id="alert-form" title="Alert">
+	<div style="display:none;" id="alert-form" title="Alert">
 		<p class="validateTips">All form fields are required.</p>
 		<form action="superman" method="post">
 			<fieldset>
@@ -45,7 +45,7 @@
 
     {% set roleIndex = 0 %}
     {% for role in forms %}
-	<div id="{{role}}-sub-form" title="Create Substitution">
+	<div style="display:none;" id="{{role}}-sub-form" title="Create Substitution">
 	  <p class="validateTips">All form fields are required.</p>
 	
 	  <form action="/addSub" method="post">
