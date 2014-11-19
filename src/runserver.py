@@ -14,7 +14,7 @@ def index():
     try:
         # return  str(request.environ['REMOTE_USER'][:request.environ['REMOTE_USER'].index('@')])
         session['user_netid'] = str(request.environ['REMOTE_USER'][:request.environ['REMOTE_USER'].index('@')])
-        return ensure_user_exists(session['user_netid'])
+        ensure_user_exists(session['user_netid'])
         return render_template('index.html')
     except Exception as a:
         return str(a)

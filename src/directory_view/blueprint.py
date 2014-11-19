@@ -72,8 +72,7 @@ def show_directory(staff = None, addstaff = False, editstaff = False):
 
 def ensure_user_exists(netID):
     if get_user_from_netID(netID) == None:
-        show_directory("{u'firstName': u'DEFAULT', u'netID': u'{}', u'admin': u'No', u'lastName': u'DEFAULT', u'homeNumber': u'+19876543210', u'role': u'Faculty', u'cellNumber': u'+19876543210', u'pager': u'+19876543210'}".format(netID), True, False)
-        return '2'
+        show_directory({u'firstName': u'DEFAULT', u'netID': netID, u'admin': u'No', u'lastName': u'DEFAULT', u'homeNumber': u'+19876543210', u'role': u'Faculty', u'cellNumber': u'+19876543210', u'pager': u'+19876543210'}, True, False)
 
 # Add a staff to the directory
 @directory.route('/addStaff', methods = ['POST'])
