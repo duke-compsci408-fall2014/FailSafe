@@ -70,6 +70,10 @@ def show_directory(staff = None, addstaff = False, editstaff = False):
 
     return render_template('directory.html', person_list=person_list)
 
+def ensure_user_exists(netID):
+    if get_user_from_netID(netID) == None:
+        show_directory("{u'firstName': u'DEFAULT', u'netID': u'{}', u'admin': u'No', u'lastName': u'DEFAULT', u'homeNumber': u'+19876543210', u'role': u'Faculty', u'cellNumber': u'+19876543210', u'pager': u'+19876543210'}".format(netID), True, False)
+        return '2'
 
 # Add a staff to the directory
 @directory.route('/addStaff', methods = ['POST'])
@@ -127,6 +131,9 @@ def get_user_from_number(number):
     return None
 
 def get_user_from_netID(netID):
-    data = run_query(dir_mysql, "SELECT * FROM tblUser WHERE NetID = '{netID}'".format(netID = netID))
-    newUser = User(data[0])
-    return newUser
+    try:
+        data = run_query(dir_mysql, "SELECT * FROM tblUser WHERE NetID = '{netID}'".format(netID = netID))
+        newUser = User(data[0])
+        return newUser
+    except:
+        return None

@@ -1,5 +1,5 @@
 from flask import Flask, render_template, session, request
-from directory_view.blueprint import directory
+from directory_view.blueprint import directory, ensure_user_exists
 from calendar_view.blueprint import calendar
 from dashboard_view.blueprint import dashboard
 import backend.blueprint as backend_blueprint
@@ -12,8 +12,9 @@ app.register_blueprint(backend_blueprint.backend, url_prefix='/backend')
 @app.route('/')
 def index():
     try:
-        #return  str(request.environ['REMOTE_USER'][:request.environ['REMOTE_USER'].index('@')])
+        # return  str(request.environ['REMOTE_USER'][:request.environ['REMOTE_USER'].index('@')])
         session['user_netid'] = str(request.environ['REMOTE_USER'][:request.environ['REMOTE_USER'].index('@')])
+        return ensure_user_exists(session['user_netid'])
         return render_template('index.html')
     except Exception as a:
         return str(a)
