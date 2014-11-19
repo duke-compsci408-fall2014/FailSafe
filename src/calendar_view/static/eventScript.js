@@ -248,25 +248,6 @@ $(document).ready(function() {
 			data: JSON.stringify(data)
 		});
 	}
-	
-	function addSub(role) {
-		var valid = true;
-		allFields.removeClass( "ui-state-error" );
-		
-		var start = $('#start' + role).val();
-		var duration = parseInt($('#duration' + role).val());
-
-		if(valid) {
-			var sub_data = {
-				"start":start,
-				"end":moment(start).add(duration, 'h').format(),
-				"role":$('#role' + role).val(),
-				"sub":$('#sub' + role).val()
-			};
-                        AJAXJSONWrapper("POST", "/calendar/addSub", sub_data);
-			document.getElementById("dayView").innerHTML = makeDayView();
-		}
-	}
 
 	function getInputtedCall(suffix) {
 		var valid = true;
@@ -288,7 +269,7 @@ $(document).ready(function() {
 
 	function addFull() {
 		oncall_data = getInputtedCall("");
-		AJAXJSONWrapper("POST", "/calendar/addCall", oncall_data);
+		AJAXJSONWrapper("POST", "/calendar/add_call", oncall_data);
 		$fullDialog.dialog( "close" );
 		document.getElementById("calendar").innerHTML = makeCalendar();
 	}
@@ -313,7 +294,7 @@ $(document).ready(function() {
 
 	function updateFull() {
 		oncall_data = getInputtedCall("CRUD");
-		AJAXJSONWrapper("PUT", "/calendar/updateCall", oncall_data);
+		AJAXJSONWrapper("PUT", "/calendar/update_call", oncall_data);
 		$fullCRUDDialog.dialog( "close" );
 		document.getElementById("calendar").innerHTML = makeCalendar();
 	}
@@ -344,6 +325,32 @@ $(document).ready(function() {
 	
 	var $alertDialog = $("#alert-form").dialog(createDialog(alertButtons, alertForm));
 
+    function getSubVals(prefix, role) {
+        var start = $('#start' + prefix + role).val();
+        var duration = parseInt($('#duration' + prefix + role).val());
+        var sub = $('#sub' + prefix + role).val();
+
+        return {
+            "start": start,
+            "end": moment(start).add(duration, 'h').format(),
+            "role": role,
+            "sub":sub
+        };
+    }
+	
+	function addSub(role) {
+        sub_data = getSubVals("", role);
+        
+        var valid = true;
+        allFields.removeClass("ui-state-error");
+        
+        
+
+
+        AJAXJSONWrapper("POST", "/calendar/add_substitute", sub_data);
+        document.getElementById("dayView").innerHTML = makeDayView();
+	}
+
 	function createSubButtons(role) {
 		return	   {
 				"Create event": function() {
@@ -354,6 +361,13 @@ $(document).ready(function() {
 		};
 	}
 
+    function updateSub(role, originalStart) {
+        sub_data = getSubVals("CRUD", role);
+        sub_data['originalStart'] = originalStart;
+        AJAXJSONWrapper("PUT", "/calendar/update_substitute", sub_data);
+        document.getElementById("dayView").innerHTML = makeDayView();
+    }
+
     function deleteSub(role) {
         var role_data = {
             "time":$('#startCRUD' + role).val(),
@@ -363,10 +377,10 @@ $(document).ready(function() {
 		document.getElementById("dayView").innerHTML = makeDayView();
     }
 
-	function createCRUDSubButtons(role) {
+	function createCRUDSubButtons(role, originalStart) {
 		return     {
 				"Update Sub": function() {
-					updateSub(role);
+					updateSub(role, originalStart);
 					$(this).dialog( "close" );
 				},
 				"Delete Sub": function() {
@@ -447,7 +461,7 @@ $(document).ready(function() {
                 var endTime = clickedSchedule[2];
                 var duration = moment(endTime).hours() - moment(startTime).hours();
                 $(subField + roleID).val(clickedSchedule[4]);
-				buttons = createCRUDSubButtons(role);
+				buttons = createCRUDSubButtons(role, startTime);
 			}
             
             $(startField + roleID).val(startTime);

@@ -185,8 +185,8 @@ def delete_substitute():
     run_query_with_commit(cal_mysql, sql_query)
     return ""
 
-@calendar.route('/updateCall', methods=['PUT'])
-def updateCall():
+@calendar.route('/update_call', methods=['PUT'])
+def update_call():
     callData = request.json
     sql_query = "UPDATE schedule \
         SET Faculty='{faculty}', Fellow='{fellow}', RN1='{rn1}', RN2='{rn2}', Tech1='{tech1}', Tech2='{tech2}' \
@@ -196,8 +196,19 @@ def updateCall():
     run_query_with_commit(cal_mysql, sql_query)
     return ""
 
-@calendar.route('/addCall', methods=['POST'])
-def addCall():
+@calendar.route('/update_substitute', methods=['PUT'])
+def update_substitute():
+    subData = request.json
+    sql_query = "UPDATE substitutions \
+            SET StartTime='{start}', EndTime='{end}', SubID='{sub}' \
+            WHERE Role='{role}' AND StartTime='{originalStart}'".format(
+            start=subData['start'], end=subData['end'], sub=subData['sub'],
+            role=subData['role'], originalStart=subData['originalStart']);
+    run_query_with_commit(cal_mysql, sql_query)
+    return ""
+
+@calendar.route('/add_call', methods=['POST'])
+def add_call():
     callData = request.json
     sql_query = "INSERT INTO schedule (Day, Faculty, Fellow, RN1, \
             RN2, Tech1, Tech2) VALUES (" + \
@@ -211,7 +222,7 @@ def addCall():
     run_query_with_commit(cal_mysql, sql_query)
     return ""
 
-@calendar.route('/addSub', methods=['POST'])
+@calendar.route('/add_substitute', methods=['POST'])
 def addSub():
     callData = request.json
     sql_query = "INSERT INTO substitutions (StartTime, EndTime, Role, SubID \
