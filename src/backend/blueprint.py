@@ -13,17 +13,18 @@ backend = Blueprint('backend', __name__, template_folder='templates', static_fol
 
 @backend.route("/response_actual", methods=['GET', 'POST'])
 def process_response():
-    global oncall_eta
+    global oncall_eta, team_status
     from_number = request.values.get('From', None)
     message_body = str(request.values.get('Body', None)).lower()
     user = get_user_from_number(from_number)
-    if user != None and user.netID in get_oncall_team.values():
+    if user != None and user.netID in get_oncall_team().values():
         log("sender valid")
         command_string = message_body.split()[0]
         if command_string == "eta":
             log("sender reporting eta")
             try:
                 oncall_eta[user.netID] = int(message_body.split()[1])
+                team_status[user.netID] = -1
                 client.messages.create(to=from_number, from_=default_from_phone, body="Thank you for your response. You said your eta is " + str(message_body.split()[1]) + " minutes.")
             except:
                 client.messages.create(to=from_number, from_=default_from_phone, body="Your text is invalid. Please type \"eta X\" where X is a whole number.")

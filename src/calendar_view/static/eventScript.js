@@ -331,16 +331,45 @@ $(document).ready(function() {
 		};
 		AJAXJSONWrapper("POST", "/backend/start_alert", alert_data);
         var pending = AJAXGetWrapper("/backend/pending_staff");
-        for(var id in pending) {
-            alertingIDs[id] = setInterval(function() {
-                call(id)
-            }, alertFrequency);
-        }
-		$alertDialog.dialog( "close" );
+        console.log(Object.keys(pending))
+
+        var keys = Object.keys(pending)
+        alertingIDs[keys[0]] = setInterval(function() {
+            console.log("calling: " + keys[0])
+            call(keys[0])
+        }, alertFrequency);
+        var keys = Object.keys(pending)
+        alertingIDs[keys[1]] = setInterval(function() {
+            console.log("calling: " + keys[1])
+            call(keys[1])
+        }, alertFrequency);
+        var keys = Object.keys(pending)
+        alertingIDs[keys[2]] = setInterval(function() {
+            console.log("calling: " + keys[2])
+            call(keys[2])
+        }, alertFrequency);
+        var keys = Object.keys(pending)
+        alertingIDs[keys[3]] = setInterval(function() {
+            console.log("calling: " + keys[3])
+            call(keys[3])
+        }, alertFrequency);
+        var keys = Object.keys(pending)
+        alertingIDs[keys[4]] = setInterval(function() {
+            console.log("calling: " + keys[4])
+            call(keys[4])
+        }, alertFrequency);
+        var keys = Object.keys(pending)
+        alertingIDs[keys[5]] = setInterval(function() {
+            console.log("calling: " + keys[5])
+            call(keys[5])
+        }, alertFrequency);
+		
+        $alertDialog.dialog( "close" );
 	}
 
     function call(id) {
         var pending = AJAXGetWrapper("/backend/pending_staff");
+        console.log(id);
         if(pending[id] == -1){
             clearInterval(alertingIDs[id]);
         }
