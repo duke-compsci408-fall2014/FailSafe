@@ -46,11 +46,11 @@ $(document).ready(function() {
 
 		dialog = $( "#dialog-form" ).dialog({
 		  autoOpen: false,
-		  height: 300,
+		  height: 400,
 		  width: 350,
 		  modal: true,
 		  buttons: {
-			"Create user": function() {
+			"Create Staff": function() {
 				var staff_data = {"role":$('#role').val(), "admin":$('#admin').val(), 
 								  "firstName":$('#firstName').val(), "lastName":$('#lastName').val(),
 								  "cellNumber":$('#cellNumber').val(), "homeNumber":$('#homeNumber').val(), 
@@ -102,7 +102,7 @@ $(document).ready(function() {
             
             edit_dialog = $( "#dialog-form" ).dialog({
                 autoOpen: false,
-                height: 300,
+                height: 400,
                 width: 350,
                 modal: true,
                 buttons: {
@@ -140,7 +140,7 @@ $(document).ready(function() {
             deleteDialog = $( "#delete-dialog" ).dialog({
                 autoOpen: false,
                 height: 100,
-                width: 200,
+                width: 250,
                 modal: true,
                 buttons: {
                     "Delete": function() {

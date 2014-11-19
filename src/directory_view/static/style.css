@@ -9,3 +9,15 @@ h3 {
 	font-size: 20px;
 	font-weight: bold;
 }
+#directory_heading {
+    float:left;
+    margin-bottom:10px;
+}
+#addnew_heading {
+    float:right;
+    margin-top:50px;
+    margin-bottom:10px;
+}
+#directory_table {
+    clear:both;
+}

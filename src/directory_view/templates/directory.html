@@ -7,13 +7,15 @@
 {% block body %}	
 	<div class="main">
 		<div class="container">
-			<h1>Staff Directory</h1>
-			<h3 style="margin-bottom: 10px">List of staff members and their contact information</h3>
-			<button id = "create-user" type="button" class="btn btn-default btn-lg" style="margin-bottom: 10px; margin-top:10px">Add New Staff</button>
-			<div class="panel panel-default">
-			  	<!-- Default panel contents -->
-			  	<div class="panel-heading">Staff Directory</div>
+            <div id="directory_heading"> 
+    			<h1>Staff Directory</h1>
+	    		<h3>List of staff members and their contact information</h3>
+            </div>
+            <div id="addnew_heading"> 
+                <button id = "create-user" type="button" class="btn btn-success btn-lg" style="margin-bottom: 10px; margin-top:10px">Add Staff &nbsp;<i class="fa fa-plus"></i></button> 
+            </div>
 
+			<div class="panel panel-default" id="directory_table">
 			  	<!-- Table -->
                {% for group in person_list|groupby("Role") %}   
                      <table id ="staff" class="table">
@@ -49,11 +51,10 @@
 			    	</table>
 				{% endfor %}
             </div>
-			<button id = "create-user" type="button" class="btn btn-default btn-lg">Add New Staff</button>
 		</div>
 	</div>
 
-	<div id="dialog-form" title="Create new user">
+	<div id="dialog-form" title="Create new staff">
 	  <p class="validateTips">All form fields are required.</p>
 	
 	  <form action="/directory/addStaff" method="post">
