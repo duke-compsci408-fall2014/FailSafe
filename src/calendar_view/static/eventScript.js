@@ -5,22 +5,26 @@ $(document).ready(function() {
 		rn1 = $( "#rn1" ),
 		rn2 = $( "#rn2" ),
 		tech1 = $("#tech1"),
-		tech2 = $("#tech2"),
-		allFields = $( [] ).add( faculty ).add( fellow ).add( rn1 ).add( rn2 ).add( tech1 ).add( tech2 ),
-		tips = $( ".validateTips" );
+		tech2 = $("#tech2");
+	var allFields = $( [] ).add( faculty ).add( fellow ).add( rn1 ).add( rn2 ).add( tech1 ).add( tech2 );
+	var tips = $( ".validateTips" );
 	var roles = ["Faculty", "Fellow", "RN1", "RN2", "Tech1", "Tech2"];
 	var roleIds = ["faculty", "fellow", "rn1", "rn2", "tech1", "tech2"];
-	var clickedSquare;
    	var displayTime = moment();
-    var alertFrequency = 30000; //30 seconds
-    var alertingIDs = {};
-    var showCancel = false;
+	var clickedSquare;
+    
 
-	if(document.getElementById("calendar") != null) {
-		document.getElementById("calendar").innerHTML = makeCalendar();
-	}
-	if(document.getElementById("dayView") != null) {
-		document.getElementById("dayView").innerHTML = makeDayView();
+	function createDialog(buttonsList, form, height, width) {
+		return {
+			autoOpen: false,
+			height: height,
+			width: width,
+			modal: true,
+			buttons: buttonsList,
+			close: function() {
+				allFields.removeClass("ui-state-error");
+			}
+		};
 	}
 
     function AJAXGetWrapper(endpoint) {
@@ -35,6 +39,24 @@ $(document).ready(function() {
 		});
 		return info;
     }
+
+	function AJAXJSONWrapper(method, url, data) {
+		$.ajax({
+			async: false,
+			url: url,
+			type: method,
+			contentType: "application/json",
+			dataType: "json",
+			data: JSON.stringify(data)
+		});
+	}
+
+	if(document.getElementById("calendar") != null) {
+		document.getElementById("calendar").innerHTML = makeCalendar();
+	}
+	if(document.getElementById("dayView") != null) {
+		document.getElementById("dayView").innerHTML = makeDayView();
+	}
 
 	function getScheduleWithDatetime(endpoint, requestParams) {
 		var schedule;
@@ -254,17 +276,6 @@ $(document).ready(function() {
           }
         }
 
-	function AJAXJSONWrapper(method, url, data) {
-		$.ajax({
-			async: false,
-			url: url,
-			type: method,
-			contentType: "application/json",
-			dataType: "json",
-			data: JSON.stringify(data)
-		});
-	}
-
 	function getInputtedCall(suffix) {
 		var valid = true;
 		allFields.removeClass( "ui-state-error" );
@@ -289,8 +300,8 @@ $(document).ready(function() {
 		$fullDialog.dialog( "close" );
 		document.getElementById("calendar").innerHTML = makeCalendar();
 	}
-
-	function cancel() {
+	
+    function cancel() {
 		$(this).dialog("close");
 	}
 
@@ -300,6 +311,10 @@ $(document).ready(function() {
 	};
 
 	var $fullDialog = $("#full-form").dialog(createDialog(fullButtons, fullForm, 350, 350));
+	
+	var fullForm = $fullDialog.find( "form" ).on( "submit", function( event ) {
+		event.preventDefault();
+	});
 
 	function deleteFull() {
 		allFields.removeClass("ui-state-error");
@@ -323,72 +338,6 @@ $(document).ready(function() {
 
 	var $fullCRUDDialog = $("#full-crud-form").dialog(createDialog(CRUDButtons, fullCRUDForm, 350, 350));
         
-	function alertOnCall() {
-		var alert_data = {
-			"eta":$('#eta').val(),
-			"location":$('#location').val(),
-			"type":$('#type').val(),
-			"msg":$('#msg').val()
-		};
-		AJAXJSONWrapper("POST", "/backend/start_alert", alert_data);
-        var pending = AJAXGetWrapper("/backend/pending_staff");
-        console.log(Object.keys(pending))
-
-        var keys = Object.keys(pending)
-        alertingIDs[keys[0]] = setInterval(function() {
-            console.log("calling: " + keys[0])
-            call(keys[0])
-        }, alertFrequency);
-        var keys = Object.keys(pending)
-        alertingIDs[keys[1]] = setInterval(function() {
-            console.log("calling: " + keys[1])
-            call(keys[1])
-        }, alertFrequency);
-        var keys = Object.keys(pending)
-        alertingIDs[keys[2]] = setInterval(function() {
-            console.log("calling: " + keys[2])
-            call(keys[2])
-        }, alertFrequency);
-        var keys = Object.keys(pending)
-        alertingIDs[keys[3]] = setInterval(function() {
-            console.log("calling: " + keys[3])
-            call(keys[3])
-        }, alertFrequency);
-        var keys = Object.keys(pending)
-        alertingIDs[keys[4]] = setInterval(function() {
-            console.log("calling: " + keys[4])
-            call(keys[4])
-        }, alertFrequency);
-        var keys = Object.keys(pending)
-        alertingIDs[keys[5]] = setInterval(function() {
-            console.log("calling: " + keys[5])
-            call(keys[5])
-        }, alertFrequency);
-		
-        $alertDialog.dialog( "close" );
-	}
-
-    function call(id) {
-        var pending = AJAXGetWrapper("/backend/pending_staff");
-        console.log(id);
-        if(pending[id] == -1){
-            clearInterval(alertingIDs[id]);
-        }
-        else {
-            var data = {
-                "netID": id
-            }
-            AJAXJSONWrapper("POST", "/backend/contact", data);
-        }
-    }
-
-	var alertButtons = {
-		"Send SMS": alertOnCall,
-		Cancel: cancel 
-	};
-	
-	var $alertDialog = $("#alert-form").dialog(createDialog(alertButtons, alertForm, 275, 350));
-
     function getSubVals(prefix, role) {
         var start = $('#start' + prefix + role).val();
         var duration = parseInt($('#duration' + prefix + role).val());
@@ -401,6 +350,11 @@ $(document).ready(function() {
             "sub":sub
         };
     }
+
+	var fullCRUDForm = $fullCRUDDialog.find( "form" ).on( "submit", function( event ) {
+		event.preventDefault();
+	});
+
 
     function checkTimeValidity(role, sub_data) {
         var valid = true;
@@ -483,69 +437,8 @@ $(document).ready(function() {
 				Cancel: cancel
 		};
 	}
-
-	function createDialog(buttonsList, form, height, width) {
-		return {
-			autoOpen: false,
-			height: height,
-			width: width,
-			modal: true,
-			buttons: buttonsList,
-			close: function() {
-				allFields.removeClass("ui-state-error");
-			}
-		};
-	}
 	
-	var fullForm = $fullDialog.find( "form" ).on( "submit", function( event ) {
-		event.preventDefault();
-	});
-
-	var fullCRUDForm = $fullCRUDDialog.find( "form" ).on( "submit", function( event ) {
-		event.preventDefault();
-	});
-	
-	var alertForm = $alertDialog.find( "form" ).on( "submit", function( event ) {
-		event.preventDefault();
-	});
-
-	$('#alert-button').click( function() {
-		$alertDialog.dialog('open');
-	});
-
 	$('div').on('click', 'td.inside', handleSubClick("#start", "#role", "#duration", "#sub"));
-	
-	$("div").on('click', 'td.day', handleDateClick());
- 
-    $('#cancel-alert-button').click( function() {
-        alert("Alert successfully cancelled. No more messages will be sent.");
-        cancelAll();
-    });
-
-    function cancelAll() {
-        for(var id in alertingIDs) {
-            clearInterval(alertingIDs[id]);
-        }
-    }
-
-    function handleDateClick(fieldToFill) {
-        return function(event) {
-            clickedSquare = event.target || event.srcElement;
-            var clickedSchedule = getScheduleWithDatetime("/calendar/json_datetime_schedule", {"datetime": clickedSquare.id})[0];
-            if(clickedSchedule != null) {
-                $("#dateCRUD").val(clickedSquare.id);
-                for(i = 0; i < 6; i++) {
-                    $("#" + roleIds[i] + "CRUD").val(clickedSchedule[i+1]);
-                }
-                
-                $fullCRUDDialog.dialog("open");
-            }
-            else {
-                $fullDialog.dialog("open");
-                $("#date").val(clickedSquare.id);
-            }
-        };
-    }
 	
 	function handleSubClick(startField, roleField, durationField, subField) {
 		return function(event) {
@@ -580,6 +473,27 @@ $(document).ready(function() {
             $dialog.dialog("open");
 		};
 	}
+	
+	$("div").on('click', 'td.day', handleDateClick());
+
+    function handleDateClick(fieldToFill) {
+        return function(event) {
+            clickedSquare = event.target || event.srcElement;
+            var clickedSchedule = getScheduleWithDatetime("/calendar/json_datetime_schedule", {"datetime": clickedSquare.id})[0];
+            if(clickedSchedule != null) {
+                $("#dateCRUD").val(clickedSquare.id);
+                for(i = 0; i < 6; i++) {
+                    $("#" + roleIds[i] + "CRUD").val(clickedSchedule[i+1]);
+                }
+                
+                $fullCRUDDialog.dialog("open");
+            }
+            else {
+                $fullDialog.dialog("open");
+                $("#date").val(clickedSquare.id);
+            }
+        };
+    }
 });
 
 $(document).keypress(function(e) {
