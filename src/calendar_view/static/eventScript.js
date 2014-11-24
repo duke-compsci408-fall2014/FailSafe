@@ -1,12 +1,7 @@
 $(document).ready(function() {
-	var sub = $("#sub"),
-		faculty = $( "#faculty" ),
-		fellow = $( "#fellow" ),
-		rn1 = $( "#rn1" ),
-		rn2 = $( "#rn2" ),
-		tech1 = $("#tech1"),
-		tech2 = $("#tech2");
-	var allFields = $( [] ).add( faculty ).add( fellow ).add( rn1 ).add( rn2 ).add( tech1 ).add( tech2 );
+	var date = $("#date"),
+        CRUDdate = $("#dateCRUD");
+	var allFields = $( [] ).add( date ).add( CRUDdate );
 	var tips = $( ".validateTips" );
 	var roles = ["Faculty", "Fellow", "RN1", "RN2", "Tech1", "Tech2"];
 	var roleIds = ["faculty", "fellow", "rn1", "rn2", "tech1", "tech2"];
@@ -151,7 +146,7 @@ $(document).ready(function() {
 	}
 
 	function makeSubRow(id, tdClass, substitutions) {
-		var row = "<tr><td class='timelabel'>" + id.format("h[:]mma") + "</td>";
+		var row = "<tr><td class='timelabel'>" + id.format("h[:]mm a") + "</td>";
 		for(role = 0; role < roles.length; role++) {
 			row += "<td class='" + tdClass + "' id='" + id.format() + "'>";
 			for(sub = 0; sub < substitutions.length; sub++) {
@@ -396,13 +391,16 @@ $(document).ready(function() {
             AJAXJSONWrapper("POST", "/calendar/add_substitute", sub_data);
             document.getElementById("dayView").innerHTML = makeDayView();
         }
+        return valid;
 	}
 
 	function createSubButtons(role) {
 		return	   {
 				"Create event": function() {
-					addSub(role);
-			        $(this).dialog( "close" );
+					var success = addSub(role);
+			        if(success) {
+                        $(this).dialog( "close" );
+                    }
 				},
 				Cancel: cancel
 		};
