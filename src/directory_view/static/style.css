@@ -11,12 +11,22 @@ h3 {
 }
 #directory_heading {
     float:left;
-    margin-bottom:10px;
 }
 #addnew_heading {
     float:right;
     margin-top:50px;
     margin-bottom:10px;
+}
+#quicklinks {
+    clear:left;
+    float:left;
+    padding:0;
+    margin-top:10px;
+    margin-bottom:10px;
+    list-style:none;
+}
+#quicklinks li {
+    display:inline;
 }
 #directory_table {
     clear:both;

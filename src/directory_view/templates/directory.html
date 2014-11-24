@@ -9,18 +9,22 @@
 		<div class="container">
             <div id="directory_heading"> 
     			<h1>Staff Directory</h1>
-	    		<h3>List of staff members and their contact information</h3>
             </div>
             <div id="addnew_heading"> 
                 <button id = "create-user" type="button" class="btn btn-success btn-lg" style="margin-bottom: 10px; margin-top:10px">Add Staff &nbsp;<i class="fa fa-plus"></i></button> 
             </div>
-
+            <ul id="quicklinks">
+                <li><a href="#Faculty">Faculty</a> |</li>
+                <li><a href="#Fellow">Fellow</a> |</li>
+                <li><a href="#Nurse">Nurse</a> |</li>
+                <li><a href="#Tech">Tech</a> </li>
+            </ul>
 			<div class="panel panel-default" id="directory_table">
 			  	<!-- Table -->
                {% for group in person_list|groupby("Role") %}   
                      <table id ="staff" class="table">
 						<tr>
-							<td class="roleGroup" colspan=10>{{group.grouper}}</td>
+                            <td id="{{group.grouper}}" class="roleGroup" colspan=10>{{group.grouper}}</td>
 						</tr>
 						<tr class="table_headings">
 							<th style="display:none">Role</th>
