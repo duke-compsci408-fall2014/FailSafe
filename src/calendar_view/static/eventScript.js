@@ -232,13 +232,25 @@ $(document).ready(function() {
 	$("#yesterday").click(handleIndexClick(-1, "d", "dayView", makeDayView));
 
 	$("#tomorrow").click(handleIndexClick(1, "d", "dayView", makeDayView));
-        
-        function handleIndexClick(change, thingToChange, elementId, creationMethod) {
-            return function() {
-                displayTime.add(change, thingToChange);
-                document.getElementById(elementId).innerHTML = creationMethod();
-            };
+ 
+    $(".team-link").click(updateDayView());
+
+    function handleIndexClick(change, thingToChange, elementId, creationMethod) {
+        return function() {
+            displayTime.add(change, thingToChange);
+            document.getElementById(elementId).innerHTML = creationMethod();
+        };
+    }
+
+    function updateDayView() {
+        return function(event) {
+            var clickedLink = event.target || event.srcElement;
+            var date = clickedLink.id;
+            window.location.replace("https://failsafe.colab.duke.edu/calendar/day");
+            displayTime = moment(date);
+            document.getElementById("dayView").innerHTML = makeDayView();
         }
+    }
 
 	//FORMS
 

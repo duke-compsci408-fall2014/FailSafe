@@ -3,6 +3,7 @@
 {% block dir_head %}
     <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='style.css') }}">
     <script src='{{ url_for('dashboard.static', filename='script.js') }}'></script>
+    <script src='{{ url_for('calendar.static', filename='eventScript.js') }}'></script>
 {% endblock %}
 {% block body %}
     <div class="main">
@@ -20,7 +21,7 @@
                         <tr>
                             <td>{{day}}</td>
                             <td>All day</td>
-                            <td><a href="/calendar/day" id="oncall-day">View Team</a></td>
+                            <td><a class="team-link" id="{{day}}">View Team</a></td>
                         </tr>
                         {% endfor %}
                     </table>
