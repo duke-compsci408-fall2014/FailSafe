@@ -460,7 +460,7 @@ $(document).ready(function() {
 				roleID = "CRUD" + role;
                 startTime = clickedSchedule[1];
                 var endTime = clickedSchedule[2];
-                var duration = moment(endTime).hours() - moment(startTime).hours();
+                var duration = moment(endTime).diff(startTime, 'hours');
                 $(subField + roleID).val(clickedSchedule[4]);
 				buttons = createCRUDSubButtons(role, startTime);
 			}
