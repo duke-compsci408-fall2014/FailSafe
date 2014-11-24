@@ -12,7 +12,6 @@ $(document).ready(function() {
 	var roleIds = ["faculty", "fellow", "rn1", "rn2", "tech1", "tech2"];
    	var displayTime = moment();
 	var clickedSquare;
-    
 
 	function createDialog(buttonsList, form, height, width) {
 		return {
@@ -55,7 +54,12 @@ $(document).ready(function() {
 		document.getElementById("calendar").innerHTML = makeCalendar();
 	}
 	if(document.getElementById("dayView") != null) {
-		document.getElementById("dayView").innerHTML = makeDayView();
+        var startingDate = document.getElementById("startingDate").innerHTML;
+	    if(startingDate != "")
+        {
+            displayTime = moment(startingDate);
+        }
+        document.getElementById("dayView").innerHTML = makeDayView();
 	}
 
 	function getScheduleWithDatetime(endpoint, requestParams) {
@@ -232,24 +236,12 @@ $(document).ready(function() {
 	$("#yesterday").click(handleIndexClick(-1, "d", "dayView", makeDayView));
 
 	$("#tomorrow").click(handleIndexClick(1, "d", "dayView", makeDayView));
- 
-    $(".team-link").click(updateDayView());
 
     function handleIndexClick(change, thingToChange, elementId, creationMethod) {
         return function() {
             displayTime.add(change, thingToChange);
             document.getElementById(elementId).innerHTML = creationMethod();
         };
-    }
-
-    function updateDayView() {
-        return function(event) {
-            var clickedLink = event.target || event.srcElement;
-            var date = clickedLink.id;
-            window.location.replace("https://failsafe.colab.duke.edu/calendar/day");
-            displayTime = moment(date);
-            document.getElementById("dayView").innerHTML = makeDayView();
-        }
     }
 
 	//FORMS

@@ -7,38 +7,12 @@
     {% set formRoles = roles + roles %}
     {% set weekdays =['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] %}
 
+    <p id="startingDate" hidden >{{date}}</p>
     <div class = "container">
 	<button id = "yesterday" type="button" class="btn btn-default pull-left">Previous Day</button>
 	<button id = "tomorrow" type="button" class="btn btn-default pull-left">Next Day</button>
     </div>
     <div class="container" id="dayView"></div>
-
-	<div style="display:none;" id="alert-form" title="Alert">
-		<p class="validateTips">All form fields are required.</p>
-		<form action="superman" method="post">
-			<fieldset>
-				<div>
-					<label for="eta">ETA</label>
-					<input type="text" name="eta" id="eta" class="text ui-widget-content ui-corner-all">
-				</div>
-				<div>
-					<label for="location">Location</label>
-					<input type="text" name="location" id="location" class="text ui-widget-content ui-corner-all">
-				</div>
-				<div>
-					<label for="type">Type</label>
-					<input type="text" name="type" id="type" class="text ui-widget-content ui-corner-all">
-				</div>
-				<div>
-					<label for="msg">Message</label>
-					<input type="text" name="msg" id="msg" class="text ui-widget-content ui-corner-all">
-				</div>
-					
-				<!-- Allow form submission with keyboard without duplicating the dialog button -->
-				<input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-			</fieldset>
-		</form>
-	</div>
 
     {% set roleIndex = 0 %}
     {% for role in forms %}

@@ -18,6 +18,10 @@ def default():
 def day_view():
     return render_template('day_view.html', directory_list=get_directory_list())
 
+@calendar.route('/day/<date>')
+def specific_day_view(date):
+    return render_template('day_view.html', directory_list=get_directory_list(), date=date)
+
 @calendar.route('/month')
 def month_view():
     return render_template('month_view.html', directory_list=get_directory_list())
