@@ -9,30 +9,41 @@
 		<div class="container">
             <div id="directory_heading"> 
     			<h1>Staff Directory</h1>
-	    		<h3>List of staff members and their contact information</h3>
             </div>
+            {%  if user.isAdministrator == 'Yes' %}
             <div id="addnew_heading"> 
                 <button id = "create-user" type="button" class="btn btn-success btn-lg" style="margin-bottom: 10px; margin-top:10px">Add Staff &nbsp;<i class="fa fa-plus"></i></button> 
             </div>
-
+            {% else %}
+            {% endif %}
+            <ul id="quicklinks">
+                <li><a href="#Faculty">Faculty</a> |</li>
+                <li><a href="#Fellow">Fellow</a> |</li>
+                <li><a href="#Nurse">Nurse</a> |</li>
+                <li><a href="#Tech">Tech</a> </li>
+            </ul
+            >
 			<div class="panel panel-default" id="directory_table">
 			  	<!-- Table -->
-               {% for group in person_list|groupby("Role") %}   
-                     <table id ="staff" class="table">
+               {% for group in person_list|groupby("Role") %}
+                     <table id ="staff-table" class="table">
 						<tr>
-							<td class="roleGroup" colspan=10>{{group.grouper}}</td>
+                            <td id="{{group.grouper}}" class="roleGroup" colspan=10>{{group.grouper}}</td>
 						</tr>
 						<tr class="table_headings">
 							<th style="display:none">Role</th>
-							<th>Admin</th>
+                            <th>Admin</th>
 							<th>First Name</th>
 							<th>Last Name</th>
             				<th>Cell Phone</th>
 							<th>Home Phone</th>
 							<th>Pager Number</th>
-			            	<th>NetID</th>
+                            <th>NetID</th>
+                            {% if user.isAdministrator == 'Yes' %}
             				<th>Edit</th>
 			            	<th>Delete</th>
+                            {% else %}
+                            {% endif %}
 						</tr>
 						{% for person in group.list %}
 							<tr class="entry">
@@ -44,8 +55,11 @@
 								<td class="entry-data">{{person.HomePhone}}</td>
 								<td class="entry-data">{{person.PagerNumber}}</td>
 							    <td class="entry-data">{{person.NetID}}</td>
+                                {% if user.isAdministrator == 'Yes' %}
 							    <td class="edit-staff" id="{{person.UserID}}"><a href="#" class="btn btn-primary btn-large"> Edit &nbsp; <i class="fa fa-pencil"></i></a></td>
 							    <td class="delete-staff" id="{{person.UserID}}"><a href="#" class="btn btn-danger btn-large">Delete &nbsp; <i class="fa fa-times"></i></a></td>
+                                {% else %}
+                                {% endif %}
 							</tr>
 						{% endfor %}
 			    	</table>
@@ -93,7 +107,7 @@
 			</div>
 			<div>
 				<label for="pager">Pager Number</label>
-				<input type="text" name="pager" id="pager" class="text ui-widget-content ui-corner-all" placeholder="+19876543210">
+				<input type="text" name="pager" id="pager" class="text ui-widget-content ui-corner-all" placeholder="9876543210">
 			</div>
 			<div>
 				<label for="netID">NetID</label>

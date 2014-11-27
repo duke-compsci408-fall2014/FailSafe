@@ -20,9 +20,12 @@ directory = Blueprint('directory',__name__, template_folder='templates', static_
 def show_directory(staff = None, addstaff = False, editstaff = False):
     con = dir_mysql.connect()
     cursor = con.cursor()
-    person_list = list();
+    person_list = list()
 
-	# add new staff based on the form
+    # get the logged in user
+    user = get_logged_in_user()
+
+    # add new staff based on the form
     if staff is not None:
         if addstaff:
             sql_query = "INSERT INTO tblUser (UserID, Role, IsAdministrator, FirstName, \
@@ -68,7 +71,7 @@ def show_directory(staff = None, addstaff = False, editstaff = False):
         #    person_data.append(d[i])
         #person_list.append(person_data)
 
-    return render_template('directory.html', person_list=person_list)
+    return render_template('directory.html', person_list=person_list, user=user)
 
 def ensure_user_exists(netID):
     if get_user_from_netID(netID) == None:
@@ -136,3 +139,13 @@ def get_user_from_netID(netID):
         return newUser
     except:
         return None
+
+def get_logged_in_user():
+    session['user_netid'] = str(request.environ['REMOTE_USER'][:request.environ['REMOTE_USER'].index('@')])
+    if 'user_netid' in session and session['user_netid'] in get_all_staff():
+        netID = session['user_netid']
+        user = get_all_staff()[netID]
+    else:
+        user = "user not valid"
+    return user
+
