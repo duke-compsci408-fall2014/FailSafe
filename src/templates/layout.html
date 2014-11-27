@@ -39,14 +39,15 @@
               <li><a href="/calendar">Calendar</a></li>
               <li><a href="/calendar/day">Substitutions</a></li>
             </ul>
-            <button id = "cancel-alert-button" type="button" class="btn btn-info navbar-btn pull-right">Silence</button>
-            <button id = "alert-button" type="button" class="btn btn-danger navbar-btn pull-right">Activate</button>
+            <button id = "silence-button" type="button" class="btn btn-info navbar-btn pull-right">Silence</button>
+            <button id = "deactivate-button" type="button" class="btn btn-success navbar-btn pull-right">Deactivate</button>
+            <button id = "activate-button" type="button" class="btn btn-danger navbar-btn pull-right">Activate</button>
           </div><!-- /.navbar-collapse -->
         </div><!-- /.container-fluid -->
       </nav>
 
-        <div style="display:none;" id="alert-form" title="Alert">
-            <p class="validateTips">All form fields are required.</p>
+        <div style="display:none;" id="alert-form" title="Activate Emergency Alert">
+            <p class="validateTips">Send an emergency alert to active team. All form fields are required.</p>
             <form action="superman" method="post">
                 <fieldset>
                     <div>
@@ -64,6 +65,21 @@
                     <div>
                         <label for="msg">Message</label>
                         <input type="text" name="msg" id="msg" class="text ui-widget-content ui-corner-all">
+                    </div>
+                        
+                    <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                </fieldset>
+            </form>
+        </div>
+
+        <div style="display:none;" id="deactivate-form" title="Deactivate Emergency Call">
+            <p class="validateTips">Send a message to send the team home. All form fields are required.</p>
+            <form action="superman" method="post">
+                <fieldset>
+                    <div>
+                        <label for="deactivate_message">Message</label>
+                        <input type="text" name="deactivate_message" id="deactivate_message" class="text ui-widget-content ui-corner-all">
                     </div>
                         
                     <!-- Allow form submission with keyboard without duplicating the dialog button -->

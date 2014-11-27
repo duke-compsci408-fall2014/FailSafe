@@ -109,6 +109,14 @@ def start_alert():
         team_status[i] = 0
     return jsonify(team_status)
 
+@backend.route("/form_team", methods=['GET'])
+def form_team():
+    global team_status
+    team_status = {}
+    for i in get_oncall_team().values():
+        team_status[i] = 0
+    return jsonify(results=team_status)
+
 @backend.route("/pending_staff", methods=['GET'])
 def pending_staff():
     global team_status
@@ -135,6 +143,26 @@ def contact():
             return ''
     else:
         return ''
+
+@backend.route("/deactivate", methods=['POST'])
+def deactivate():
+    global team_status
+    team_status = {}
+    for i in get_oncall_team().values():
+        team_status[i] = 0
+    netID = request.json['netID']
+    deactivate_message = request.json['msg']
+    if netID in team_status:
+        user = get_user_from_netID(netID)
+        #arbitrarily chose to have this not call the home phone
+        send_page(user.pagerNumber, deactivate_message)
+        send_sms(user.cellPhone, deactivate_message)
+        make_call(user.cellPhone, deactivate_message)
+        return ''
+    else:
+        return ''
+
+
 '''
 @purpose makes calendar-passed information for on-call emergency notification
          python compatible

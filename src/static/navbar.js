@@ -49,7 +49,12 @@ $(document).ready(function() {
 		};
 		alertAJAXJSONWrapper("POST", "/backend/start_alert", alert_data);
         var pending = alertAJAXGetWrapper("/backend/pending_staff");
-        console.log(Object.keys(pending))
+        console.log(Object.keys(pending));
+        
+        for(i = 0; i < 6; i++) {
+            var keys = Object.keys(pending);
+            call(keys[i]);
+        }
 
         var keys = Object.keys(pending)
         alertingIDs[keys[0]] = setInterval(function() {
@@ -82,6 +87,8 @@ $(document).ready(function() {
             call(keys[5])
         }, alertFrequency);
 		
+        alert("Activation initiated.");
+
         $alertDialog.dialog( "close" );
 	}
 
@@ -94,13 +101,29 @@ $(document).ready(function() {
         else {
             var data = {
                 "netID": id
-            }
+            };
             alertAJAXJSONWrapper("POST", "/backend/contact", data);
         }
     }
 
+    function sendHome(id) {
+        var data = {
+            "netID": id,
+			"msg":$('#deactivate_message').val()
+        };
+        alertAJAXJSONWrapper("POST", "/backend/deactivate", data);
+    }
+
 	var alertButtons = {
-		"Send SMS": alertOnCall,
+		"Activate": function() {
+            var doubleCheck = confirm("Activate on call team?");
+            if(doubleCheck) {
+                alertOnCall();
+            }
+            else {
+                alert("Activation cancelled.");
+            }
+        },
 		Cancel: alertCancel 
 	};
 
@@ -108,24 +131,63 @@ $(document).ready(function() {
 		$(this).dialog("close");
 	}
 
-	var $alertDialog = $("#alert-form").dialog(createAlertDialog(alertButtons, alertForm, 275, 350));
+	var $alertDialog = $("#alert-form").dialog(createAlertDialog(alertButtons, alertForm, 300, 350));
 
-	var alertForm = $alertDialog.find( "form" ).on( "submit", function( event ) {
+	var alertForm = $alertDialog.find( "form" ).on( "submit", function(event) {
 		event.preventDefault();
 	});
 
-	$('#alert-button').click( function() {
+	$('#activate-button').click( function() {
 		$alertDialog.dialog('open');
 	});
+
+    function deactivate() {
+        var team = alertAJAXGetWrapper("/backend/form_team");
+        var keys = Object.keys(team);
+        for(i = 0; i < 6; i++) {
+            sendHome(keys[i]);
+        }
+        alert("Deactivation initiated.");
+        $deactivateDialog.dialog( "close" );
+    }
+
+	var deactivateButtons = {
+		"Send Message": function() {
+            var doubleCheck = confirm("Deactivate currently activated team? (will send an alert to all members of activated team)");
+            if(doubleCheck) {
+                deactivate();
+            }
+            else {
+                alert("Deactivation cancelled.");
+            }
+        },
+		Cancel: alertCancel 
+	};
+
+	var $deactivateDialog = $("#deactivate-form").dialog(createAlertDialog(deactivateButtons, deactivateForm, 200, 350));
+
+	var deactivateForm = $deactivateDialog.find( "form" ).on( "submit", function(event) {
+		event.preventDefault();
+	});
+
+    $('#deactivate-button').click( function() {
+        $deactivateDialog.dialog('open');
+    });
  
-    $('#cancel-alert-button').click( function() {
-        alert("Alert successfully cancelled. No more messages will be sent.");
-        cancelAll();
+    $('#silence-button').click( function() {
+        var doubleCheck = confirm("Stop sending messages to all staff on currently activated team(s)?");
+        if(doubleCheck) {
+            cancelAll();
+        }
+        else {
+            alert("Silence cancelled.");
+        }    
     });
 
     function cancelAll() {
         for(var id in alertingIDs) {
             clearInterval(alertingIDs[id]);
         }
+        alert("Alert successfully cancelled. No more messages will be sent.");
     }
 });
