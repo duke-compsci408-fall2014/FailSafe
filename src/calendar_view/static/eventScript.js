@@ -57,7 +57,7 @@ $(document).ready(function() {
         document.getElementById("dayView").innerHTML = makeDayView();
 	}
 
-	function getScheduleWithDatetime(endpoint, requestParams) {
+	function AJAXGetWithData(endpoint, requestParams) {
 		var schedule;
 		$.ajax({
 			url:endpoint,
@@ -361,7 +361,15 @@ $(document).ready(function() {
         var tempTime = moment(sub_data['start']);
         var endTime = moment(sub_data['end']);
         while(tempTime.isBefore(endTime)) {
-            var tempSchedule = getScheduleWithDatetime("/calendar/json_datetime_substitute", {"datetime": moment(tempTime).add(1, 's').format(), "role": role})[0];
+            var isValid = AJAXGetWithData("/calendar/check_availability", sub_data);
+            alert(isValid);
+            if(isValid) {
+                alert("ok!");
+            }
+            else {
+                alert("no.");
+            }
+            var tempSchedule = AJAXGetWithData("/calendar/json_datetime_substitute", {"datetime": moment(tempTime).add(1, 's').format(), "role": role})[0];
 			if(tempSchedule != null && tempSchedule[4] != sub_data['sub']) {
                 valid = false;
                 updateTips("Conflicts with existing substitution of " + tempSchedule[4]);
@@ -374,8 +382,7 @@ $(document).ready(function() {
                 AJAXJSONWrapper("DELETE", "delete_substitute", role_data);
                 var otherEndTime = moment(tempSchedule[2]);
                 endTime = moment.max(endTime, otherEndTime);
-                sub_data['end'] = endTime.format();
-                
+                sub_data['end'] = endTime.format();   
             }
             tempTime.add(30, 'm');
         }
@@ -453,7 +460,7 @@ $(document).ready(function() {
             var duration = "1";
             var buttons = createSubButtons(role);
 			
-            var clickedSchedule = getScheduleWithDatetime("/calendar/json_datetime_substitute", {"datetime": moment(clickedSquare.id).add(1, 's').format(), "role": role})[0];
+            var clickedSchedule = AJAXGetWithData("/calendar/json_datetime_substitute", {"datetime": moment(clickedSquare.id).add(1, 's').format(), "role": role})[0];
 			if(clickedSchedule != null) {
 				roleID = "CRUD" + role;
                 startTime = clickedSchedule[1];
@@ -481,7 +488,7 @@ $(document).ready(function() {
     function handleDateClick(fieldToFill) {
         return function(event) {
             clickedSquare = event.target || event.srcElement;
-            var clickedSchedule = getScheduleWithDatetime("/calendar/json_datetime_schedule", {"datetime": clickedSquare.id})[0];
+            var clickedSchedule = AJAXGetWithData("/calendar/json_datetime_schedule", {"datetime": clickedSquare.id})[0];
             if(clickedSchedule != null) {
                 $("#dateCRUD").val(clickedSquare.id);
                 for(i = 0; i < 6; i++) {

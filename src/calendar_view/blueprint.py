@@ -98,18 +98,40 @@ def getNameForID(netID):
 def get_json_sub_schedule():
     return jsonify(results=get_sub_schedule(request.args.get('day'), request.args.get('month'), request.args.get('year')))
 
+@calendar.route('/check_availability')
+def check_availability():
+    user = request.args.get('sub')
+    start = request.args.get('start')
+    end = request.args.get('end')
+    con = cal_mysql.connect()
+    cursor = con.cursor()
+    roles = ['Faculty', 'Fellow', 'RN1', 'RN2', 'Tech1', 'Tech2']
+    for i in roles:
+        cursor.execute("SELECT * from schedule WHERE DATE('{start}')=Day AND '{user}'={role}".format(start=start, user=user, role=i))
+        data = cursor.fetchall()
+        if len(data) > 0:
+            return jsonify(results=False)
+    cursor.execute("SELECT * from substitutions WHERE '{user}'=SubID AND (('{start}' >= StartTime AND '{start}' < EndTime) OR ('{end}' > StartTime AND '{end}' <= EndTime))".format(user=user, start=start, end=end))
+    data = cursor.fetchall()
+    if len(data) > 0:
+        return jsonify(results=False)
+    return jsonify(results=True)
+
 def get_oncall_team():
+    return get_team_at_time("NOW()")
+
+def get_team_at_time(time):
     con = cal_mysql.connect()
     cursor = con.cursor()
     roles = ['Faculty', 'Fellow', 'RN1', 'RN2', 'Tech1', 'Tech2']
     oncall_team = {}
     for i in roles:
-        cursor.execute("SELECT {role} from schedule WHERE DATE(CONVERT_TZ(NOW(), '-1:00', '-5:00'))=Day".format(role = i))
+        cursor.execute("SELECT {role} from schedule WHERE DATE({time})=Day".format(role = i, time=time))
         data = cursor.fetchall()
         if len(data) > 0:
             oncall_team[i] = str(data[0][0])  #first zero for first entry from fetchall, second zero for the actual value of (netID, )
     for i in roles:
-        cursor.execute("SELECT * FROM substitutions WHERE CONVERT_TZ(NOW(), '-1:00', '-5:00') > StartTime AND CONVERT_TZ(NOW(), '-1:00', '-5:00') < EndTime AND Role = '{role}'".format(role=i))
+        cursor.execute("SELECT * FROM substitutions WHERE {time} > StartTime AND {time} < EndTime AND Role = '{role}'".format(role=i, time=time))
         data = cursor.fetchall()
         if len(data) == 0:
             pass
