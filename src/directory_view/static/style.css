@@ -31,3 +31,6 @@ h3 {
 #directory_table {
     clear:both;
 }
+#staff-table td {
+    width: 8%;
+}
