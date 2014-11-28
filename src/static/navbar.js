@@ -3,11 +3,11 @@ $(document).ready(function() {
     var alertingIDs = {};
     var showCancel = false;
 
-    function createAlertDialog(buttonsList, form, height, width) {
+    function createAlertDialog(buttonsList, form) {
 		return {
 			autoOpen: false,
-			height: height,
-			width: width,
+			height: 'auto',
+			width: 350,
 			modal: true,
 			buttons: buttonsList,
 			close: function() {
@@ -41,6 +41,8 @@ $(document).ready(function() {
 	}
 
 	function alertOnCall() {
+        alert("Activation initiated.");
+        $alertDialog.dialog( "close" );
 		var alert_data = {
 			"eta":$('#eta').val(),
 			"location":$('#location').val(),
@@ -87,9 +89,6 @@ $(document).ready(function() {
             call(keys[5])
         }, alertFrequency);
 		
-        alert("Activation initiated.");
-
-        $alertDialog.dialog( "close" );
 	}
 
     function call(id) {
@@ -131,7 +130,7 @@ $(document).ready(function() {
 		$(this).dialog("close");
 	}
 
-	var $alertDialog = $("#alert-form").dialog(createAlertDialog(alertButtons, alertForm, 300, 350));
+	var $alertDialog = $("#alert-form").dialog(createAlertDialog(alertButtons, alertForm));
 
 	var alertForm = $alertDialog.find( "form" ).on( "submit", function(event) {
 		event.preventDefault();
@@ -142,13 +141,14 @@ $(document).ready(function() {
 	});
 
     function deactivate() {
+        $deactivateDialog.dialog( "close" );
+        alert("Deactivation initiated. Messaging all team members once.");
+        cancelAll();
         var team = alertAJAXGetWrapper("/backend/form_team");
         var keys = Object.keys(team);
         for(i = 0; i < 6; i++) {
             sendHome(keys[i]);
         }
-        alert("Deactivation initiated.");
-        $deactivateDialog.dialog( "close" );
     }
 
 	var deactivateButtons = {
@@ -164,7 +164,7 @@ $(document).ready(function() {
 		Cancel: alertCancel 
 	};
 
-	var $deactivateDialog = $("#deactivate-form").dialog(createAlertDialog(deactivateButtons, deactivateForm, 200, 350));
+	var $deactivateDialog = $("#deactivate-form").dialog(createAlertDialog(deactivateButtons, deactivateForm));
 
 	var deactivateForm = $deactivateDialog.find( "form" ).on( "submit", function(event) {
 		event.preventDefault();
@@ -177,6 +177,7 @@ $(document).ready(function() {
     $('#silence-button').click( function() {
         var doubleCheck = confirm("Stop sending messages to all staff on currently activated team(s)?");
         if(doubleCheck) {
+            alert("Alert successfully cancelled. No more messages will be sent.");
             cancelAll();
         }
         else {
@@ -188,6 +189,5 @@ $(document).ready(function() {
         for(var id in alertingIDs) {
             clearInterval(alertingIDs[id]);
         }
-        alert("Alert successfully cancelled. No more messages will be sent.");
     }
 });

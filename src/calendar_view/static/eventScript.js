@@ -8,11 +8,11 @@ $(document).ready(function() {
    	var displayTime = moment();
 	var clickedSquare;
 
-	function createDialog(buttonsList, form, height, width) {
+	function createDialog(buttonsList, form) {
 		return {
 			autoOpen: false,
-			height: height,
-			width: width,
+			height: 'auto',
+			width: 350,
 			modal: true,
 			buttons: buttonsList,
 			close: function() {
@@ -295,6 +295,15 @@ $(document).ready(function() {
 
 	function addFull() {
 		oncall_data = getInputtedCall("");
+        var roles = ["faculty", "fellow", "rn1", "rn2", "tech1", "tech2"];
+        for(i = 0; i < 6; i++) {
+            for(j = 0; j < 6; j++) {
+                if((oncall_data[roles[i]] == oncall_data[roles[j]]) && (i != j)) {
+                    updateTips("User " + oncall_data[roles[i]] + " has been assigned twice.");
+                    return false;
+                }
+            }
+        }
 		AJAXJSONWrapper("POST", "/calendar/add_call", oncall_data);
 		$fullDialog.dialog( "close" );
 		document.getElementById("calendar").innerHTML = makeCalendar();
@@ -309,7 +318,7 @@ $(document).ready(function() {
 		Cancel: cancel
 	};
 
-	var $fullDialog = $("#full-form").dialog(createDialog(fullButtons, fullForm, 350, 350));
+	var $fullDialog = $("#full-form").dialog(createDialog(fullButtons, fullForm));
 	
 	var fullForm = $fullDialog.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
@@ -335,7 +344,7 @@ $(document).ready(function() {
 		Cancel: cancel
 	};
 
-	var $fullCRUDDialog = $("#full-crud-form").dialog(createDialog(CRUDButtons, fullCRUDForm, 350, 350));
+	var $fullCRUDDialog = $("#full-crud-form").dialog(createDialog(CRUDButtons, fullCRUDForm));
         
     function getSubVals(prefix, role) {
         var start = $('#start' + prefix + role).val();
@@ -354,21 +363,21 @@ $(document).ready(function() {
 		event.preventDefault();
 	});
 
+    function checkAvailability(sub_data) {
+        var valid = AJAXGetWithData("/calendar/check_availability", sub_data);
+        if(!valid) {
+            updateTips("User has already been assigned for another role at that time");
+        }
+        return valid;
+    }
 
     function checkTimeValidity(role, sub_data) {
         var valid = true;
         allFields.removeClass("ui-state-error");
         var tempTime = moment(sub_data['start']);
         var endTime = moment(sub_data['end']);
+        valid = checkAvailability(sub_data);
         while(tempTime.isBefore(endTime)) {
-            var isValid = AJAXGetWithData("/calendar/check_availability", sub_data);
-            alert(isValid);
-            if(isValid) {
-                alert("ok!");
-            }
-            else {
-                alert("no.");
-            }
             var tempSchedule = AJAXGetWithData("/calendar/json_datetime_substitute", {"datetime": moment(tempTime).add(1, 's').format(), "role": role})[0];
 			if(tempSchedule != null && tempSchedule[4] != sub_data['sub']) {
                 valid = false;
@@ -416,7 +425,7 @@ $(document).ready(function() {
     function updateSub(role, originalStart) {
         sub_data = getSubVals("CRUD", role);
         sub_data['originalStart'] = originalStart;
-        var valid = true;
+        var valid = checkAvailability(sub_data);
 
         if(valid) {
             AJAXJSONWrapper("PUT", "/calendar/update_substitute", sub_data);
@@ -474,7 +483,7 @@ $(document).ready(function() {
 			$(roleField + roleID).val(role);
             $(durationField + roleID).val(duration);
 			
-            var $dialog = $( "#" + roleID + "-sub-form" ).dialog(createDialog(buttons, null, 275, 350));
+            var $dialog = $( "#" + roleID + "-sub-form" ).dialog(createDialog(buttons, null));
             var form = $dialog.find( "form" ).on( "submit", function( event ) {
 				event.preventDefault();
 			});
