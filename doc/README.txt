@@ -15,5 +15,15 @@ This should allow emergency operations to start sooner and thus increase the pro
 
 DEPLOYMENT - INSTALL INSTRUCTIONS
 
-On an Ubuntu VM, run the following commands in order:
-...
+Please see the TechnicalGuide (TechnicalGuide.pdf) for complete instructions.
+Basic instructions are as follows:
+
+1) Create a server running on Ubuntu 14
+2) Install Flask.
+3) Download the FailSafe source code from GitHub.
+4) Add Apache/Mod WSGI to the server for compatibility.
+5) Order an SSL certificate to confirm the security of your webpage.
+6) Set up Duke Shibboleth for authorization/authentication.
+7) Install MySQL for database management.
+8) Set up databases for the calendar and directory portions of FailSafe.
+9) Test everything!
