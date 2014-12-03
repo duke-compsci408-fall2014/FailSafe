@@ -8,3 +8,4 @@ The following are features that would be desirable for future versions of the pr
 6. Substitutions and shift trades should have to be formally requested -- 
 	a user should have to request that he/she substitutes for someone else, 
 	and the other user should have the opportunity to approve the request on their Dashboard.
+7. Prompt user to correct their information in Dashboard at first login
