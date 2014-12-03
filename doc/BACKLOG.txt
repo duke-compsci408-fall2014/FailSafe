@@ -1,0 +1,7 @@
+The following are items that would be good features to include in the future:
+
+1. Restricted access to DUMC members only - all Duke affiliated workers are currently allowed
+2. Status page that allows users to see the status of all their teammates
+3. Smartphone applications to replace the SMS messaging system for on-call verification
+4. GPS tracking option to allow hospital staff to view physical distance away from hospital
+5. CSV uploads to parse employee information
