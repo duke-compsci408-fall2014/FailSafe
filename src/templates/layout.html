@@ -37,7 +37,7 @@
               <li><a href="/dashboard">Dashboard</a></li>
               <li><a href="/directory">Directory</a></li>
               <li><a href="/calendar">Calendar</a></li>
-              <li><a href="/calendar/day">Substitutions</a></li>
+              <li><a href="/calendar/day">Hourly Substitutions</a></li>
             </ul>
             <button id = "silence-button" type="button" class="btn btn-info navbar-btn pull-right">Silence</button>
             <button id = "deactivate-button" type="button" class="btn btn-success navbar-btn pull-right">Deactivate</button>
@@ -46,12 +46,12 @@
         </div><!-- /.container-fluid -->
       </nav>
 
-        <div style="display:none;" id="alert-form" title="Activate Emergency Alert">
+        <div style="display:none;" id="alert-form" title="Activate Call Team">
             <p class="validateTips">Send an emergency alert to active team. All form fields are required.</p>
             <form action="superman" method="post">
                 <fieldset>
                     <div>
-                        <label for="eta">ETA</label>
+                        <label for="eta">ETA of Patient</label>
                         <input type="text" name="eta" id="eta" class="text ui-widget-content ui-corner-all">
                     </div>
                     <div>
@@ -73,7 +73,7 @@
             </form>
         </div>
 
-        <div style="display:none;" id="deactivate-form" title="Deactivate Emergency Call">
+        <div style="display:none;" id="deactivate-form" title="Deactivate Call Team">
             <p class="validateTips">Send a message to send the team home. All form fields are required.</p>
             <form action="superman" method="post">
                 <fieldset>

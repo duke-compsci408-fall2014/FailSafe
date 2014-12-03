@@ -12,7 +12,7 @@ $(document).ready(function() {
 		return {
 			autoOpen: false,
 			height: 'auto',
-			width: 350,
+			width: 400,
 			modal: true,
 			buttons: buttonsList,
 			close: function() {
@@ -314,7 +314,7 @@ $(document).ready(function() {
 	}
 
 	var fullButtons = {
-		"Create event": addFull,
+		"Assign Team": addFull,
 		Cancel: cancel
 	};
 
@@ -339,8 +339,8 @@ $(document).ready(function() {
 	}
 
 	var CRUDButtons = {
-		"Edit event": updateFull,
-		"Delete": deleteFull,
+		"Update Team": updateFull,
+		"Delete Assignment": deleteFull,
 		Cancel: cancel
 	};
 
@@ -412,7 +412,7 @@ $(document).ready(function() {
 
 	function createSubButtons(role) {
 		return	   {
-				"Create event": function() {
+				"Submit Substitution": function() {
 					var success = addSub(role);
 			        if(success) {
                         $(this).dialog( "close" );
