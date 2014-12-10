@@ -9,4 +9,5 @@ The following are features that would be desirable for future versions of the pr
 	a user should have to request that he/she substitutes for someone else, 
 	and the other user should have the opportunity to approve the request on their Dashboard.
 7. Prompt user to correct their information in Dashboard at first login
-8. Currently, deleting a contact in the directory will cause problems in the calendar because it will attempt to search for the NetID of that person when it tries to fill the roles. Consequently, it will be important to change the delete functionality so that the person is not only removed from the schedule but also from the calendar.
+8. Deleting a contact in the directory will cause problems in the calendar because it will attempt to search for the NetID of that person when it tries to fill the roles. Consequently, it will be important to change the delete functionality so that the person is not only removed from the schedule but also from the calendar.
+9. Time for HTML and the MySQL database is not synced properly - this needs to be edited so that the timings are exactly the same (ensuring that on-call activation will make the proper calls)
