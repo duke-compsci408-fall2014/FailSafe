@@ -26,11 +26,16 @@ def process_response():
                 oncall_eta[user.netID] = int(message_body.split()[1])
                 team_status[user.netID] = -1
                 client.messages.create(to=from_number, from_=default_from_phone, body="Thank you for your response. You said your eta is " + str(message_body.split()[1]) + " minutes.")
+
             except:
                 client.messages.create(to=from_number, from_=default_from_phone, body="Your text is invalid. Please type \"eta X\" where X is a whole number.")
         elif command_string == "status":
             log("sender requesting team status")
-            client.messages.create(to=from_number, from_=default_from_phone, body="Your text has been received. You requested status.")
+            response = "STATUS:"
+            for i in oncall_eta:
+                response += ", " + user.netID + " - " + str(oncall_eta[user.netID])
+            response = response[8:] + response[9:]
+            client.messages.create(to=from_number, from_=default_from_phone, body=response)
         else:
             log("invalid command")
             client.messages.create(to=from_number, from_=default_from_phone, body="Your text is invalid. Please type \"eta X\" or \"status\"")
