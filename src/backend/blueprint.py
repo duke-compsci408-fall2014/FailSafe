@@ -20,15 +20,15 @@ def process_response():
     if user != None and user.netID in get_oncall_team().values():
         log("sender valid")
         command_string = message_body.split()[0]
-        if command_string == "eta":
+        if represents_int(command_string):
             log("sender reporting eta")
             try:
-                oncall_eta[user.netID] = int(message_body.split()[1])
+                oncall_eta[user.netID] = int(command_string)
                 team_status[user.netID] = -1
-                client.messages.create(to=from_number, from_=default_from_phone, body="Thank you for your response. You said your eta is " + str(message_body.split()[1]) + " minutes.")
+                client.messages.create(to=from_number, from_=default_from_phone, body="Thank you for your response. You said your eta is " + str(command_string) + " minutes.")
 
             except:
-                client.messages.create(to=from_number, from_=default_from_phone, body="Your text is invalid. Please type \"eta X\" where X is a whole number.")
+                client.messages.create(to=from_number, from_=default_from_phone, body="Your text is invalid. Please type \"X\" where X is a whole number.")
         elif command_string == "status":
             log("sender requesting team status")
             response = "STATUS:"
@@ -38,7 +38,7 @@ def process_response():
             client.messages.create(to=from_number, from_=default_from_phone, body=response)
         else:
             log("invalid command")
-            client.messages.create(to=from_number, from_=default_from_phone, body="Your text is invalid. Please type \"eta X\" or \"status\"")
+            client.messages.create(to=from_number, from_=default_from_phone, body="Your text is invalid. Please type \"X\" or \"status\"")
     else:
         log("sender invalid")
         client.messages.create(to=from_number, from_=default_from_phone, body="")
@@ -49,6 +49,13 @@ def process_response():
     #   update ETA of the individual
     # if the message is a status request
     #   update send the text to the sender with status updates
+
+def represents_int(s):
+    try: 
+        int(s)
+        return True
+    except ValueError:
+        return False
 
 @backend.route("/")
 def index():
@@ -173,5 +180,5 @@ def deactivate():
          python compatible
 '''
 def format_message(message_json):
-    message = "[{}] ETA: {}, TYPE: {}, LOCATION: {}, MSG: {} Please respond with your personal ETA in minutes, i.e. \"eta 3\" for 3 minutes.".format(str(datetime.now())[:-7], message_json['eta'], message_json['type'], message_json['location'], message_json['msg'])
+    message = "[{}] ETA: {}, TYPE: {}, LOCATION: {}, MSG: {} Please respond with your personal ETA in minutes, i.e. \"3\" for 3 minutes.".format(str(datetime.now())[:-7], message_json['eta'], message_json['type'], message_json['location'], message_json['msg'])
     return message
