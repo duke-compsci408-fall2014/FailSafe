@@ -1,4 +1,4 @@
-PURPOSE
+﻿PURPOSE
 
 Dealing with a heart attack is a time-critical operation. No more than ninety minutes should pass between the
 time an incident is reported and the time that the catheter operation is completed. 
@@ -27,3 +27,14 @@ Basic instructions are as follows:
 7) Install MySQL for database management.
 8) Set up databases for the calendar and directory portions of FailSafe.
 9) Test everything!
+
+VERSIONS OF UTILIZED SOFTWARE
+
+Ubuntu 14.04.1
+Python 2.7
+Flask 0.10.1
+JavaScript 1.8.5
+jQuery 1.11.1
+Twilio API version 2010-04-01
+Moment.js 2.8.4
+CSS3 & HTML5
