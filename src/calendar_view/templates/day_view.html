@@ -9,8 +9,9 @@
 
     <p id="startingDate" hidden >{{date}}</p>
     <div class = "container">
-	<button id = "yesterday" type="button" class="btn btn-default pull-left">Previous Day</button>
-	<button id = "tomorrow" type="button" class="btn btn-default pull-left">Next Day</button>
+        <button id = "yesterday" type="button" class="btn btn-default pull-left">Previous Day</button>
+        <button id = "tomorrow" type="button" class="btn btn-default pull-left">Next Day</button>
+        <a href="{{ url_for('calendar.month_view') }}"><button id = "month-view" type="button" class="btn btn-default pull-right">Month View</button></a>
     </div>
     <div class="container" id="dayView"></div>
 
