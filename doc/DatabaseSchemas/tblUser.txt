@@ -1,0 +1,10 @@
+Field	Type	Null	Key	Default	Extra
+UserID	int(11)	NO	PRI	NULL	auto_increment
+Role	varchar(50)	NO		NULL	
+IsAdministrator	varchar(3)	NO		NULL	
+FirstName	varchar(50)	NO		NULL	
+LastName	varchar(50)	NO		NULL	
+CellPhone	varchar(14)	NO		NULL	
+HomePhone	varchar(14)	NO		NULL	
+PagerNumber	varchar(14)	NO		NULL	
+NetID	varchar(10)	NO		NULL	

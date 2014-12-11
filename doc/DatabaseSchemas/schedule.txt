@@ -1,0 +1,8 @@
+Field	Type	Null	Key	Default	Extra
+Day	date	NO	PRI	NULL	
+Faculty	varchar(50)	NO		NULL	
+Fellow	varchar(50)	NO		NULL	
+RN1	varchar(50)	NO		NULL	
+RN2	varchar(50)	NO		NULL	
+Tech1	varchar(50)	NO		NULL	
+Tech2	varchar(50)	NO		NULL	

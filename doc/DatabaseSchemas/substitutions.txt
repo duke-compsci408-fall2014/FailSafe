@@ -1,0 +1,6 @@
+Field	Type	Null	Key	Default	Extra
+ID	int(11)	NO	PRI	NULL	auto_increment
+StartTime	datetime	NO		NULL	
+EndTime	datetime	NO		NULL	
+Role	varchar(50)	NO		NULL	
+SubID	varchar(50)	NO		NULL	
