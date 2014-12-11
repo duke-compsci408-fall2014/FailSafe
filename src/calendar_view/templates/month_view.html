@@ -8,6 +8,7 @@
     <div class="container">
 		<button id = "last-month" type="button" class="btn btn-default pull-left">Previous Month</button>
 		<button id = "next-month" type="button" class="btn btn-default pull-left">Next Month</button>
+        <a href="{{ url_for('calendar.day_view') }}"><button id = "day-view" type="button" class="btn btn-default pull-right">Day View</button></a>
 	</div>
 	<div class="container" id="calendar"></div>
 	
