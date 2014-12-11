@@ -1,0 +1,28 @@
+CURRENT PROJECT FUNCTIONALITY
+All users can:
+	- Login to the FailSafe service using Duke Shibboleth.
+	- View your schedule; see which call teams you have been assigned to.
+		View specifics of these teams by clicking the links in your "Dashboard"
+	- View the global schedule; see the monthly and daily schedules for call teams.
+		- See when your friends are working!
+	- Receive alerts when their team is Activated.  
+		- At such a time the user is able to communicate with our Twilio service
+			- Stop messages by responding with their ETA
+			- Check the status of other team members
+Users with administrator privileges can:
+	- Activate the current call team
+		- Send messages to team members pagers, phones, and SMS boxes until they respond with their ETA
+	- Add contact information for new staff members
+	- Edit the contact information of all staff members
+	- Delete contact information for all staff members.
+	- Create a new call team assignment for any given day.  Assign 6 people to be on call.
+	- Edit call team assignments
+	- Delete call team assignments
+	- Add substitutes for a member of previously created call teams for portions of the night.
+	- Edit previously created substitution schedules.
+	- Delete previously created substitution schedules.
+
+TESTED ON
+Google Chrome (Desktop & iOS)
+Mozilla Firefox (Desktop)
+Safari (iOS)

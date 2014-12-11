@@ -1,0 +1,13 @@
+The following are features that would be desirable for future versions of the product.
+
+1. Restricted access to DUMC members only - all Duke affiliated workers are currently allowed
+2. Status page that allows users to see the status of all their teammates
+3. Smartphone applications to replace the SMS messaging system for on-call verification
+4. GPS tracking option to allow hospital staff to view physical distance away from hospital
+5. CSV uploads to parse employee information -- would allow for mass entry of new staff members.
+6. Substitutions and shift trades should have to be formally requested -- 
+	a user should have to request that he/she substitutes for someone else, 
+	and the other user should have the opportunity to approve the request on their Dashboard.
+7. Prompt user to correct their information in Dashboard at first login
+8. Deleting a contact in the directory will cause problems in the calendar because it will attempt to search for the NetID of that person when it tries to fill the roles. Consequently, it will be important to change the delete functionality so that the person is not only removed from the schedule but also from the calendar.
+9. Time for HTML and the MySQL database is not synced properly - this needs to be edited so that the timings are exactly the same (ensuring that on-call activation will make the proper calls)

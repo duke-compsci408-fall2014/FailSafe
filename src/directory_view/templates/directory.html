@@ -71,7 +71,7 @@
 	<div id="dialog-form" title="Create new staff">
 	  <p class="validateTips">All form fields are required.</p>
 	
-	  <form action="/directory/addStaff" method="post">
+	  <form action="/directory/addStaff" method="post" id="directory-form">
 		<fieldset>
 			<div>
                 <label for="role">Role</label>
@@ -83,8 +83,8 @@
                 </select>
 			</div>
 			<div>
-                <label for="admin" style="display:none">Is Admin?</label>
-                <select id="admin" style="display:none">
+                <label for="admin">Is Admin?</label>
+                <select id="admin">
                     <option value="No">No</option>
                     <option value="Yes">Yes</option>
                 </select>

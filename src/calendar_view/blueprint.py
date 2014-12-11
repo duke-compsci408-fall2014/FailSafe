@@ -2,7 +2,7 @@ from flask import Flask, Blueprint, request, render_template, jsonify, Response
 from flask.json import JSONEncoder
 import calendar
 from datetime import datetime
-from datetime import date
+from datetime import date, time, timedelta
 from flaskext.mysql import MySQL
 import directory_view as directory
 from config import cal_mysql, dir_mysql
@@ -118,20 +118,26 @@ def check_availability():
     return jsonify(results=True)
 
 def get_oncall_team():
-    return get_team_at_time("NOW()")
+    print "test"
+    print datetime.now()
+    return get_team_at_time(datetime.now())
 
-def get_team_at_time(time):
+def get_team_at_time(time1):
     con = cal_mysql.connect()
     cursor = con.cursor()
     roles = ['Faculty', 'Fellow', 'RN1', 'RN2', 'Tech1', 'Tech2']
     oncall_team = {}
+    if(time1.time() >= time(0,0) and time1.time() <= time(6, 30)):
+        time1 = time1 - timedelta(days=1)
+        print ("a:" + str(time1))
+    print "b:" + str(time1)
     for i in roles:
-        cursor.execute("SELECT {role} from schedule WHERE DATE({time})=Day".format(role = i, time=time))
+        cursor.execute("SELECT {role} from schedule WHERE DATE('{time}')=Day".format(role = i, time=time1))
         data = cursor.fetchall()
         if len(data) > 0:
             oncall_team[i] = str(data[0][0])  #first zero for first entry from fetchall, second zero for the actual value of (netID, )
     for i in roles:
-        cursor.execute("SELECT * FROM substitutions WHERE {time} > StartTime AND {time} < EndTime AND Role = '{role}'".format(role=i, time=time))
+        cursor.execute("SELECT * FROM substitutions WHERE '{time}' > StartTime AND '{time}' < EndTime AND Role = '{role}'".format(role=i, time=time1))
         data = cursor.fetchall()
         if len(data) == 0:
             pass
@@ -158,6 +164,12 @@ def get_user_days_oncall(netID, numLimit):
     days = []
     for i in range(len(data)):
         days.append(data[i][0])
+
+    cursor.execute("SELECT Date(StartTime) FROM substitutions WHERE SubID = '{netID}'".format(netID = user.netID))
+    sub_data = cursor.fetchall()
+    for j in range(len(sub_data)):
+        days.append(sub_data[j][0])
+
     return days
 
 @calendar.route('/json_datetime_schedule')

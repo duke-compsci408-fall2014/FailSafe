@@ -1,100 +1,100 @@
 $(document).ready(function() {
-	$('.entry').mouseover(function() {
-	    $(this).css({'background-color':'#e7e7e7'});
-	}).mouseout(function() {
-		$(this).css({'background-color':'#ffffff'});
-	});
-	
-	$(function() {
-		var dialog, form,
-		  firstName = $( "#firstName" ),
-		  lastName = $( "#lastName" ),
-		  phoneNumber = $( "#phoneNumber" ),
-		  allFields = $( [] ).add( firstName ).add( lastName ).add( phoneNumber ),
-		  tips = $( ".validateTips" );
+    $('.entry').mouseover(function() {
+        $(this).css({'background-color':'#e7e7e7'});
+    }).mouseout(function() {
+        $(this).css({'background-color':'#ffffff'});
+    });
+    
 
-		function updateTips( t ) {
-		  tips
-			.text( t )
-			.addClass( "ui-state-highlight" );
-		  setTimeout(function() {
-			tips.removeClass( "ui-state-highlight", 1500 );
-		  }, 500 );
-		}
 
-		function checkLength( o, n, min, max ) {
-		  if ( o.val().length > max || o.val().length < min ) {
-			o.addClass( "ui-state-error" );
-			updateTips( "Length of " + n + " must be between " +
-			  min + " and " + max + "." );
-			return false;
-		  } else {
-			return true;
-		  }
-		}
-
-		function checkRegexp( o, regexp, n ) {
-		  if ( !( regexp.test( o.val() ) ) ) {
-			o.addClass( "ui-state-error" );
-			updateTips( n );
-			return false;
-		  } else {
-			return true;
-		  }
-		}        
-        
-
-		dialog = $( "#dialog-form" ).dialog({
-		  autoOpen: false,
-		  height: 400,
-		  width: 350,
-		  modal: true,
-		  buttons: {
-			"Create Staff": function() {
-				var staff_data = {"role":$('#role').val(), "admin":$('#admin').val(), 
-								  "firstName":$('#firstName').val(), "lastName":$('#lastName').val(),
-								  "cellNumber":$('#cellNumber').val(), "homeNumber":$('#homeNumber').val(), 
-								  "pager":$('#pager').val(), "netID":$('#netID').val() };
-                var valid = true;
-                for(var key in staff_data){
-                    data = staff_data[key];
-                    if(!data) {
+//    $(function() {
+        addStaff = function() {
+            var staff_data = {"role":$('#role').val(), "admin":$('#admin').val(), 
+                                  "firstName":$('#firstName').val(), "lastName":$('#lastName').val(),
+                                  "cellNumber":$('#cellNumber').val(), "homeNumber":$('#homeNumber').val(), 
+                                  "pager":$('#pager').val(), "netID":$('#netID').val() };
+            var valid = true;
+            var count = 0;
+            var errorMessage = "";
+            for(var key in staff_data){
+                data = staff_data[key];
+                if(!data) {
+                    errorMessage = "All fields are required";
+                    valid = false;
+                    break;
+                }
+                
+                // cell/home phone number check
+                else if(count == 4 || count == 5) {
+                    if(data.length != 12 || data.substring(0,2) != "+1" || !$.isNumeric(data.substring(1))) {
+                        errorMessage = "Phone numbers must be in the form '+19876543210'";
                         valid = false;
+                        break;
                     }
                 }
-                if(valid) {
-				    $.ajax({
-                        url:"/directory/addStaff",
-                        type: "POST",
-                        contentType:"application/json",
-                        dataType:"json",
-                        data: JSON.stringify(staff_data),
-          		    });
-              		dialog.dialog( "close" );
-              		window.location.reload(true);
-                } else {
-                    alert("All fields are required.");
+                // pager number check
+                else if(count == 6) {
+                    if(data.length != 10 || !$.isNumeric(data.substring(1))) {
+                        errorMessage = "Pager number must be in the form '9876543210'";
+                        valid = false;
+                        break;
+                    }
                 }
-          	
-			},
-			Cancel: function() {
-			  dialog.dialog( "close" );
-			}
-		  },
-		  close: function() {
-			form[ 0 ].reset();
-			allFields.removeClass( "ui-state-error" );
-		  }
-		});
+                count++;
 
-		form = dialog.find( "form" ).on( "submit", function( event ) {
-		  // event.preventDefault();
-		  // addUser();
-		});
-           
-		$( "#create-user" ).button().on( "click", function() {
+            }
+            if(valid) {
+                $.ajax({
+                    url:"/directory/addStaff",
+                    type: "POST",
+                    contentType:"application/json",
+                    dataType:"json",
+                    data: JSON.stringify(staff_data),
+                });
+                dialog.dialog( "close" );
+                window.location.reload(true);
+            } else {
+                alert(errorMessage);
+            }
+
+        }
+
+        dialog = $( "#dialog-form" ).dialog({
+                autoOpen: false,
+                height: 400,
+                width: 350,
+                modal: true,
+                buttons: {
+                    "Add Staff": addStaff,
+                    Cancel: function() {
+                        $(this).find('form')[0].reset();
+                        dialog.dialog( "close" );
+                        window.location.reload(true);
+                    }
+                },
+                close: function() {
+                    $(this).find('form')[0].reset();
+                    dialog.dialog( "close" );
+                    window.location.reload(true);
+                }
+            });
+       
+
+        $( "#create-user" ).button().on( "click", function() {
+            
             dialog.dialog( "open" );
-		});
+
+            //adding user by pressing enter in the add dialog
+            $("#directory-form").keypress(function(e) {
+                if(e.which == 13) {
+                    e.preventDefault();
+                    addStaff();  
+                }
+            });
+        });
+
+
+
         $(".edit-staff").button().on("click", function(e) {
             e.preventDefault();
             var id = $(this).attr('id');
@@ -110,6 +110,57 @@ $(document).ready(function() {
                 $(list[count]).val($(this).text());
                 count += 1
             });
+
+            editStaff = function() {
+                var staff_data = {"prevNetid":prevNetid, "role":$('#role').val(), "admin":$('#admin').val(),
+                                      "firstName":$('#firstName').val(), "lastName":$('#lastName').val(),
+                                      "cellNumber":$('#cellNumber').val(), "homeNumber":$('#homeNumber').val(),
+                                      "pager":$('#pager').val(), "netID":$('#netID').val()};
+                var valid = true;
+                var count = 0;
+                var errorMessage = "";
+                for(var key in staff_data){
+                    data = staff_data[key];
+                    if(!data) {
+                        errorMessage = "All fields are required";
+                        valid = false;
+                        break;
+                    }
+                
+                    // cell/home phone number check
+                    else if(count == 5 || count == 6) {
+                        if(data.length != 12 || data.substring(0,2) != "+1" || !$.isNumeric(data.substring(1))) {
+                            errorMessage = "Phone numbers must be in the form '+19876543210'";
+                            valid = false;
+                            break;
+                        }
+                    }
+                    // pager number check
+                    else if(count == 7) {
+                        if(data.length != 10 || !$.isNumeric(data.substring(1))) {
+                            errorMessage = "Pager number must be in the form '9876543210'";
+                            valid = false;
+                            break;
+                        }
+                    }
+                    count++;
+                }
+
+                
+                if(valid) {
+                    $.ajax({
+                        url:"/directory/editStaff",
+                        type: "POST",
+                        contentType:"application/json",
+                        dataType:"json",
+                        data: JSON.stringify(staff_data),
+                    }); 
+                    edit_dialog.dialog( "close" );
+                    window.location.reload(true);
+                } else {
+                    alert(errorMessage);
+                }
+            }
             
             edit_dialog = $( "#dialog-form" ).dialog({
                 autoOpen: false,
@@ -117,43 +168,32 @@ $(document).ready(function() {
                 width: 350,
                 modal: true,
                 buttons: {
-                    "Edit Staff": function() {
-                        var staff_data = {"prevNetid":prevNetid, "role":$('#role').val(), "admin":$('#admin').val(),
-                                          "firstName":$('#firstName').val(), "lastName":$('#lastName').val(),
-                                          "cellNumber":$('#cellNumber').val(), "homeNumber":$('#homeNumber').val(),
-                                          "pager":$('#pager').val(), "netID":$('#netID').val()};
-                        var valid = true;
-                        for(var key in staff_data){
-                            data = staff_data[key];
-                            if(!data) {
-                                valid = false;
-                            }
-                        }
-                        if(valid) {
-                            $.ajax({
-                                url:"/directory/editStaff",
-                                type: "POST",
-                                contentType:"application/json",
-                                dataType:"json",
-                                data: JSON.stringify(staff_data),
-                            }); 
-                            dialog.dialog( "close" );
-                            window.location.reload(true);
-                        } else {
-                            alert("All fields are required.");
-                        }
-                    },
+                    "Edit Staff": editStaff,
                     Cancel: function() {
-                        dialog.dialog( "close" );
+                        $(this).find('form')[0].reset();
+                        edit_dialog.dialog( "close" );
+                        window.location.reload(true);
                     }
                 },
                 close: function() {
-                    form[ 0 ].reset();
-                    allFields.removeClass( "ui-state-error" );
+                    $(this).find('form')[0].reset();
+                    edit_dialog.dialog( "close" );
+                    window.location.reload(true);
                 }
             });
             edit_dialog.dialog("open");
+
+            // editing staff entry by presing enter in the dialog
+            $("#directory-form").keypress(function(e) {
+                if(e.which == 13) {
+                    e.preventDefault();
+                    editStaff();
+                }
+            });
         });
+
+
+
 
         $(".delete-staff").button().on("click", function(e) {
             console.log($(this).attr('id'));
@@ -184,7 +224,7 @@ $(document).ready(function() {
             });
             deleteDialog.dialog("open");
         });
-	});
+  //  });
 });
 
 $(document).keypress(function(e) { 
